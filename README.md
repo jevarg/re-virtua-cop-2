@@ -1,2 +1,2 @@
-# re-virtua-cops-2
-Reverse engineering of Virtua Cops 2 PC (1997)
+# re-virtua-cop-2
+Reverse engineering of Virtua Cop 2 PC (1997)
