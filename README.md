@@ -7,7 +7,7 @@ Work in progress reverse engineering of [Virtua Cop 2 PC](https://www.abandonwar
     - [Vertices](#vertices)
     - [Indices and faces](#indices-and-faces)
     - [Unknown section](#unknown-section)
-  - [Textures (T\_.BIN)](#textures-t_bin)
+  - [Textures](#textures)
   - [Color palettes](#color-palettes)
 
 ## Used tools
@@ -63,7 +63,7 @@ Each face is represented like so:
 I suspect this has something to do with UV coordinates or texture mapping.
 
 
-### Textures (T_.BIN)
+### Textures
 Textures are stored in **T_*.BIN** files.
 
 Based on what we can see using **Binocle**, it seems like each pixel is encoded as an **8bit palette index**.
