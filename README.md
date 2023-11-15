@@ -35,7 +35,7 @@ The header consists in *n* number of model definitions until a **16 bytes** chun
 | 1 byte  | Number of faces      | The number of faces for this model         |
 | 1 byte  | Unknown              | -                                          |
 
-<small>Model definition structure</small>
+<sub>Model definition structure</sub>
 
 #### Vertices
 Vertices are directly stored as a list of **3 &times; 32 bits** float coordinates (XYZ).
@@ -57,7 +57,7 @@ Each face is represented like so:
 | 2 bytes  | Index 4 | Fourth index of the face |
 | 12 bytes | Unknown | -                        |
 
-<small>Face indices data structure</small>
+<sub>Face indices data structure</sub>
 
 #### Unknown section
 I suspect this has something to do with UV coordinates or texture mapping.
@@ -69,7 +69,8 @@ Textures are stored in **T_*.BIN** files.
 Based on what we can see using **Binocle**, it seems like each pixel is encoded as an **8bit palette index**.
 
 ![texture-binocle](.doc/texture-binocle.png)
-<small>Example of T_MINI_C.BIN captured using Binocle</small>
+
+<sub>Example of T_MINI_C.BIN captured using Binocle</sub>
 
 
 ### Color palettes
@@ -86,4 +87,4 @@ ImHex can help us having a better view on palette data
 
 ![logo-palette-imhex](.doc/logo-palette-imhex.png)
 
-<small>Example of L_LOGO.BIN captured using ImHex w/ palettes.hexpat pattern</small>
+<sub>Example of L_LOGO.BIN captured using ImHex w/ palettes.hexpat pattern</sub>
