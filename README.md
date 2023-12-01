@@ -26,14 +26,14 @@ Models are stored in **P_*.BIN** files divided into 4 sections.
 #### Header
 The header consists in *n* number of model definitions until a **16 bytes** chunk of **0**s is reached. Each definition is structured like so:
 
-| Size    | Name                 | Description                                |
-| ------- | -------------------- | ------------------------------------------ |
-| 4 bytes | Vertices data offset | Offset of the model's vertices in the file |
-| 4 bytes | Indices data offset  | Offset of the model's indices in the file  |
-| 4 bytes | Unknown              | Not sure for now. Maybe UVs?               |
-| 2 bytes | Number of vertices   | The number of vertices for this model      |
-| 1 byte  | Number of faces      | The number of faces for this model         |
-| 1 byte  | Unknown              | -                                          |
+| Size    | Name                 | Description                                                                               |
+| ------- | -------------------- | ----------------------------------------------------------------------------------------- |
+| 4 bytes | Vertices data offset | Offset of the model's vertices in the file (see [Vertices](#vertices))                    |
+| 4 bytes | Indices data offset  | Offset of the model's indices in the file   (see [Indices and faces](#indices-and-faces)) |
+| 4 bytes | Unknown              | Not sure for now. Maybe UVs?  (see [Unknown section](#unknown-section))                   |
+| 2 bytes | Number of vertices   | The number of vertices for this model                                                     |
+| 1 byte  | Number of faces      | The number of faces for this model                                                        |
+| 1 byte  | Unknown              | -                                                                                         |
 
 <sub>Model definition structure</sub>
 
@@ -77,11 +77,12 @@ Based on what we can see using **Binocle**, it seems like each pixel is encoded 
 Color palettes are defined in **L_*.BIN** files.
 Each file contains several color palettes.
 
-| Size   | Name | Description              |
-| ------ | ---- | ------------------------ |
-| 1 byte | R    | Red color value |
+| Size   | Name | Description       |
+| ------ | ---- | ----------------- |
+| 1 byte | R    | Red color value   |
 | 1 byte | G    | Green color value |
-| 1 byte | B    | Blue color value |
+| 1 byte | B    | Blue color value  |
+| 1 byte | X    | Padding           |
 
 ImHex can help us having a better view on palette data
 
