@@ -67,7 +67,7 @@ class PPJ2DD():
             try:
                 textures_count: int = self.__v_unpack("I", v_count_ptr)[0]
                 texture_data_off = 0
-                textures: list[Texture] = []
+                textures: dict[int, list[Texture]] = {}
                 if v_textures_off > 0:
                     for i in range(textures_count):
                         t = Texture(i, *self.__v_unpack(
@@ -75,10 +75,16 @@ class PPJ2DD():
                             v_textures_off + (Texture.BYTES_SIZE * i)
                         ))
 
+                        if t.flags.hud():
+                            continue
+
+                        if textures.get(t.width) is None:
+                            textures[t.width] = []
+
                         t.offset = texture_data_off
                         texture_data_off += t.width * t.height
 
-                        textures.append(t)
+                        textures[t.width].append(t)
 
                 self.textures[tex_type] = TexturesFile(file_name, palette_file_name, textures)
                 # self.textures[tex_type].extract(0)
