@@ -14,7 +14,7 @@ class TextureFlags():
     def alpha(self) -> bool:
         return self.raw_val & 0x2
 
-    def hud(self) -> bool:
+    def ui(self) -> bool:
         return self.raw_val & 0x4
 
     def __repr__(self) -> str:
@@ -56,6 +56,8 @@ class TexturesFile():
     FORMAT = "IIIIII"
     BYTES_SIZE = struct.calcsize(FORMAT)
 
+    __to_unpack_nb: int
+
     __file_name: str
     __palette_name: str
     __textures: dict[int, list[Texture]]
@@ -69,12 +71,13 @@ class TexturesFile():
     def __repr__(self) -> str:
         return f"TexturesFile(file={self.__file_name} palette={self.__palette_name} textures={len(self.__textures)} items)"
 
-    def __init__(self, file_name: str, palette_name: str, textures: dict[int, list[Texture]]) -> None:
+    def __init__(self, file_name: str, palette_name: str, textures: dict[int, list[Texture]], packed_count: int) -> None:
         self.__file_name = file_name
         self.__palette_name = palette_name
         self.__textures = textures
         self.__atlas_data = bytearray(256 * 9999)
         self.__unpacked_textures = []
+        self.__to_unpack_nb = packed_count
 
         self.__load()
 
@@ -86,77 +89,80 @@ class TexturesFile():
             self.__textures_data = f.read()
         with open(palette_path, "rb") as f:
             self.__palette_data = f.read()
-        
-        self.__pack_textures(0, 0, 256, 256)
 
-    def __pack_textures(self, x_off: int, y_off: int, avail_width: int, avail_height: int):
+        self.__pack_textures(0, 0, 0, 256, 256)
+        self.__debug_save()
+
+    def __debug_save(self):
+        test_path = os.path.join(Context.out_dir, 'test.bin')
+        with open(test_path, "w+b") as f:
+            f.write(self.__atlas_data)
+            print(f"unpacked {len(self.__unpacked_textures)} textures")
+            print(f"to_unpack: {self.__to_unpack_nb} textures")
+
+    def __pack_textures(self, out_off: int, x_off: int, y_off: int, avail_width: int, avail_height: int):
         print(f"\nx_off: {x_off} y_off: {y_off} avail_width: {avail_width} avail_height: {avail_height}")
-    
-        count = 0
-        while count <= 0:
-            textures: list[Texture] = None
-            tex_width = avail_width
-            while textures is None:
-                if tex_width <= 0:
-                    print(f"skipped {avail_width}")
-                    return # done
 
-                textures = self.__textures.get(tex_width)
-                tex_width -= 1
+        if x_off >= avail_width:
+            return
 
-            x_atlas = x_off
-            y_atlas = y_off
+        while y_off < avail_height and self.__to_unpack_nb > 0:
 
-            print(f"tex_width: {tex_width}")
+            tex_width = avail_width - x_off
+            count = 0
+            while count <= 0:
+                textures: list[Texture] = None
+                while True:
+                    if tex_width <= 0:
+                        print(f"skipped {avail_width}")
+                        return # done
 
-            for t in textures:
-                if t.id in self.__unpacked_textures:
-                    print(f"{t.id} already unpacked")
-                    continue
+                    textures = self.__textures.get(tex_width)
+                    if textures is not None:
+                        break
 
-                print(f"t.id: {t.id}")
-                if t.height <= avail_height:
+                    tex_width -= 1
+
+                y_atlas = y_off
+
+                print(f"tex_width: {tex_width}")
+
+                for t in textures:
+                    if t.id in self.__unpacked_textures:
+                        continue
+
+                    if t.height > avail_height - y_atlas:
+                        continue
+
                     for y in range(t.height):
+                        i = out_off + (y_atlas + y) * 256
                         for x in range(t.width):
-                            t_index = y * t.width + x
-                            b = struct.unpack_from("B", self.__textures_data, t.offset + t_index)[0]
-                            self.__atlas_data[y_atlas * avail_width + x_atlas + x] = b
-                        self.__unpacked_textures.append(t.id)
-                        count += 1
-                        y_atlas += 1
+                            t_pixel = y * t.width + x
+                            b = struct.unpack_from("B", self.__textures_data, t.offset + t_pixel)[0]
+                            self.__atlas_data[i + x_off + x] = b
+
+                    self.__unpacked_textures.append(t.id)
+                    self.__to_unpack_nb -= 1
+                    y_atlas += t.height
+                    count += 1
+
+                if count > 0:
+                    self.__pack_textures(out_off, x_off + tex_width, y_off, avail_width, y_atlas)
+                    self.__pack_textures(out_off, x_off, y_atlas, avail_width, avail_height)
+                    break
                 else:
-                    pass
-                    # if y_atlas >= height:
-                    #     self.__pack_textures(t.id, width, y_atlas)
-                    #     return
-            print(f"count: {count}")
-            if count > 0:
-                self.__pack_textures(x_off + avail_width, y_off, avail_width - tex_width, avail_height)
-                self.__pack_textures(0, y_atlas, avail_width, avail_height)
-                break
-            else:
-                tex_width
+                    tex_width -= 1
 
-            # else: # t.height <= height
-                
-                    # texture_size = t.width * t.height
-                    # t_data = struct.unpack_from(f"{texture_size}B", self.__textures_data, t.offset)
-        # for t in self.__textures:
-        #     texture_size = t.width * t.height
-        #     indexes = struct.unpack_from(f"{texture_size}B", textures_data, t.offset)
-        #     t.data = bytes(indexes)
+            if x_off != 0 or y_off != 0:
+                return
 
-        #     pixels: list[int] = []
-        #     for index in indexes:
-        #         color = RGBColor(*struct.unpack_from("3Bx", palette_data, t.palette_offset * 64 + index * 4))
+            if avail_width != 256 or avail_height != 256:
+                return
 
-        #         alpha = 0xff
-        #         if index == 0 and t.flags.alpha():
-        #             alpha = 0x00
+            if self.__to_unpack_nb <= 0:
+                return
 
-        #         pixels.extend([color.r, color.g, color.b, alpha])
-
-        #     t.data = bytes(pixels)
+            out_off += (256 * 256)
 
     def __export__texture(self, t: Texture, out_dir: str):
         file_path = os.path.join(out_dir, f'{t.id}.png')

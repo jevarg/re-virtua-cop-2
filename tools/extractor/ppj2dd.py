@@ -68,6 +68,7 @@ class PPJ2DD():
                 textures_count: int = self.__v_unpack("I", v_count_ptr)[0]
                 texture_data_off = 0
                 textures: dict[int, list[Texture]] = {}
+                c = 0
                 if v_textures_off > 0:
                     for i in range(textures_count):
                         t = Texture(i, *self.__v_unpack(
@@ -75,18 +76,21 @@ class PPJ2DD():
                             v_textures_off + (Texture.BYTES_SIZE * i)
                         ))
 
-                        if t.flags.hud():
+                        t.offset = texture_data_off
+                        texture_data_off += t.width * t.height
+
+                        if t.flags.ui():
                             continue
 
                         if textures.get(t.width) is None:
                             textures[t.width] = []
 
-                        t.offset = texture_data_off
-                        texture_data_off += t.width * t.height
-
                         textures[t.width].append(t)
 
-                self.textures[tex_type] = TexturesFile(file_name, palette_file_name, textures)
+                        c += 1
+
+                print(f"Total non-UI textures: {c}")
+                self.textures[tex_type] = TexturesFile(file_name, palette_file_name, textures, c)
                 # self.textures[tex_type].extract(0)
                 # self.textures[tex_type].export()
                 # exit()
