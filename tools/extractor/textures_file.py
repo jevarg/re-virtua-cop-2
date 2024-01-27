@@ -75,7 +75,7 @@ class TexturesFile():
         self.__file_name = file_name
         self.__palette_name = palette_name
         self.__textures = textures
-        self.__atlas_data = bytearray(256 * 9999)
+        self.__atlas_data = bytearray(0x400000) # 4Mo
         self.__unpacked_textures = []
         self.__to_unpack_nb = packed_count
 
@@ -90,8 +90,11 @@ class TexturesFile():
         with open(palette_path, "rb") as f:
             self.__palette_data = f.read()
 
+        self.__rect_nb = 0
         self.__pack_textures(0, 0, 0, 256, 256)
-        self.__debug_save()
+        self.__atlas_data = self.__atlas_data[:(self.__rect_nb + 1) * (256 * 256 * 4)]
+        # self.__debug_save()
+        self.export_atlas()
 
     def __debug_save(self):
         test_path = os.path.join(Context.out_dir, 'test.bin')
@@ -100,7 +103,7 @@ class TexturesFile():
             print(f"unpacked {len(self.__unpacked_textures)} textures")
             print(f"to_unpack: {self.__to_unpack_nb} textures")
 
-    def __pack_textures(self, out_off: int, x_off: int, y_off: int, avail_width: int, avail_height: int):
+    def __pack_textures(self, rect_nb: int, x_off: int, y_off: int, avail_width: int, avail_height: int):
         print(f"\nx_off: {x_off} y_off: {y_off} avail_width: {avail_width} avail_height: {avail_height}")
 
         if x_off >= avail_width:
@@ -135,11 +138,19 @@ class TexturesFile():
                         continue
 
                     for y in range(t.height):
-                        i = out_off + (y_atlas + y) * 256
+                        i = rect_nb * (256 * 256) + (y_atlas + y) * 256
                         for x in range(t.width):
                             t_pixel = y * t.width + x
-                            b = struct.unpack_from("B", self.__textures_data, t.offset + t_pixel)[0]
-                            self.__atlas_data[i + x_off + x] = b
+                            index = struct.unpack_from("B", self.__textures_data, t.offset + t_pixel)[0]
+                            (r, g, b) = struct.unpack_from("3Bx", self.__palette_data, t.palette_offset * 64 + index * 4)
+                            self.__atlas_data[(i + x_off + x) * 4] = r
+                            self.__atlas_data[(i + x_off + x) * 4 + 1] = g
+                            self.__atlas_data[(i + x_off + x) * 4 + 2] = b
+
+                            if t.flags.alpha() and index == 0:
+                                self.__atlas_data[(i + x_off + x) * 4 + 3] = 0
+                            else:
+                                self.__atlas_data[(i + x_off + x) * 4 + 3] = 0xff
 
                     self.__unpacked_textures.append(t.id)
                     self.__to_unpack_nb -= 1
@@ -147,11 +158,14 @@ class TexturesFile():
                     count += 1
 
                 if count > 0:
-                    self.__pack_textures(out_off, x_off + tex_width, y_off, avail_width, y_atlas)
-                    self.__pack_textures(out_off, x_off, y_atlas, avail_width, avail_height)
+                    self.__pack_textures(rect_nb, x_off + tex_width, y_off, avail_width, y_atlas)
+                    self.__pack_textures(rect_nb, x_off, y_atlas, avail_width, avail_height)
                     break
                 else:
                     tex_width -= 1
+
+            if rect_nb > self.__rect_nb:
+                self.__rect_nb = rect_nb
 
             if x_off != 0 or y_off != 0:
                 return
@@ -162,7 +176,7 @@ class TexturesFile():
             if self.__to_unpack_nb <= 0:
                 return
 
-            out_off += (256 * 256)
+            rect_nb += 1
 
     def __export__texture(self, t: Texture, out_dir: str):
         file_path = os.path.join(out_dir, f'{t.id}.png')
@@ -192,3 +206,11 @@ class TexturesFile():
         else:
             for t in self.__textures:
                 self.__export__texture(t, out_dir)
+
+    def export_atlas(self):
+        if not os.path.exists(Context.out_dir):
+            os.makedirs(Context.out_dir)
+
+        file_path = os.path.join(Context.out_dir, f'{self.__file_name}.png')
+        img = Image.frombytes('RGBA', (256, len(self.__atlas_data) // 256 // 4), self.__atlas_data)
+        img.save(file_path)

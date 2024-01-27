@@ -25,8 +25,6 @@ class PPJ2DD():
         return raw_addr
 
     def __init__(self, file_path: str) -> None:
-        # self.textures = {}
-
         with open(file_path, "rb") as file:
             self.file_name = file_path
             self.__data = file.read()

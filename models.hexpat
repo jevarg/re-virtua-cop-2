@@ -22,8 +22,8 @@ struct Model {
     u16 *indices_addr : u32;
     u8 *off2 : u32;
     u16 vertices_count;
-    u8 faces_count;
-    u8 unk1;
+    u16 faces_count;
+    //padding[1];
 
     float vertices[calc_vertices_size(vertices_count)] @ addressof(vertices_addr);
     Index indices[faces_count] @ addressof(indices_addr);
