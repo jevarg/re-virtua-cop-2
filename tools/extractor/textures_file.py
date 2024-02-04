@@ -100,11 +100,11 @@ class TexturesFile():
         test_path = os.path.join(Context.out_dir, 'test.bin')
         with open(test_path, "w+b") as f:
             f.write(self.__atlas_data)
-            print(f"unpacked {len(self.__unpacked_textures)} textures")
-            print(f"to_unpack: {self.__to_unpack_nb} textures")
+            # print(f"unpacked {len(self.__unpacked_textures)} textures")
+            # print(f"to_unpack: {self.__to_unpack_nb} textures")
 
     def __pack_textures(self, rect_nb: int, x_off: int, y_off: int, avail_width: int, avail_height: int):
-        print(f"\nx_off: {x_off} y_off: {y_off} avail_width: {avail_width} avail_height: {avail_height}")
+        # print(f"\nx_off: {x_off} y_off: {y_off} avail_width: {avail_width} avail_height: {avail_height}")
 
         if x_off >= avail_width:
             return
@@ -117,7 +117,7 @@ class TexturesFile():
                 textures: list[Texture] = None
                 while True:
                     if tex_width <= 0:
-                        print(f"skipped {avail_width}")
+                        # print(f"skipped {avail_width}")
                         return # done
 
                     textures = self.__textures.get(tex_width)
@@ -128,7 +128,7 @@ class TexturesFile():
 
                 y_atlas = y_off
 
-                print(f"tex_width: {tex_width}")
+                # print(f"tex_width: {tex_width}")
 
                 for t in textures:
                     if t.id in self.__unpacked_textures:

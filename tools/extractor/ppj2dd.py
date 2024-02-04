@@ -1,9 +1,10 @@
-from contextvars import ContextVar
 import os
 import struct
-from typing import Final, List
-from textures_file import TexturesFile, Texture, Tile
+from typing import Final
+from textures_file import TexturesFile, Texture
 from model.textures import TextureType
+import models
+from context import Context
 
 RDATA_SECTION_ADDR: Final[int] = 0x0004D400
 VDATA_SECTION_ADDR: Final[int] = 0x0044F000
@@ -38,7 +39,15 @@ class PPJ2DD():
         return struct.unpack_from(fmt, self.__data, raw_offset)
 
     def __load_assets(self):
-        self.__load_textures()
+        # self.__load_textures()
+        self.__load_models()
+
+    def __load_models(self):
+        res_path = os.path.join(Context.bin_dir, "P_MINI_C.BIN")
+        out_dir = os.path.join(Context.out_dir, "P_MINI_C")
+        with open(res_path, "rb") as file:
+            data = file.read()
+            models.extract_models(data, out_dir)
 
     def __load_textures(self):
         for tex_type in TextureType:
@@ -94,7 +103,7 @@ class PPJ2DD():
                 # exit()
             except Exception as e:
                 print(f"Skipping {file_name}: {e}")
-                raise e
+                # raise e #debug
 
             print("\n")
-            return
+            # return

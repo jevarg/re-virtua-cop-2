@@ -1,7 +1,7 @@
 import os
 import struct
 
-from types.models import Model, Vertex, Index
+from model.models import Model, Vertex, Index
 
 def extract_models(data: bytes, out_dir: str):
     models: list[Model] = []
