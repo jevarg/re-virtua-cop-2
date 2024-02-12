@@ -39,12 +39,12 @@ class PPJ2DD():
         return struct.unpack_from(fmt, self.__data, raw_offset)
 
     def __load_assets(self):
-        # self.__load_textures()
-        self.__load_models()
+        self.__load_textures()
+        # self.__load_models()
 
     def __load_models(self):
-        res_path = os.path.join(Context.bin_dir, "P_MINI_C.BIN")
-        out_dir = os.path.join(Context.out_dir, "P_MINI_C")
+        res_path = os.path.join(Context.bin_dir, "P_SEL.BIN")
+        out_dir = os.path.join(Context.out_dir, "P_SEL")
         with open(res_path, "rb") as file:
             data = file.read()
             models.extract_models(data, out_dir)
@@ -74,7 +74,8 @@ class PPJ2DD():
             try:
                 textures_count: int = self.__v_unpack("I", v_count_ptr)[0]
                 texture_data_off = 0
-                textures: dict[int, list[Texture]] = {}
+                # textures: dict[int, list[Texture]] = {}
+                textures: list[Texture] = list()
                 c = 0
                 if v_textures_off > 0:
                     for i in range(textures_count):
@@ -85,21 +86,22 @@ class PPJ2DD():
 
                         t.offset = texture_data_off
                         texture_data_off += t.width * t.height
+                        textures.append(t)
 
-                        if t.flags.ui():
-                            continue
+                        # if t.flags.ui():
+                        #     continue
 
-                        if textures.get(t.width) is None:
-                            textures[t.width] = []
+                        # if textures.get(t.width) is None:
+                        #     textures[t.width] = []
 
-                        textures[t.width].append(t)
+                        # textures[t.width].append(t)
 
                         c += 1
 
                 print(f"Total non-UI textures: {c}")
                 self.textures[tex_type] = TexturesFile(file_name, palette_file_name, textures, c)
                 # self.textures[tex_type].extract(0)
-                # self.textures[tex_type].export()
+                self.textures[tex_type].export()
                 # exit()
             except Exception as e:
                 print(f"Skipping {file_name}: {e}")

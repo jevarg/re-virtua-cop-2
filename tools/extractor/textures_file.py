@@ -29,7 +29,7 @@ class Texture():
     FORMAT = "HHB7xB3x"
     BYTES_SIZE = struct.calcsize(FORMAT)
 
-    data: Optional[bytes] = None
+    data: Optional[bytearray] = None
 
     id: int
     width: int
@@ -60,7 +60,7 @@ class TexturesFile():
 
     __file_name: str
     __palette_name: str
-    __textures: dict[int, list[Texture]]
+    __textures: list[Texture]
     # __palettes: dict[int, ColorPalette]
     __textures_data: bytes
     __palette_data: bytes
@@ -71,7 +71,7 @@ class TexturesFile():
     def __repr__(self) -> str:
         return f"TexturesFile(file={self.__file_name} palette={self.__palette_name} textures={len(self.__textures)} items)"
 
-    def __init__(self, file_name: str, palette_name: str, textures: dict[int, list[Texture]], packed_count: int) -> None:
+    def __init__(self, file_name: str, palette_name: str, textures: list[Texture], packed_count: int) -> None:
         self.__file_name = file_name
         self.__palette_name = palette_name
         self.__textures = textures
@@ -90,11 +90,26 @@ class TexturesFile():
         with open(palette_path, "rb") as f:
             self.__palette_data = f.read()
 
-        self.__rect_nb = 0
-        self.__pack_textures(0, 0, 0, 256, 256)
-        self.__atlas_data = self.__atlas_data[:(self.__rect_nb + 1) * (256 * 256 * 4)]
+        for t in self.__textures:
+            indices = struct.unpack_from(f"{t.width * t.height}B", self.__textures_data, t.offset)
+            t.data = bytearray()
+            pixels = list()
+            for i in indices:
+                if t.flags.alpha() and i == 0:
+                    pixels.extend([0, 0, 0, 0])
+                    continue
+
+                (r, g, b) = struct.unpack_from("3Bx", self.__palette_data, (t.palette_offset * 64 + i * 4))
+                pixels.extend([r, g, b, 0xff])
+
+            t.data = bytes(pixels)
+
+
+        # self.__rect_nb = 0
+        # self.__pack_textures(0, 0, 0, 256, 256)
+        # self.__atlas_data = self.__atlas_data[:(self.__rect_nb + 1) * (256 * 256 * 4)]
         # self.__debug_save()
-        self.export_atlas()
+        # self.export_atlas()
 
     def __debug_save(self):
         test_path = os.path.join(Context.out_dir, 'test.bin')

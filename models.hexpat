@@ -24,17 +24,25 @@ bitfield MaterialFlags {
     enabled : 1;
 };
 
+bitfield RenderFlags {
+    dithered : 1;
+    padding : 1;
+    notSure : 1;
+};
+
 struct Index {
     u16 face[4];
     padding[12];
 };
 
 struct Material {
-    MaterialFlags flags;
+    MaterialFlags mFlags;
     padding[1];    
     u8 texID;
     u8 texSheetID;
-    padding[4];
+    padding[1];
+    RenderFlags rFlags;
+    padding[2];
     padding[2];
 };
 
