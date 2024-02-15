@@ -1,4 +1,4 @@
-import { FileType, GameFile } from '../GameFile';
+import { AssetType, PackedAssetsFile } from '../PackedAssetsFile';
 
 export enum PaletteFileType {
     L_COMMON = 'L_COMMON.BIN',
@@ -25,6 +25,10 @@ export enum PaletteFileType {
     L_RANK = 'L_RANK.BIN',
 }
 
-export class PaletteFile extends GameFile {
-    public readonly type: FileType = FileType.Palette;
+export class PaletteFile extends PackedAssetsFile {
+    public readonly assetType: AssetType = AssetType.Palette;
+    
+    public unpack(): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
 }

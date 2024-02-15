@@ -1,27 +1,25 @@
 import { FileSystemFileHandle } from 'native-file-system-adapter';
 
-export enum FileType {
+export enum GameFileType {
     Exe = 'Exe',
-    Texture = 'Texture',
-    Palette = 'Palette',
-    Model = 'Model',
+    PackedAsset = 'PackedAsset',
 }
 
 export abstract class GameFile {
-    public abstract readonly type: FileType;
+    public abstract readonly fileType: GameFileType;
     public get name(): string {
         return this._fileHandle.name;
     }
 
     protected readonly _fileHandle: FileSystemFileHandle;
-    protected _content?: ArrayBuffer;
+    public buffer!: ArrayBuffer;
 
     constructor(file: FileSystemFileHandle) {
         this._fileHandle = file;
     }
 
-    public async reloadContent() {
+    public async read() {
         const file = await this._fileHandle.getFile();
-        this._content = await file.arrayBuffer();
+        this.buffer = await file.arrayBuffer();
     }
 }

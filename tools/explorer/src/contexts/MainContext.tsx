@@ -1,5 +1,5 @@
 import { FunctionComponent, PropsWithChildren, createContext, useCallback, useEffect, useState } from 'react';
-import { VC2GameData } from '../gamedata/VC2GameData';
+import { VC2GameData } from '../core/gamedata/VC2GameData';
 import { showDirectoryPicker } from 'native-file-system-adapter';
 
 export interface MainContextType {

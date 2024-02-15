@@ -2,7 +2,7 @@ import { Tree } from '@geist-ui/core';
 import { useContext, useMemo } from 'react';
 import { MainContext } from '../contexts/MainContext';
 import { TreeFile } from '@geist-ui/core/esm/tree';
-import { TreeNodeType } from '../gamedata/FSTree';
+import { TreeNodeType } from '../core/gamedata/FSTree';
 
 export function FileTree() {
     const mainCtx = useContext(MainContext);

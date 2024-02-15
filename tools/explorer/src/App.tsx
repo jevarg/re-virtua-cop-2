@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { MainContext } from './contexts/MainContext';
-import { Button } from './utils/ButtonFix';
+import { Button } from './components/ButtonFix';
 import { Explorer } from './components/Explorer';
 
 function App() {

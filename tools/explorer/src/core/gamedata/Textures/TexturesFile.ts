@@ -1,4 +1,7 @@
-import { FileType, GameFile } from '../GameFile';
+import { FileSystemFileHandle } from 'native-file-system-adapter';
+import { ExeFile } from '../ExeFile';
+import { AssetType, PackedAssetsFile } from '../PackedAssetsFile';
+import { PaletteFile } from './PaletteFile';
 
 export enum TextureFileType {
     T_COMMON = 'T_COMMON.BIN',
@@ -25,6 +28,17 @@ export enum TextureFileType {
     T_RANK = 'T_RANK.BIN',
 }
 
-export class TextureFile extends GameFile {
-    public readonly type: FileType = FileType.Texture;
+export class TexturesFile extends PackedAssetsFile {
+    public readonly assetType: AssetType = AssetType.Texture;
+    private readonly _palette: PaletteFile;
+
+    constructor(file: FileSystemFileHandle, palette: PaletteFile) {
+        super(file);
+
+        this._palette = palette;
+    }
+
+    public async unpack(): Promise<void> {
+        
+    }
 }

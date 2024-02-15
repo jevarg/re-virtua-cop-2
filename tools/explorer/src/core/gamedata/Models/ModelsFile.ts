@@ -1,4 +1,5 @@
-import { FileType, GameFile } from '../GameFile';
+import { GameFileType } from '../GameFile';
+import { AssetType, PackedAssetsFile } from '../PackedAssetsFile';
 
 export enum ModelFileType {
     P_COMMON = 'P_COMMON.BIN',
@@ -22,6 +23,10 @@ export enum ModelFileType {
     P_MINI_C = 'P_MINI_C.BIN',
 }
 
-export class ModelsFile extends GameFile {
-    public readonly type: FileType = FileType.Model;
+export class ModelsFile extends PackedAssetsFile {
+    public readonly assetType: AssetType = AssetType.Model;
+    
+    public unpack(): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
 }

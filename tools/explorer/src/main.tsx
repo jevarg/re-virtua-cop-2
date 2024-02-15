@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import { GeistProvider, CssBaseline } from '@geist-ui/core';
 import { MainContextProvider } from './contexts/MainContext.tsx';
+import './core/extensions';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

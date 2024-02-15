@@ -1,19 +1,19 @@
 import { FileSystemDirectoryHandle, FileSystemFileHandle, FileSystemHandle } from 'native-file-system-adapter';
-import { FileType, GameFile } from './GameFile';
-import { TextureFile, TextureFileType } from './Textures/TexturesFile';
+import { TexturesFile, TextureFileType } from './Textures/TexturesFile';
 import { PaletteFile, PaletteFileType } from './Textures/PaletteFile';
 import { ModelFileType, ModelsFile } from './Models/ModelsFile';
-import { ExeFile } from './ExeFile';
+import { MegaBuilder } from './MegaBuilder';
 import { DirNode, TreeNode, TreeNodeType } from './FSTree';
+import { AssetType, PackedAssetsFile } from './PackedAssetsFile';
 
 const knownFolders = [
     'BIN'
 ];
 
-const typePrefixes: Record<string, FileType> = {
-    'T_': FileType.Texture,
-    'L_': FileType.Palette,
-    'P_': FileType.Model,
+const typePrefixes: Record<string, AssetType> = {
+    'T_': AssetType.Texture,
+    'L_': AssetType.Palette,
+    'P_': AssetType.Model,
 };
 
 type PathConfig = {
@@ -34,11 +34,11 @@ export class VC2GameData {
     };
     private readonly _rootDir: FileSystemDirectoryHandle;
 
-    public _exeFile?: ExeFile;
-    public _assets: Partial<Record<FileType, GameFile[]>> = {
-        [FileType.Texture]: [],
-        [FileType.Palette]: [],
-        [FileType.Model]: [],
+    public _builder?: MegaBuilder;
+    public _assets: Partial<Record<AssetType, PackedAssetsFile[]>> = {
+        [AssetType.Texture]: [],
+        [AssetType.Palette]: [],
+        [AssetType.Model]: [],
     };
 
     constructor(rootDir: FileSystemDirectoryHandle) {
@@ -51,7 +51,7 @@ export class VC2GameData {
 
     public buildFileTree(): TreeNode[] {
         const tree: TreeNode[] = [
-            { type: TreeNodeType.File, name: this._exeFile!.name },
+            { type: TreeNodeType.File, name: this._builder!.name },
         ];
 
         for (const [fileType, files] of Object.entries(this._assets)) {
@@ -74,18 +74,15 @@ export class VC2GameData {
         return tree;
     }
 
-    private _buildGameFile(type: FileType, fileHandle: FileSystemFileHandle): GameFile | undefined {
+    private _buildPackedAssetFile(type: AssetType, fileHandle: FileSystemFileHandle): PackedAssetsFile | undefined {
         switch (type) {
-            case FileType.Exe:
-                return new ExeFile(fileHandle);
+            case AssetType.Texture:
+                return new TexturesFile(fileHandle);
 
-            case FileType.Texture:
-                return new TextureFile(fileHandle);
-
-            case FileType.Palette:
+            case AssetType.Palette:
                 return new PaletteFile(fileHandle);
 
-            case FileType.Model:
+            case AssetType.Model:
                 return new ModelsFile(fileHandle);
 
             default:
@@ -93,7 +90,7 @@ export class VC2GameData {
         }
     }
 
-    private _guessFileType(name: string): FileType | undefined {
+    private _guessAssetType(name: string): AssetType | undefined {
         for (const prefix in typePrefixes) {
             if (name.startsWith(prefix)) {
                 return typePrefixes[prefix];
@@ -104,23 +101,23 @@ export class VC2GameData {
     }
 
     private async _buildAssetEntry(dir: FileSystemDirectoryHandle, entry: FileSystemHandle) {
-        const fileType = this._guessFileType(entry.name);
+        const fileType = this._guessAssetType(entry.name);
         if (!fileType) {
             return;
         }
 
-        const gameFile = this._buildGameFile(fileType, await dir.getFileHandle(entry.name));
-        if (!gameFile) {
+        const asset = this._buildPackedAssetFile(fileType, await dir.getFileHandle(entry.name));
+        if (!asset) {
             console.error(`Could not build GameFile for ${entry}`);
             return;
         }
 
-        this._assets[fileType]?.push(gameFile);
+        this._assets[fileType]?.push(asset);
     }
 
     private async _buildExeEntry(dir: FileSystemDirectoryHandle, entry: FileSystemHandle) {
         const fileHandle = await dir.getFileHandle(entry.name);
-        this._exeFile = new ExeFile(fileHandle);
+        this._builder = new MegaBuilder(fileHandle);
     }
 
     public async build(dir: FileSystemDirectoryHandle = this._rootDir) {
