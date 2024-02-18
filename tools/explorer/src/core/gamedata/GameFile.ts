@@ -14,11 +14,11 @@ export abstract class GameFile {
         return this._fileHandle.name;
     }
 
-    public static async new<T extends typeof GameFile>(...args: ConstructorParameters<T>): Promise<InstanceType<T>> {
-        const instance = new (this as unknown as new (...a: ConstructorParameters<T>) => InstanceType<T>)(...args);
-        await instance._init();
+    static async new<T extends new (...args: never[]) => GameFile>(this: T, ...args: ConstructorParameters<T>) {
+        const instance = new this(...args);
+        instance._init();
 
-        return instance;
+        return instance as InstanceType<T>;
     }
 
     constructor(file: FileSystemFileHandle) {
