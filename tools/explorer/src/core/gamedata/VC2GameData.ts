@@ -5,10 +5,16 @@ import { ModelFileType, ModelsFile } from './Models/ModelsFile';
 import { MegaBuilder } from './MegaBuilder';
 import { DirNode, TreeNode, TreeNodeType } from './FSTree';
 import { AssetType, PackedAssetsFile } from './PackedAssetsFile';
+import { ExeFile } from './ExeFile';
 
 const knownFolders = [
     'BIN'
 ];
+
+enum KnownEntries {
+    ExeFile = 'PPJ2DD.EXE',
+    BinDir = 'BIN'
+}
 
 const typePrefixes: Record<string, AssetType> = {
     'T_': AssetType.Texture,
@@ -16,22 +22,22 @@ const typePrefixes: Record<string, AssetType> = {
     'P_': AssetType.Model,
 };
 
-type PathConfig = {
-    builder: (dir: FileSystemDirectoryHandle, entry: FileSystemHandle) => Promise<void>,
-    files: string[]
-}
+// type PathConfig = {
+//     builder: (dir: FileSystemDirectoryHandle, entry: FileSystemHandle) => Promise<void>,
+//     files: string[]
+// }
 
 export class VC2GameData {
-    private readonly _builderConfig: Record<string, PathConfig> = {
-        BIN: {
-            builder: this._buildAssetEntry.bind(this),
-            files: [
-                ...Object.values(TextureFileType),
-                ...Object.values(PaletteFileType),
-                ...Object.values(ModelFileType),
-            ]
-        },
-    };
+    // private readonly _builderConfig: Record<string, PathConfig> = {
+    //     BIN: {
+    //         builder: this._buildAssetEntry.bind(this),
+    //         files: [
+    //             ...Object.values(TextureFileType),
+    //             ...Object.values(PaletteFileType),
+    //             ...Object.values(ModelFileType),
+    //         ]
+    //     },
+    // };
     private readonly _rootDir: FileSystemDirectoryHandle;
 
     public _builder?: MegaBuilder;
@@ -43,95 +49,103 @@ export class VC2GameData {
 
     constructor(rootDir: FileSystemDirectoryHandle) {
         this._rootDir = rootDir;
-        this._builderConfig[rootDir.name] = {
-            builder: this._buildExeEntry.bind(this),
-            files: ['PPJ2DD.EXE']
-        };
+        // this._builderConfig[rootDir.name] = {
+        //     builder: this._buildExeEntry.bind(this),
+        //     files: ['PPJ2DD.EXE']
+        // };
     }
 
-    public buildFileTree(): TreeNode[] {
-        const tree: TreeNode[] = [
-            { type: TreeNodeType.File, name: this._builder!.name },
-        ];
+    // public buildFileTree(): TreeNode[] {
+    //     const tree: TreeNode[] = [
+    //         { type: TreeNodeType.File, name: this._builder!.name },
+    //     ];
 
-        for (const [fileType, files] of Object.entries(this._assets)) {
-            const dir: DirNode = {
-                type: TreeNodeType.Directory,
-                name: `${fileType}s`,
-                children: []
-            };
+    //     for (const [fileType, files] of Object.entries(this._assets)) {
+    //         const dir: DirNode = {
+    //             type: TreeNodeType.Directory,
+    //             name: `${fileType}s`,
+    //             children: []
+    //         };
 
-            for (const file of files) {
-                dir.children.push({
-                    type: TreeNodeType.File,
-                    name: file.name
-                });
-            }
+    //         for (const file of files) {
+    //             dir.children.push({
+    //                 type: TreeNodeType.File,
+    //                 name: file.name
+    //             });
+    //         }
 
-            tree.push(dir);
-        }
+    //         tree.push(dir);
+    //     }
 
-        return tree;
-    }
+    //     return tree;
+    // }
 
-    private _buildPackedAssetFile(type: AssetType, fileHandle: FileSystemFileHandle): PackedAssetsFile | undefined {
-        switch (type) {
-            case AssetType.Texture:
-                return new TexturesFile(fileHandle);
+    // private _buildPackedAssetFile(type: AssetType, fileHandle: FileSystemFileHandle): PackedAssetsFile | undefined {
+    //     switch (type) {
+    //         case AssetType.Texture:
+    //             return new TexturesFile(fileHandle, {} as PaletteFile);
 
-            case AssetType.Palette:
-                return new PaletteFile(fileHandle);
+    //         case AssetType.Palette:
+    //             return new PaletteFile(fileHandle);
 
-            case AssetType.Model:
-                return new ModelsFile(fileHandle);
+    //         case AssetType.Model:
+    //             return new ModelsFile(fileHandle);
 
-            default:
-                return undefined;
-        }
-    }
+    //         default:
+    //             return undefined;
+    //     }
+    // }
 
-    private _guessAssetType(name: string): AssetType | undefined {
-        for (const prefix in typePrefixes) {
-            if (name.startsWith(prefix)) {
-                return typePrefixes[prefix];
-            }
-        }
+    // private _guessAssetType(name: string): AssetType | undefined {
+    //     for (const prefix in typePrefixes) {
+    //         if (name.startsWith(prefix)) {
+    //             return typePrefixes[prefix];
+    //         }
+    //     }
 
-        return undefined;
-    }
+    //     return undefined;
+    // }
 
-    private async _buildAssetEntry(dir: FileSystemDirectoryHandle, entry: FileSystemHandle) {
-        const fileType = this._guessAssetType(entry.name);
-        if (!fileType) {
-            return;
-        }
+    // private async _buildAssetEntry(dir: FileSystemDirectoryHandle, entry: FileSystemHandle) {
+    //     const fileType = this._guessAssetType(entry.name);
+    //     if (!fileType) {
+    //         return;
+    //     }
 
-        const asset = this._buildPackedAssetFile(fileType, await dir.getFileHandle(entry.name));
-        if (!asset) {
-            console.error(`Could not build GameFile for ${entry}`);
-            return;
-        }
+    //     const asset = this._buildPackedAssetFile(fileType, await dir.getFileHandle(entry.name));
+    //     if (!asset) {
+    //         console.error(`Could not build GameFile for ${entry}`);
+    //         return;
+    //     }
 
-        this._assets[fileType]?.push(asset);
-    }
+    //     this._assets[fileType]?.push(asset);
+    // }
 
-    private async _buildExeEntry(dir: FileSystemDirectoryHandle, entry: FileSystemHandle) {
-        const fileHandle = await dir.getFileHandle(entry.name);
-        this._builder = new MegaBuilder(fileHandle);
-    }
+    // private async _buildExeEntry(dir: FileSystemDirectoryHandle, entry: FileSystemHandle) {
+    //     const fileHandle = await dir.getFileHandle(entry.name);
+    //     this._builder = new MegaBuilder(fileHandle);
+    // }
 
     public async build(dir: FileSystemDirectoryHandle = this._rootDir) {
-        for await (const entry of dir.values()) {
-            if (entry.kind === 'directory' && knownFolders.includes(entry.name) && entry instanceof FileSystemDirectoryHandle) {
-                await this.build(entry);
-            } else if (entry.kind === 'file') {
-                const pathConfig = this._builderConfig[dir.name];
-                if (!pathConfig?.files.includes(entry.name)) {
-                    continue;
-                }
+        let binDir: FileSystemDirectoryHandle | undefined;
 
-                await pathConfig.builder(dir, entry);
+        for await (const entry of dir.values()) {
+            if (entry.kind === 'directory' && entry.name === KnownEntries.BinDir) {
+                binDir = entry as FileSystemDirectoryHandle;
+                // await this.build(entry);
+            } else if (entry.kind === 'file' && entry.name === KnownEntries.ExeFile) {
+                const fileHnd = await dir.getFileHandle(entry.name);
+                this._builder = await MegaBuilder.new(fileHnd);
+                // exeFile = new ExeFile(fileHnd);
+                // const pathConfig = this._builderConfig[dir.name];
+                // if (!pathConfig?.files.includes(entry.name)) {
+                //     continue;
+                // }
+
+                // await pathConfig.builder(dir, entry);
             }
         }
+
+        this._builder?.makeTextures(binDir!);
     }
 }

@@ -8,7 +8,7 @@ export enum AssetType {
 
 export abstract class PackedAssetsFile extends GameFile {
     public readonly fileType: GameFileType = GameFileType.PackedAsset;
-
     public abstract readonly assetType: AssetType;
+
     public abstract unpack(): Promise<void>;
 }

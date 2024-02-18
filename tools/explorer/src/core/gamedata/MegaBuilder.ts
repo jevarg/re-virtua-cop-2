@@ -8,8 +8,13 @@ const texturesAddr: number = 0x00458FD0;
 export class MegaBuilder {
     private _exeFile: ExeFile;
 
-    constructor(exeFileHandle: FileSystemFileHandle) {
-        this._exeFile = new ExeFile(exeFileHandle);
+    public static async new(exeHandle: FileSystemFileHandle) {
+        const exeFile = await ExeFile.new(exeHandle);
+        return new MegaBuilder(exeFile);
+    }
+
+    constructor(exeFile: ExeFile) {
+        this._exeFile = exeFile;
     }
 
     public async makeTextures(assetsDir: FileSystemDirectoryHandle) {
@@ -36,11 +41,12 @@ export class MegaBuilder {
                     await assetsDir.getFileHandle(fileName),
                     await assetsDir.getFileHandle(paletteFileName)
                 ]);
-                
-                const texturesFile = new TexturesFile(fileHandle, new PaletteFile(paletteFileHandle));
+
+                const texturesFile = new TexturesFile(fileHandle, await PaletteFile.new(paletteFileHandle));
+
                 texturesMap.set(fileName, texturesFile);
             } catch (err) {
-                console.error('Skipped fileName.', err);
+                console.error(`Skipped ${fileName}.`, err);
             }
         }
 
