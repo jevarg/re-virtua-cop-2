@@ -22,6 +22,8 @@ module.exports = {
         'caughtErrorsIgnorePattern': '^_'
       }
     ],
-    'semi': ['error', 'always']
+
+    'semi': ['error', 'always'],
+    'no-constant-condition': ['error', { 'checkLoops': false }]
   },
 }

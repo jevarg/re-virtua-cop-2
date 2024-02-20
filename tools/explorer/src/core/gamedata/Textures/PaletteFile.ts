@@ -1,6 +1,6 @@
 import { AssetType, PackedAssetsFile } from '../PackedAssetsFile';
 
-export enum PaletteFileType {
+export enum PaletteType {
     L_COMMON = 'L_COMMON.BIN',
     L_STG1C = 'L_STG1C.BIN',
     L_STG10 = 'L_STG10.BIN',
@@ -25,10 +25,28 @@ export enum PaletteFileType {
     L_RANK = 'L_RANK.BIN',
 }
 
-export class PaletteFile extends PackedAssetsFile {
+export class Palette extends PackedAssetsFile {
+    public static pageSize = 64;
+    public static bytesPerColor = 4;
+
     public readonly assetType: AssetType = AssetType.Palette;
-    
-    public unpack(): Promise<void> {
-        throw new Error('Method not implemented.');
+
+    public getPixels(indices: Uint8Array, offset: number, hasAlpha: boolean) {
+        const pixels = new Uint8ClampedArray(indices.length * Palette.bytesPerColor);
+        const dataView = new DataView(this.buffer, offset * Palette.pageSize);
+
+        let i = 0;
+        for (const index of indices) {
+            const indexPos = index * Palette.bytesPerColor;
+
+            pixels[i] = dataView.getUint8(indexPos);
+            pixels[i + 1] = dataView.getUint8(indexPos + 1);
+            pixels[i + 2] = dataView.getUint8(indexPos + 2);
+            pixels[i + 3] = (hasAlpha && !indexPos) ? dataView.getUint8(indexPos + 3) : 0xff;
+
+            i += Palette.bytesPerColor;
+        }
+
+        return pixels;
     }
 }

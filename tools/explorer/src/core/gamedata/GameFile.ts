@@ -3,6 +3,8 @@ import { FileSystemFileHandle } from 'native-file-system-adapter';
 export enum GameFileType {
     Exe = 'Exe',
     PackedAsset = 'PackedAsset',
+    Texture = 'Texture',
+    Model = 'Model',
 }
 
 export abstract class GameFile {
@@ -14,9 +16,9 @@ export abstract class GameFile {
         return this._fileHandle.name;
     }
 
-    static async new<T extends new (...args: never[]) => GameFile>(this: T, ...args: ConstructorParameters<T>) {
+    static async make<T extends new (...args: never[]) => GameFile>(this: T, ...args: ConstructorParameters<T>) {
         const instance = new this(...args);
-        instance._init();
+        await instance._init();
 
         return instance as InstanceType<T>;
     }

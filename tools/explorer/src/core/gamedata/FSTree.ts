@@ -7,6 +7,7 @@ export enum TreeNodeType {
 type NamedNode = {
     name: string
     type: TreeNodeType
+    extra?: string
 }
 
 export type FileNode = NamedNode & {

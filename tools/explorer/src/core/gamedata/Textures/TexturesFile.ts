@@ -1,7 +1,9 @@
 import { FileSystemFileHandle } from 'native-file-system-adapter';
-import { ExeFile } from '../ExeFile';
 import { AssetType, PackedAssetsFile } from '../PackedAssetsFile';
-import { PaletteFile } from './PaletteFile';
+import { Palette } from './PaletteFile';
+import { TextureFlag, TextureInfo } from './TextureInfo';
+import { Texture } from './Texture';
+import { TileMap } from './TileMap';
 
 export enum TextureFileType {
     T_COMMON = 'T_COMMON.BIN',
@@ -30,15 +32,44 @@ export enum TextureFileType {
 
 export class TexturesFile extends PackedAssetsFile {
     public readonly assetType: AssetType = AssetType.Texture;
-    private readonly _palette: PaletteFile;
+    public readonly count: number;
 
-    constructor(file: FileSystemFileHandle, palette: PaletteFile) {
+    private readonly _palette: Palette;
+    private readonly _metadata: ArrayBuffer;
+    private _tileMap: TileMap | undefined;
+
+    public textures: Texture[] = [];
+
+    constructor(file: FileSystemFileHandle, palette: Palette, count: number, metadata: ArrayBuffer) {
         super(file);
 
+        this.count = count;
         this._palette = palette;
+        this._metadata = metadata;
     }
 
-    public async unpack(): Promise<void> {
-        
+    protected override async _init(): Promise<void> {
+        const start = performance.now();
+        await super._init();
+
+        let filePos = 0;
+        for (let i = 0; i < this.count; i++) {
+            const info = new TextureInfo(this._metadata, TextureInfo.byteSize * i);
+            const byteSize = info.width * info.height;
+            const indices = this.buffer.sliceAt(filePos, byteSize);
+            filePos += byteSize;
+
+            const pixels = this._palette.getPixels(new Uint8Array(indices), info.paletteOffset, info.hasFlag(TextureFlag.Alpha));
+            this.textures.push(new Texture(i, info, pixels));
+        }
+
+        this._tileMap = new TileMap(this.textures);
+        console.log(this.name, this._tileMap);
+
+        console.info(`${this.name}: ${performance.now() - start}ms`);
+    }
+
+    public getTexture(id: number): Texture | undefined {
+        return this.textures[id];
     }
 }
