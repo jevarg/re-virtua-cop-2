@@ -152,20 +152,20 @@ class TexturesFile():
                     if t.height > avail_height - y_atlas:
                         continue
 
-                    for y in range(t.height):
-                        i = rect_nb * (256 * 256) + (y_atlas + y) * 256
-                        for x in range(t.width):
-                            t_pixel = y * t.width + x
-                            index = struct.unpack_from("B", self.__textures_data, t.offset + t_pixel)[0]
-                            (r, g, b) = struct.unpack_from("3Bx", self.__palette_data, t.palette_offset * 64 + index * 4)
-                            self.__atlas_data[(i + x_off + x) * 4] = r
-                            self.__atlas_data[(i + x_off + x) * 4 + 1] = g
-                            self.__atlas_data[(i + x_off + x) * 4 + 2] = b
+                    # for y in range(t.height):
+                    #     i = rect_nb * (256 * 256) + (y_atlas + y) * 256
+                    #     for x in range(t.width):
+                    #         t_pixel = y * t.width + x
+                    #         index = struct.unpack_from("B", self.__textures_data, t.offset + t_pixel)[0]
+                    #         (r, g, b) = struct.unpack_from("3Bx", self.__palette_data, t.palette_offset * 64 + index * 4)
+                    #         self.__atlas_data[(i + x_off + x) * 4] = r
+                    #         self.__atlas_data[(i + x_off + x) * 4 + 1] = g
+                    #         self.__atlas_data[(i + x_off + x) * 4 + 2] = b
 
-                            if t.flags.alpha() and index == 0:
-                                self.__atlas_data[(i + x_off + x) * 4 + 3] = 0
-                            else:
-                                self.__atlas_data[(i + x_off + x) * 4 + 3] = 0xff
+                    #         if t.flags.alpha() and index == 0:
+                    #             self.__atlas_data[(i + x_off + x) * 4 + 3] = 0
+                    #         else:
+                    #             self.__atlas_data[(i + x_off + x) * 4 + 3] = 0xff
 
                     self.__unpacked_textures.append(t.id)
                     self.__to_unpack_nb -= 1
