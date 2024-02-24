@@ -18,7 +18,7 @@ export class TextureInfo {
         return Boolean(this._flags & flag);
     }
 
-    constructor(buffer: ArrayBufferLike, byteOffset: number = 0) {
+    constructor(buffer: ArrayBufferLike, byteOffset: number) {
         const dataView = new DataView(buffer, byteOffset, TextureInfo.byteSize);
 
         this.width = dataView.getUint16(0, true);

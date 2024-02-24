@@ -3,20 +3,20 @@ import { useCallback, useContext, useMemo } from 'react';
 import { MainContext } from '../../contexts/MainContext';
 import { TreeFile } from '@geist-ui/core/esm/tree';
 import { TreeNode, TreeNodeType } from '../../core/gamedata/FSTree';
-import { TextureFileType } from '../../core/gamedata/Textures/TexturesFile';
+import { TextureFileName, TexturesFile } from '../../core/gamedata/Textures/TexturesFile';
 import { Texture } from '../../core/gamedata/Textures/Texture';
+import { AssetType } from '../../core/gamedata/PackedAssetsFile';
 
 export type ClickedTexture = {
     texture: Texture
 }
 
 export interface FileTreeProps {
-    onClick: (item: Texture) => void;
+    onClick: (item: TexturesFile) => void;
 }
 
 export function FileTree({ onClick }: FileTreeProps) {
     const mainCtx = useContext(MainContext);
-    console.log('tree update');
 
     const tree = useMemo(() => {
         const buildTree = (nodes: TreeNode[]) => {
@@ -42,26 +42,27 @@ export function FileTree({ onClick }: FileTreeProps) {
         };
 
         const list = mainCtx.gameData.getFileStructure();
+        console.log(list);
 
         return buildTree(list);
     }, [mainCtx.gameData]);
 
     const onTreeClicked = useCallback((path: string) => {
-        const [assetType, textureFileType, textureId] = path.split('/');
-        if (!assetType || !textureFileType || !textureId) {
+        const [assetType, assetFileType] = path.split('/');
+        if (!assetType || !assetFileType) {
             console.warn('Invalid file was clicked:', path);
             return;
         }
 
-        const textureFile = mainCtx.gameData.textureFiles.get(textureFileType as TextureFileType);
-        const texture = textureFile?.getTexture(Number(textureId));
-        if (!texture) {
-            console.warn(`Unable to find texture ${textureId} in ${textureFileType}`);
+        const textureFile = mainCtx.gameData.assets?.[assetType as AssetType].get(assetFileType as TextureFileName);
+        if (!textureFile) {
+            console.warn(`Unable to find ${assetFileType} in game data`);
             return;
         }
+        // const texture = textureFile?.getTexture(Number(textureId));
 
-        onClick(texture);
-    }, [mainCtx.gameData.textureFiles, onClick]);
+        onClick(textureFile);
+    }, [mainCtx.gameData.assets, onClick]);
 
 
     return (

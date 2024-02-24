@@ -8,9 +8,15 @@ dependencies:
   '@geist-ui/core':
     specifier: ^2.3.8
     version: 2.3.8(react-dom@18.2.0)(react@18.2.0)
+  babylonjs:
+    specifier: ^6.44.0
+    version: 6.44.0
   inter-ui:
     specifier: ^4.0.2
     version: 4.0.2
+  konva:
+    specifier: ^9.3.3
+    version: 9.3.3
   native-file-system-adapter:
     specifier: ^3.0.0
     version: 3.0.0
@@ -821,6 +827,11 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /babylonjs@6.44.0:
+    resolution: {integrity: sha512-d7Uq5bCW+CJQ6+hWrIRbKssqZMAVh337uh+1Dcga/Fc5aOXdMja+BlszfJ8KItGyqz0qgtwZ0tQdnR5miS/Ykw==}
+    requiresBuild: true
+    dev: false
+
   /balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: true
@@ -1296,6 +1307,10 @@ packages:
     dependencies:
       json-buffer: 3.0.1
     dev: true
+
+  /konva@9.3.3:
+    resolution: {integrity: sha512-cg/AHxnfawZ1rKxygCnzx0TZY7hQiQiAKgAHPinEwMn49MVrBkeKLj2d0EaleoFG/0y0XhEKTD0dFZiPPdWlCQ==}
+    dev: false
 
   /levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}

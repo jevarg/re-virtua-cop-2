@@ -5,7 +5,7 @@ import { TextureFlag, TextureInfo } from './TextureInfo';
 import { Texture } from './Texture';
 import { TileMap } from './TileMap';
 
-export enum TextureFileType {
+export enum TextureFileName {
     T_COMMON = 'T_COMMON.BIN',
     T_STG1C = 'T_STG1C.BIN',
     T_STG10 = 'T_STG10.BIN',
@@ -36,7 +36,7 @@ export class TexturesFile extends PackedAssetsFile {
 
     private readonly _palette: Palette;
     private readonly _metadata: ArrayBuffer;
-    private _tileMap: TileMap | undefined;
+    public tileMap: TileMap | undefined;
 
     public textures: Texture[] = [];
 
@@ -49,7 +49,6 @@ export class TexturesFile extends PackedAssetsFile {
     }
 
     protected override async _init(): Promise<void> {
-        const start = performance.now();
         await super._init();
 
         let filePos = 0;
@@ -63,10 +62,7 @@ export class TexturesFile extends PackedAssetsFile {
             this.textures.push(new Texture(i, info, pixels));
         }
 
-        this._tileMap = new TileMap(this.textures);
-        console.log(this.name, this._tileMap);
-
-        console.info(`${this.name}: ${performance.now() - start}ms`);
+        this.tileMap = new TileMap(this.textures);
     }
 
     public getTexture(id: number): Texture | undefined {

@@ -5,6 +5,7 @@ export enum GameFileType {
     PackedAsset = 'PackedAsset',
     Texture = 'Texture',
     Model = 'Model',
+    Palette = 'Palette',
 }
 
 export abstract class GameFile {
@@ -18,8 +19,11 @@ export abstract class GameFile {
 
     static async make<T extends new (...args: never[]) => GameFile>(this: T, ...args: ConstructorParameters<T>) {
         const instance = new this(...args);
-        await instance._init();
+        const start = performance.now();
 
+        await instance._init(); // Initializing...
+
+        console.info(`${instance.name}: ${performance.now() - start}ms`);
         return instance as InstanceType<T>;
     }
 

@@ -14,10 +14,6 @@ function SelectGameDir(props: ButtonProps) {
 function App() {
   const mainCtx = useContext(MainContext);
 
-  useEffect(() => {
-    console.log('mainCtx.isGameDataLoaded effect');
-  }, [mainCtx.isGameDataLoaded]);
-
   return <>
     <div className='header-wrapper'>
       <header className='header'>

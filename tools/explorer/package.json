@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "@geist-ui/core": "^2.3.8",
+    "babylonjs": "^6.44.0",
     "inter-ui": "^4.0.2",
+    "konva": "^9.3.3",
     "native-file-system-adapter": "^3.0.0",
     "pretty-bytes": "^6.1.1",
     "react": "^18.2.0",

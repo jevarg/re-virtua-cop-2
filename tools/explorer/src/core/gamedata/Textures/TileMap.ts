@@ -8,7 +8,7 @@ export type Tile = {
     textureId: number;
 };
 
-export class TileMap {
+export class TileMap implements Iterable<Tile> {
     public static readonly pageSize = 256;
     public pageCount: number = 0;
     public tileCount: number = 0;
@@ -16,19 +16,20 @@ export class TileMap {
     private readonly _sortedTextures: Map<number, number[]>;
     private readonly _tiles = new Map<number, Tile>();
 
-    // public static async make(...args: ConstructorParameters<typeof TileMap>) {
-    //     return new this(...args);
-    // }
-
     constructor(textures: Texture[]) {
         this._sortedTextures = this._sortTextures(textures);
         this._createTileMap(textures);
+    }
+
+    [Symbol.iterator]() {
+        return this._tiles.values();
     }
 
     private _sortTextures(textures: Texture[]) {
         const map = new Map<number, number[]>();
 
         for (const texture of textures) {
+            // UI Textures are not included in the TileMap
             if (texture.info.hasFlag(TextureFlag.UI)) {
                 continue;
             }
@@ -92,14 +93,14 @@ export class TileMap {
 
                         // Do we still have enough space in height
                         // to place the texture?
-                        if (texture.info.height > available.height - y) {
+                        if (texture.info.height > (available.height - y)) {
                             continue;
                         }
 
                         // We do have enough space!
                         this._tiles.set(id, {
                             textureId: id,
-                            position: { x: offset.x, y }
+                            position: { x: offset.x, y: pageNumber * TileMap.pageSize + y }
                         });
 
                         // Adjusting current y position
@@ -127,17 +128,17 @@ export class TileMap {
                         );
 
                         break;
+                    } else {
+                        // No texture could be placed
+                        currentWidth--;
                     }
-
-                    // No texture could be placed
-                    currentWidth--;
                 }
 
-                // if (pageNumber > this.pageCount) {
-                //     this.pageCount = pageNumber;
-                // }
+                if (pageNumber > this.pageCount) {
+                    this.pageCount = pageNumber;
+                }
 
-                if (!offset.x || !offset.y) {
+                if (offset.x || offset.y) {
                     return;
                 }
 
@@ -149,6 +150,8 @@ export class TileMap {
                 if (remaining <= 0) {
                     return;
                 }
+
+                pageNumber++;
             }
         };
 

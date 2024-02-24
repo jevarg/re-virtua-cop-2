@@ -3,13 +3,13 @@ import { FileTree } from '../FileTree/FileTree';
 import './Explorer.css';
 import { TextureViewer } from '../viewer/TextureViewer';
 import { useCallback, useState } from 'react';
-import { Texture } from '../../core/gamedata/Textures/Texture';
+import { TexturesFile } from '../../core/gamedata/Textures/TexturesFile';
 
 export function Explorer() {
-    const [texture, setTexture] = useState<Texture>();
+    const [textureFile, setTextureFile] = useState<TexturesFile>();
 
-    const onClick = useCallback((item: Texture) => {
-        setTexture(item);
+    const onClick = useCallback((item: TexturesFile) => {
+        setTextureFile(item);
     }, []);
 
     return <Grid.Container>
@@ -18,8 +18,8 @@ export function Explorer() {
                 <FileTree onClick={onClick} />
             </aside>
         </Grid>
-        <Grid.Container justify='center' xs>
-            {texture && <TextureViewer texture={texture} />}
+        <Grid.Container justify='center' xs={18}>
+            {textureFile && <TextureViewer textureFile={textureFile} />}
         </Grid.Container>
     </Grid.Container>;
 }

@@ -1,6 +1,6 @@
-import { AssetType, PackedAssetsFile } from '../PackedAssetsFile';
+import { GameFile, GameFileType } from '../GameFile';
 
-export enum PaletteType {
+export enum PaletteFileName {
     L_COMMON = 'L_COMMON.BIN',
     L_STG1C = 'L_STG1C.BIN',
     L_STG10 = 'L_STG10.BIN',
@@ -25,11 +25,10 @@ export enum PaletteType {
     L_RANK = 'L_RANK.BIN',
 }
 
-export class Palette extends PackedAssetsFile {
+export class Palette extends GameFile {
+    public fileType: GameFileType = GameFileType.Palette;
     public static pageSize = 64;
     public static bytesPerColor = 4;
-
-    public readonly assetType: AssetType = AssetType.Palette;
 
     public getPixels(indices: Uint8Array, offset: number, hasAlpha: boolean) {
         const pixels = new Uint8ClampedArray(indices.length * Palette.bytesPerColor);

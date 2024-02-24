@@ -1,10 +1,15 @@
 import { FileSystemDirectoryHandle } from 'native-file-system-adapter';
-import { TextureFileType, TexturesFile } from './Textures/TexturesFile';
+import { TextureFileName, TexturesFile } from './Textures/TexturesFile';
 import { ExeFile } from './ExeFile';
 import { Palette } from './Textures/PaletteFile';
 import { TextureInfo } from './Textures/TextureInfo';
+import { AssetType } from './PackedAssetsFile';
+import { ModelFileName, ModelsFile } from './Models/ModelsFile';
 
 const texturesAddr: number = 0x00458FD0;
+
+export type AssetsMap = Record<AssetType.Texture, Map<TextureFileName, TexturesFile>>
+                        & Record<AssetType.Model, Map<ModelFileName, ModelsFile>>
 
 export class MegaBuilder {
     private _exeFile: ExeFile;
@@ -45,15 +50,15 @@ export class MegaBuilder {
         }
     }
 
-    public async makeTextures(assetsDir: FileSystemDirectoryHandle): Promise<Map<TextureFileType, TexturesFile>> {
-        const numberOfTextures = Object.keys(TextureFileType).length;
+    private async _makeTextures(assetsDir: FileSystemDirectoryHandle): Promise<Map<TextureFileName, TexturesFile>> {
+        const numberOfTextures = Object.keys(TextureFileName).length;
 
         const start = ExeFile.toRawAddr(texturesAddr);
         const end = start + (numberOfTextures * 24);
 
         const bytes = new Uint32Array(this._exeFile.buffer.slice(start, end));
 
-        const texturesMap = new Map<TextureFileType, TexturesFile>();
+        const texturesMap = new Map<TextureFileName, TexturesFile>();
         const promises: Promise<TexturesFile | undefined>[] = [];
         for (let i = 0; i < numberOfTextures * 6; i += 6) {
             promises.push(this._makeTexture(assetsDir, i, bytes));
@@ -65,9 +70,33 @@ export class MegaBuilder {
                 continue;
             }
 
-            texturesMap.set(texture.name as TextureFileType, texture);
+            texturesMap.set(texture.name as TextureFileName, texture);
         }
 
         return texturesMap;
+    }
+
+    private async _makeModels(assetsDir: FileSystemDirectoryHandle): Promise<Map<ModelFileName, ModelsFile>> {
+        const modelsMap = new Map<ModelFileName, ModelsFile>();
+
+        for (const fileName of Object.values(ModelFileName)) {
+            const file = await assetsDir.getFileHandle(fileName);
+            modelsMap.set(fileName as ModelFileName, await ModelsFile.make(file));
+        }
+
+        return modelsMap;
+    }
+
+    public async build(assetsDir: FileSystemDirectoryHandle): Promise<AssetsMap> {
+        const [textures, models] = await Promise.all([
+            this._makeTextures(assetsDir),
+            this._makeModels(assetsDir)
+        ]);
+
+
+        return {
+            [AssetType.Texture]: textures,
+            [AssetType.Model]: models
+        };
     }
 }
