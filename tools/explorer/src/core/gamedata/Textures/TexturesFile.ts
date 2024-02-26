@@ -4,6 +4,7 @@ import { Palette } from './PaletteFile';
 import { TextureFlag, TextureInfo } from './TextureInfo';
 import { Texture } from './Texture';
 import { TileMap } from './TileMap';
+import { TextureNotFoundError } from '../../errors/TextureNotFoundError';
 
 export enum TextureFileName {
     T_COMMON = 'T_COMMON.BIN',
@@ -33,17 +34,19 @@ export enum TextureFileName {
 export class TexturesFile extends PackedAssetsFile {
     public readonly assetType: AssetType = AssetType.Texture;
     public readonly count: number;
+    public readonly offset: number;
 
     private readonly _palette: Palette;
     private readonly _metadata: ArrayBuffer;
-    public tileMap: TileMap | undefined;
 
+    public tileMap: TileMap | undefined;
     public textures: Texture[] = [];
 
-    constructor(file: FileSystemFileHandle, palette: Palette, count: number, metadata: ArrayBuffer) {
+    constructor(file: FileSystemFileHandle, palette: Palette, count: number, metadata: ArrayBuffer, offset: number) {
         super(file);
 
         this.count = count;
+        this.offset = offset;
         this._palette = palette;
         this._metadata = metadata;
     }
@@ -65,7 +68,12 @@ export class TexturesFile extends PackedAssetsFile {
         this.tileMap = new TileMap(this.textures);
     }
 
-    public getTexture(id: number): Texture | undefined {
-        return this.textures[id];
+    public getTexture(id: number): Texture {
+        const texture = this.textures[id];
+        if (!texture) {
+            throw new TextureNotFoundError(id);
+        }
+
+        return texture;
     }
 }

@@ -1,13 +1,18 @@
+import '@babylonjs/loaders/OBJ/objFileLoader';
+import '@babylonjs/core/Loading/loadingScreen';
+
+import './core/extensions';
+
+import 'inter-ui/inter.css';
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import { GeistProvider, CssBaseline } from '@geist-ui/core';
 import { MainContextProvider } from './contexts/MainContext.tsx';
-import './core/extensions';
-import 'inter-ui/inter.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  // <React.StrictMode>
+  <React.StrictMode>
     <GeistProvider themeType='dark'>
       <CssBaseline>
         <MainContextProvider>
@@ -15,5 +20,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </MainContextProvider>
       </CssBaseline>
     </GeistProvider>
-  // </React.StrictMode>,
+  </React.StrictMode>,
 );

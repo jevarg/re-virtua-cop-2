@@ -16,8 +16,6 @@ export class VC2GameData {
     private readonly _rootDir: FileSystemDirectoryHandle;
 
     private _builder?: MegaBuilder;
-    // public textureFiles = new Map<TextureFileType, TexturesFile>();
-    // public modelFiles = new Map<ModelFileType, ModelsFile>();
     public assets: AssetsMap | undefined;
 
     constructor(rootDir: FileSystemDirectoryHandle) {
@@ -67,42 +65,7 @@ export class VC2GameData {
 
             nodes.push(node);
         }
-        // const texturesNode: TreeNode = {
-        //     type: TreeNodeType.Directory,
-        //     name: 'Textures',
-        //     children: [],
-        // };
 
-        // for (const [textureFileType, texturesFile] of this.textureFiles) {
-        //     const textureTypeNode: TreeNode = {
-        //         type: TreeNodeType.File,
-        //         name: textureFileType,
-        //         extra: `${texturesFile.textures.length} texture(s)`,
-        //     };
-
-        //     texturesNode.children.push(textureTypeNode);
-        // }
-
-        // const modelsNode: TreeNode = {
-        //     type: TreeNodeType.Directory,
-        //     name: 'Models',
-        //     children: [],
-        // };
-
-        // for (const [modelFileType, modelsFile] of this.modelFiles) {
-        //     const modelsTypeNode: TreeNode = {
-        //         type: TreeNodeType.File,
-        //         name: modelFileType,
-        //         extra: `${modelsFile.models.length} models(s)`,
-        //     };
-
-        //     modelsNode.children.push(modelsTypeNode);
-        // }
-
-        // return [
-        //     texturesNode,
-        //     modelsNode
-        // ];
         return nodes;
     }
 }

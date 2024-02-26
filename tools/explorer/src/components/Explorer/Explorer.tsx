@@ -1,15 +1,14 @@
 import { Grid } from '@geist-ui/core';
 import { FileTree } from '../FileTree/FileTree';
 import './Explorer.css';
-import { TextureViewer } from '../viewer/TextureViewer';
 import { useCallback, useState } from 'react';
-import { TexturesFile } from '../../core/gamedata/Textures/TexturesFile';
+import { PackedAssetsFile } from '../../core/gamedata/PackedAssetsFile';
+import { AssetViewer } from '../viewer/AssetViewer';
 
 export function Explorer() {
-    const [textureFile, setTextureFile] = useState<TexturesFile>();
-
-    const onClick = useCallback((item: TexturesFile) => {
-        setTextureFile(item);
+    const [asset, setAsset] = useState<PackedAssetsFile>();
+    const onClick = useCallback((asset: PackedAssetsFile) => {
+        setAsset(asset);
     }, []);
 
     return <Grid.Container>
@@ -19,7 +18,7 @@ export function Explorer() {
             </aside>
         </Grid>
         <Grid.Container justify='center' xs={18}>
-            {textureFile && <TextureViewer textureFile={textureFile} />}
+            <AssetViewer asset={asset} />
         </Grid.Container>
     </Grid.Container>;
 }

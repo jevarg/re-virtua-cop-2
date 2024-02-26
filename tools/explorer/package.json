@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@babylonjs/core": "^6.44.0",
+    "@babylonjs/gui": "^6.44.0",
+    "@babylonjs/loaders": "^6.44.0",
     "@geist-ui/core": "^2.3.8",
-    "babylonjs": "^6.44.0",
     "inter-ui": "^4.0.2",
     "konva": "^9.3.3",
     "native-file-system-adapter": "^3.0.0",

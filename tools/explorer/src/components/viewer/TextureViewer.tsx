@@ -1,33 +1,11 @@
 import { useEffect, useRef } from 'react';
 import './TextureViewer.css';
-import { TileMap } from '../../core/gamedata/Textures/TileMap';
 import Konva from 'konva';
 import { TexturesFile } from '../../core/gamedata/Textures/TexturesFile';
 
 export interface TextureViewerProps {
     textureFile: TexturesFile;
 }
-
-// export function TextureViewer({ texture }: TextureViewerProps) {
-//     const canvasRef = useRef<HTMLCanvasElement>(null);
-
-//     useEffect(() => {
-//         const ctx = canvasRef.current?.getContext('2d');
-//         if (!ctx) {
-//             return;
-//         }
-
-//         canvasRef.current!.width = texture.info.width;
-//         canvasRef.current!.height = texture.info.height;
-
-//         const imageData = new ImageData(texture.pixels, texture.info.width, texture.info.height);
-//         ctx.putImageData(imageData, 0, 0);
-//     }, [texture]);
-
-//     return (
-//         <canvas className='tilemap-container' ref={canvasRef} />
-//     );
-// }
 
 function buildTileMap(textureFile: TexturesFile, layer: Konva.Layer) {
     if (!textureFile.tileMap) {
@@ -37,18 +15,11 @@ function buildTileMap(textureFile: TexturesFile, layer: Konva.Layer) {
 
     const group = new Konva.Group();
 
-    let i = 0;
     for (const tile of textureFile.tileMap) {
-        i++;
         const texture = textureFile.getTexture(tile.textureId);
-        if (!texture) {
-            continue;
-        }
-
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         if (!ctx) {
-            console.log('qwewqwqe');
             continue;
         }
 
@@ -60,8 +31,8 @@ function buildTileMap(textureFile: TexturesFile, layer: Konva.Layer) {
 
         Konva.Image.fromURL(canvas.toDataURL(), function(image) {
             image.setAttrs({
-                x: tile.position.x,
-                y: tile.position.y,
+                x: tile.rect.left,
+                y: tile.rect.top,
             });
 
             // image.on('mouseenter', (e) => {
@@ -71,8 +42,6 @@ function buildTileMap(textureFile: TexturesFile, layer: Konva.Layer) {
             group.add(image);
         });
     }
-
-    console.log(i);
 
     layer.add(group);
 }

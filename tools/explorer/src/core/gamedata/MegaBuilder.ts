@@ -6,7 +6,8 @@ import { TextureInfo } from './Textures/TextureInfo';
 import { AssetType } from './PackedAssetsFile';
 import { ModelFileName, ModelsFile } from './Models/ModelsFile';
 
-const texturesAddr: number = 0x00458FD0;
+const texturesListAddr: number = ExeFile.toRawAddr(0x00458FD0);
+const textureListItemByteSize: number = 24;
 
 export type AssetsMap = Record<AssetType.Texture, Map<TextureFileName, TexturesFile>>
                         & Record<AssetType.Model, Map<ModelFileName, ModelsFile>>
@@ -18,13 +19,14 @@ export class MegaBuilder {
         this._exeFile = exeFile;
     }
 
-    private async _makeTexture(assetsDir: FileSystemDirectoryHandle, i: number, bytes: Uint32Array): Promise<TexturesFile | undefined> {
-        const fileNameOffset = ExeFile.toRawAddr(bytes[i]);
-        const paletteFileNameOffset = ExeFile.toRawAddr(bytes[i + 1]);
-        const texturesMetadataOffset = ExeFile.toRawAddr(bytes[i + 2]);
-        const texturesCountOffset = ExeFile.toRawAddr(bytes[i + 4]);
-
+    private async _makeTexture(assetsDir: FileSystemDirectoryHandle, textureItemOffset: number): Promise<TexturesFile | undefined> {
         const dataView = new DataView(this._exeFile.buffer);
+
+        const fileNameOffset = ExeFile.toRawAddr(dataView.getUint32(textureItemOffset, true));
+        const paletteFileNameOffset = ExeFile.toRawAddr(dataView.getUint32(textureItemOffset + 4, true));
+        const texturesMetadataOffset = ExeFile.toRawAddr(dataView.getUint32(textureItemOffset + 8, true));
+        const fileOffset = dataView.getUint8(textureItemOffset + 12);
+        const texturesCountOffset = ExeFile.toRawAddr(dataView.getUint32(textureItemOffset + 16, true));
 
         const fileName = dataView.getAscii(fileNameOffset, 12);
         const paletteFileName = dataView.getAscii(paletteFileNameOffset, 12);
@@ -39,7 +41,7 @@ export class MegaBuilder {
             const metadata = this._exeFile.buffer.sliceAt(texturesMetadataOffset, TextureInfo.byteSize * count);
 
             const palette = await Palette.make(paletteFileHandle);
-            return TexturesFile.make(fileHandle, palette, count, metadata);
+            return TexturesFile.make(fileHandle, palette, count, metadata, fileOffset);
         } catch (err) {
             if ((err as { name?: string })?.name === 'NotFoundError') {
                 console.info(`Skipped ${fileName}: ${err}`);
@@ -52,16 +54,11 @@ export class MegaBuilder {
 
     private async _makeTextures(assetsDir: FileSystemDirectoryHandle): Promise<Map<TextureFileName, TexturesFile>> {
         const numberOfTextures = Object.keys(TextureFileName).length;
-
-        const start = ExeFile.toRawAddr(texturesAddr);
-        const end = start + (numberOfTextures * 24);
-
-        const bytes = new Uint32Array(this._exeFile.buffer.slice(start, end));
-
         const texturesMap = new Map<TextureFileName, TexturesFile>();
+
         const promises: Promise<TexturesFile | undefined>[] = [];
-        for (let i = 0; i < numberOfTextures * 6; i += 6) {
-            promises.push(this._makeTexture(assetsDir, i, bytes));
+        for (let i = 0; i < numberOfTextures; i++) {
+            promises.push(this._makeTexture(assetsDir, texturesListAddr + textureListItemByteSize * i));
         }
 
         const textures = await Promise.all(promises);

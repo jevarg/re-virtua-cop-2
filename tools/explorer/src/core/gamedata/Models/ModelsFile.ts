@@ -41,4 +41,8 @@ export class ModelsFile extends PackedAssetsFile {
             this.models.push(model);
         }
     }
+
+    public getModel(id: number): Model | undefined {
+        return this.models[id];
+    }
 }

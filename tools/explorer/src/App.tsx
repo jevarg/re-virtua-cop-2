@@ -25,7 +25,7 @@ function App() {
         </Grid.Container>
       </header>
     </div>
-    <Page>
+    <Page id='main-section'>
       <Page.Content>
         {mainCtx.isGameDataLoaded ? <Explorer /> : <SelectGameDir onClick={mainCtx.loadGameData} />}
       </Page.Content>

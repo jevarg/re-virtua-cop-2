@@ -1,17 +1,25 @@
+import { TileNotFoundError } from '../../errors/TileNotFoundError';
+import { Rect } from '../../types/Rect';
 import { Size } from '../../types/Size';
 import { Vec2 } from '../../types/Vec2';
 import { Texture } from './Texture';
 import { TextureFlag } from './TextureInfo';
 
 export type Tile = {
-    position: Vec2;
+    rect: Rect;
     textureId: number;
 };
 
 export class TileMap implements Iterable<Tile> {
-    public static readonly pageSize = 256;
+    public static readonly pageSize: number = 256;
+    public readonly width: number = TileMap.pageSize;
+    public readonly height: number;
+    public readonly byteSize: number;
+
     public pageCount: number = 0;
     public tileCount: number = 0;
+
+    public readonly pixels: Uint8ClampedArray;
 
     private readonly _sortedTextures: Map<number, number[]>;
     private readonly _tiles = new Map<number, Tile>();
@@ -19,10 +27,51 @@ export class TileMap implements Iterable<Tile> {
     constructor(textures: Texture[]) {
         this._sortedTextures = this._sortTextures(textures);
         this._createTileMap(textures);
+
+        this.height = this.width * this.pageCount;
+        this.byteSize = this.width * this.height * 4;
+        this.pixels = this._generatePixels(textures);
+    }
+
+    private _generatePixels(textures: Texture[]): Uint8ClampedArray {
+        const pixels = new Uint8ClampedArray(this.byteSize);
+        for (const tile of this) {
+            const texture = textures[tile.textureId];
+            if (!texture) {
+                throw new Error(`Could not find texture with id ${tile.textureId}`);
+            }
+
+            for (let y = 0; y < texture.info.height; y++) {
+                const offsetY = TileMap.pageSize * (tile.rect.top + y);
+
+                for (let x = 0; x < texture.info.width; x++) {
+                    const offsetX = tile.rect.left + x;
+
+                    const tileMapOffset = (offsetY + offsetX) * 4;
+                    const textureOffset = (y * texture.info.width + x) * 4;
+
+                    pixels[tileMapOffset] = texture.pixels[textureOffset];
+                    pixels[tileMapOffset + 1] = texture.pixels[textureOffset + 1];
+                    pixels[tileMapOffset + 2] = texture.pixels[textureOffset + 2];
+                    pixels[tileMapOffset + 3] = texture.pixels[textureOffset + 3];
+                }
+            }
+        }
+
+        return pixels;
     }
 
     [Symbol.iterator]() {
         return this._tiles.values();
+    }
+
+    public getTile(id: number): Tile {
+        const tile = this._tiles.get(id);
+        if (!tile) {
+            throw new TileNotFoundError(id);
+        }
+
+        return tile;
     }
 
     private _sortTextures(textures: Texture[]) {
@@ -97,10 +146,17 @@ export class TileMap implements Iterable<Tile> {
                             continue;
                         }
 
+                        const rectTop = pageNumber * TileMap.pageSize + y;
+
                         // We do have enough space!
                         this._tiles.set(id, {
                             textureId: id,
-                            position: { x: offset.x, y: pageNumber * TileMap.pageSize + y }
+                            rect: new Rect(
+                                rectTop,
+                                offset.x + texture.info.width,
+                                rectTop + texture.info.height,
+                                offset.x
+                            ),
                         });
 
                         // Adjusting current y position

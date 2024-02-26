@@ -28,3 +28,7 @@ img {
 .header-img {
     margin-right: 16px;
 }
+
+#main-section {
+    min-height: calc(100vh - var(--header-height));
+}
