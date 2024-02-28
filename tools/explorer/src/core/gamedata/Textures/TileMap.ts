@@ -65,10 +65,10 @@ export class TileMap implements Iterable<Tile> {
         return this._tiles.values();
     }
 
-    public getTile(id: number): Tile {
-        const tile = this._tiles.get(id);
+    public getTile(textureId: number): Tile {
+        const tile = this._tiles.get(textureId);
         if (!tile) {
-            throw new TileNotFoundError(id);
+            throw new TileNotFoundError(textureId);
         }
 
         return tile;

@@ -2,7 +2,7 @@
     --header-height: 64px;
 }
 
-img {
+img, canvas {
     image-rendering: pixelated !important;
 }
 

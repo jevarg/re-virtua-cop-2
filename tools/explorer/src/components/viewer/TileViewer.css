@@ -1,0 +1,16 @@
+.no-tile-selected {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.tile-viewer-main-content {
+    display: flex;
+    justify-content: center;
+}
+
+.tile-canvas {
+    height: 256px;
+    padding: calc(16px * 2);
+}

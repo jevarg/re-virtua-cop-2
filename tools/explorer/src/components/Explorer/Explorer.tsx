@@ -12,12 +12,12 @@ export function Explorer() {
     }, []);
 
     return <Grid.Container>
-        <Grid xs={6}>
+        <Grid xs={4}>
             <aside className='sidebar'>
                 <FileTree onClick={onClick} />
             </aside>
         </Grid>
-        <Grid.Container justify='center' xs={18}>
+        <Grid.Container justify='center' xs={20}>
             <AssetViewer asset={asset} />
         </Grid.Container>
     </Grid.Container>;

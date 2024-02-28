@@ -3,6 +3,7 @@ import { ModelsFile } from '../../core/gamedata/Models/ModelsFile';
 import { MainContext } from '../../contexts/MainContext';
 import { AssetType } from '../../core/gamedata/PackedAssetsFile';
 import { TextureFileName } from '../../core/gamedata/Textures/TexturesFile';
+import { Rect } from '../../core/types/Rect';
 
 import './ModelViewer.css';
 
@@ -10,18 +11,19 @@ import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { Color3, Vector3 } from '@babylonjs/core/Maths';
-import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
 
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { RawTexture } from '@babylonjs/core/Materials/Textures/rawTexture';
+import { Texture } from '@babylonjs/core/Materials/Textures/texture';
 import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 
-import { CameraGizmo } from '@babylonjs/core/Gizmos/cameraGizmo';
 import { AdvancedDynamicTexture } from '@babylonjs/gui/2D/advancedDynamicTexture';
 import { TextBlock } from '@babylonjs/gui/2D/controls/textBlock';
 import { Control } from '@babylonjs/gui/2D/controls/control';
-import { Rect } from '../../core/types/Rect';
+import { GizmoManager } from '@babylonjs/core/Gizmos/gizmoManager';
+import { Tile } from '../../core/gamedata/Textures/TileMap';
+import { MaterialFlag } from '../../core/gamedata/Models/Model';
 
 export type ModelViewerProps = {
     models: ModelsFile;
@@ -46,7 +48,7 @@ export function ModelViewer({ models }: ModelViewerProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const mainCtx = useContext(MainContext);
     const model = useMemo(() => {
-        return models.getModel(71);
+        return models.getModel(25);
     }, [models]);
 
     useEffect(() => {
@@ -54,82 +56,121 @@ export function ModelViewer({ models }: ModelViewerProps) {
             return;
         }
 
-        const engine = new Engine(canvasRef.current, true); // Generate the BABYLON 3D engine
+        const engine = new Engine(canvasRef.current, true);
         const createScene = function () {
-            // This creates a basic Babylon Scene object (non-mesh)
             const scene = new Scene(engine);
             scene.clearColor = Color3.Black().toColor4();
-            // This creates and positions a free camera (non-mesh)
-            const camera = new ArcRotateCamera('camera', -1, 1, 5, new Vector3(0, 1, 0), scene);
-            // This attaches the camera to the canvas
+
+            const camera = new ArcRotateCamera('camera', 0.1, 1.4, 0.5, new Vector3(0, 0, 0), scene);
+            camera.minZ = 0;
+            camera.wheelPrecision = 100;
             camera.attachControl(canvasRef.current, true);
-            // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-            // const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
-            // Default intensity is 1. Let's dim the light a small amount
-            // light.intensity = 1;
-            // Our built-in 'ground' shape.
-            // const ground = CreateGround("ground", {width: 6, height: 6}, scene);
 
             return scene;
         };
 
-        const textureFile = mainCtx.gameData.assets?.[AssetType.Texture].get(TextureFileName.T_MINI_C);
+        const textureFile = mainCtx.gameData.assets?.[AssetType.Texture].get(TextureFileName.T_COMMON);
         if (!textureFile || !textureFile.tileMap) {
             return;
         }
 
-        const indices: number[] = [];
-        const uvs: number[] = [0, 0, 1, 1];
-        for (const f of model.faces) {
-            const tile = textureFile.tileMap.getTile(f.material.textureId - textureFile.offset);
-
-            // const minX = tile.rect.left / textureFile.tileMap.width;
-            // const maxX = tile.rect.right / textureFile.tileMap.width;
-            // const minY = tile.rect.top / textureFile.tileMap.height;
-            // const maxY = tile.rect.bottom / textureFile.tileMap.height;
-
-            const uvRect = new Rect(
-                (textureFile.tileMap.height - tile.rect.top) / textureFile.tileMap.height,
-                tile.rect.right / textureFile.tileMap.width,
-                (textureFile.tileMap.height - tile.rect.bottom) / textureFile.tileMap.height,
-                tile.rect.left / textureFile.tileMap.width,
-            );
-
-            console.log(`${tile.textureId}:`, tile.rect, uvRect);
-
-            indices.push(
-                f.v2, f.v1, f.v3,
-                f.v4, f.v1, f.v3
-            );
-
-            uvs.push(
-                uvRect.left, uvRect.top,
-                uvRect.left, uvRect.top,
-                uvRect.left, uvRect.top,
-
-                uvRect.left, uvRect.top,
-                uvRect.left, uvRect.top,
-                uvRect.left, uvRect.top,
-            );
-        }
-
-
         const scene = createScene();
-        const mesh = new Mesh(model.id.toString(), scene);
-        const rawTexture = RawTexture.CreateRGBATexture(textureFile.tileMap.pixels, textureFile.tileMap.width, textureFile.tileMap.height, scene);
+        const rawTexture = RawTexture.CreateRGBATexture(
+            textureFile.tileMap.pixels,
+            textureFile.tileMap.width,
+            textureFile.tileMap.height,
+            scene,
+            true,
+            false,
+            Texture.NEAREST_SAMPLINGMODE
+        );
         rawTexture.hasAlpha = true;
 
         const material = new StandardMaterial('material', scene);
         material.emissiveTexture = rawTexture;
 
-        mesh.material = material;
+        const submeshes: Mesh[] = [];
+        for (const [i, f] of model.faces.entries()) {
+            if (!f.material.hasMaterialFlag(MaterialFlag.Enabled)) {
+                continue;
+            }
 
-        const vertexData = new VertexData();
-        vertexData.positions = model.vertices.flatMap(v => [v.x, v.y, v.z]);
-        vertexData.indices = indices;
-        vertexData.uvs = uvs;
+            let tile: Tile;
+            try {
+                tile = textureFile.tileMap.getTile(f.material.textureId);
+            } catch (e) {
+                console.warn(e);
+                continue;
+            }
 
-        vertexData.applyToMesh(mesh);
+            const uvRect = new Rect(
+                tile.rect.top / textureFile.tileMap.height,
+                tile.rect.right / textureFile.tileMap.width,
+                tile.rect.bottom / textureFile.tileMap.height,
+                tile.rect.left / textureFile.tileMap.width,
+            );
+
+            const positions = [
+                model.vertices[f.v1],
+                model.vertices[f.v2],
+                model.vertices[f.v3],
+                model.vertices[f.v4],
+            ].flatMap(v => [v.x, v.y, v.z]);
+
+            const uvs = Array<number>(8);
+            if (f.material.hasMaterialFlag(MaterialFlag.InvertX)) {
+                uvs[0] = uvRect.right;
+                uvs[2] = uvRect.left;
+                uvs[4] = uvRect.left;
+                uvs[6] = uvRect.right;
+            } else {
+                uvs[0] = uvRect.left;
+                uvs[2] = uvRect.right;
+                uvs[4] = uvRect.right;
+                uvs[6] = uvRect.left;
+            }
+
+            if (f.material.hasMaterialFlag(MaterialFlag.InvertY)) {
+                uvs[1] = uvRect.bottom;
+                uvs[3] = uvRect.bottom;
+                uvs[5] = uvRect.top;
+                uvs[7] = uvRect.top;
+            } else {
+                uvs[1] = uvRect.top;
+                uvs[3] = uvRect.top;
+                uvs[5] = uvRect.bottom;
+                uvs[7] = uvRect.bottom;
+            }
+
+            const mesh = new Mesh(i.toString(), scene);
+            mesh.material = material;
+
+            const vertexData = new VertexData();
+            vertexData.positions = positions;
+            vertexData.uvs = uvs;
+            vertexData.indices = [
+                0, 2, 1,
+                0, 3, 2,
+            ];
+
+            vertexData.applyToMesh(mesh);
+            submeshes.push(mesh);
+        }
+
+        const finalMesh = Mesh.MergeMeshes(submeshes);
+        if (!finalMesh) {
+            console.warn('Final mesh could not be created');
+            return;
+        }
+
+        finalMesh.rotate(new Vector3(-1, 0, 0), Math.PI / 2);
+
+        const gizmoManager = new GizmoManager(scene);
+        // gizmoManager.positionGizmoEnabled = true;
+        gizmoManager.attachToMesh(finalMesh);
+
+        // Temp
+        (scene.cameras[0] as ArcRotateCamera).setTarget(finalMesh.getBoundingInfo().boundingBox.centerWorld);
 
         engine.runRenderLoop(function () {
             scene.render();
@@ -144,7 +185,7 @@ export function ModelViewer({ models }: ModelViewerProps) {
         };
     }, [mainCtx.gameData.assets, model]);
 
-    return (
+    return <>
         <canvas className='model-viewer' ref={canvasRef} />
-    );
+    </>;
 }

@@ -1,27 +1,39 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import './TextureViewer.css';
 import Konva from 'konva';
-import { TexturesFile } from '../../core/gamedata/Textures/TexturesFile';
+import { TextureFileName, TexturesFile } from '../../core/gamedata/Textures/TexturesFile';
+import { Tile } from '../../core/gamedata/Textures/TileMap';
+import { Card, Grid } from '@geist-ui/core';
+import { TileViewer } from './TileViewer';
 
 export interface TextureViewerProps {
     textureFile: TexturesFile;
 }
 
-function buildTileMap(textureFile: TexturesFile, layer: Konva.Layer) {
+type TileClickedFunction = (tile: Tile) => void;
+
+function buildTileMap(textureFile: TexturesFile, layer: Konva.Layer, onTileClicked: TileClickedFunction) {
     if (!textureFile.tileMap) {
         console.warn('tileMap is not set!');
         return;
     }
 
     const group = new Konva.Group();
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+        console.error('Cannot get context...');
+        return;
+    }
+
+    const rect = new Konva.Rect({
+        stroke: '#ff00007c',
+        strokeScaleEnabled: true,
+        listening: false,
+    });
 
     for (const tile of textureFile.tileMap) {
         const texture = textureFile.getTexture(tile.textureId);
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-            continue;
-        }
 
         canvas.width = texture.info.width;
         canvas.height = texture.info.height;
@@ -35,15 +47,30 @@ function buildTileMap(textureFile: TexturesFile, layer: Konva.Layer) {
                 y: tile.rect.top,
             });
 
-            // image.on('mouseenter', (e) => {
-            //     console.log(e.target!);
-            // });
+            image.on('mouseover', function () {
+                rect.setAttrs({
+                    visible: true,
+                    x: tile.rect.left - 1,
+                    y: tile.rect.top - 1,
+                    width: tile.rect.width + 2,
+                    height: tile.rect.height + 2,
+                });
+            });
+
+            image.on('mouseout', function () {
+                rect.visible(false);
+            });
+
+            image.on('click', function () {
+                onTileClicked(tile);
+            });
 
             group.add(image);
         });
     }
 
     layer.add(group);
+    layer.add(rect);
 }
 
 function createStage(container: HTMLDivElement) {
@@ -52,6 +79,7 @@ function createStage(container: HTMLDivElement) {
         width: container.clientWidth,
         height: container.clientHeight,
         draggable: true,
+        scale: { x: 3, y: 3 },
     });
 
     stage.on('wheel', (e) => {
@@ -97,6 +125,11 @@ function updateLayout(stage: Konva.Stage) {
 
 export function TextureViewer({ textureFile }: TextureViewerProps) {
     const containerRef = useRef<HTMLDivElement>(null);
+    const [selectedTile, setSelectedTile] = useState<Tile>();
+
+    const onTileClicked = useCallback<TileClickedFunction>(tile => {
+        setSelectedTile(tile);
+    }, []);
 
     useEffect(() => {
         if (!containerRef.current) {
@@ -110,15 +143,22 @@ export function TextureViewer({ textureFile }: TextureViewerProps) {
         });
 
         stage.add(layer);
-        buildTileMap(textureFile, layer);
+        buildTileMap(textureFile, layer, onTileClicked);
 
         window.addEventListener('resize', onWindowResized);
         return () => {
             window.removeEventListener('resize', onWindowResized);
         };
-    }, [textureFile]);
+    }, [onTileClicked, textureFile]);
 
-    return (
-        <div className='tilemap-container' ref={containerRef} ></div>
-    );
+    return <Grid.Container gap={8}>
+        <Grid xs={17}>
+            <Card width="100%">
+                <div className='tilemap-container' ref={containerRef} ></div>
+            </Card>
+        </Grid>
+        <Grid xs={7} width="100%">
+            <TileViewer textureFileName={textureFile.name as TextureFileName} tile={selectedTile} />
+        </Grid>
+    </Grid.Container>;
 }

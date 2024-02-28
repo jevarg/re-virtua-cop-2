@@ -17,6 +17,19 @@ export class Face {
     }
 }
 
+export enum MaterialFlag {
+    Texture = 0x02,
+    Color = 0x04,
+    InvertX = 0x10,
+    InvertY = 0x20,
+    Enabled = 0x40,
+}
+
+export enum RenderFlag {
+    Dithered = 0x1,
+    Unknown = 0x2,
+}
+
 export class FaceMaterial {
     private readonly _materialFlags: number;
     private readonly _renderFlags: number;
@@ -29,6 +42,14 @@ export class FaceMaterial {
         this.textureId = textureId;
         this.textureFileId = textureFileId;
         this._renderFlags = rFlags;
+    }
+
+    public hasMaterialFlag(flag: MaterialFlag) {
+        return Boolean(this._materialFlags & flag);
+    }
+
+    public hasRenderFlag(flag: RenderFlag) {
+        return Boolean(this._renderFlags & flag);
     }
 }
 
