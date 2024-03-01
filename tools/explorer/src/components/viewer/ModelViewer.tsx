@@ -4,6 +4,8 @@ import { MainContext } from '../../contexts/MainContext';
 import { AssetType } from '../../core/gamedata/PackedAssetsFile';
 import { TextureFileName } from '../../core/gamedata/Textures/TexturesFile';
 import { Rect } from '../../core/types/Rect';
+import { MaterialFlag } from '../../core/gamedata/Models/Model';
+import { Texture } from '../../core/gamedata/Textures/Texture';
 
 import './ModelViewer.css';
 
@@ -14,7 +16,7 @@ import { Color3, Vector3 } from '@babylonjs/core/Maths';
 
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { RawTexture } from '@babylonjs/core/Materials/Textures/rawTexture';
-import { Texture } from '@babylonjs/core/Materials/Textures/texture';
+import { Texture as BabylonTexture } from '@babylonjs/core/Materials/Textures/texture';
 import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 
@@ -22,8 +24,10 @@ import { AdvancedDynamicTexture } from '@babylonjs/gui/2D/advancedDynamicTexture
 import { TextBlock } from '@babylonjs/gui/2D/controls/textBlock';
 import { Control } from '@babylonjs/gui/2D/controls/control';
 import { GizmoManager } from '@babylonjs/core/Gizmos/gizmoManager';
-import { Tile } from '../../core/gamedata/Textures/TileMap';
-import { MaterialFlag } from '../../core/gamedata/Models/Model';
+// import { SubMesh } from '@babylonjs/core/Meshes/subMesh';
+import { GroundMesh } from '@babylonjs/core/Meshes/groundMesh';
+import { GridMaterial } from '@babylonjs/materials/grid/gridMaterial';
+import { MeshBuilder } from '@babylonjs/core';
 
 export type ModelViewerProps = {
     models: ModelsFile;
@@ -48,7 +52,7 @@ export function ModelViewer({ models }: ModelViewerProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const mainCtx = useContext(MainContext);
     const model = useMemo(() => {
-        return models.getModel(25);
+        return models.getModel(71);
     }, [models]);
 
     useEffect(() => {
@@ -61,7 +65,7 @@ export function ModelViewer({ models }: ModelViewerProps) {
             const scene = new Scene(engine);
             scene.clearColor = Color3.Black().toColor4();
 
-            const camera = new ArcRotateCamera('camera', 0.1, 1.4, 0.5, new Vector3(0, 0, 0), scene);
+            const camera = new ArcRotateCamera('camera', -Math.PI / 3, Math.PI / 3, 5, new Vector3(0, 0, 0), scene);
             camera.minZ = 0;
             camera.wheelPrecision = 100;
             camera.attachControl(canvasRef.current, true);
@@ -69,47 +73,48 @@ export function ModelViewer({ models }: ModelViewerProps) {
             return scene;
         };
 
-        const textureFile = mainCtx.gameData.assets?.[AssetType.Texture].get(TextureFileName.T_COMMON);
+        const textureFile = mainCtx.gameData.assets?.[AssetType.Texture].get(TextureFileName.T_MINI_C);
         if (!textureFile || !textureFile.tileMap) {
             return;
         }
 
         const scene = createScene();
-        const rawTexture = RawTexture.CreateRGBATexture(
-            textureFile.tileMap.pixels,
-            textureFile.tileMap.width,
-            textureFile.tileMap.height,
-            scene,
-            true,
-            false,
-            Texture.NEAREST_SAMPLINGMODE
-        );
-        rawTexture.hasAlpha = true;
-
-        const material = new StandardMaterial('material', scene);
-        material.emissiveTexture = rawTexture;
+        const ground = MeshBuilder.CreateGround('ground', {
+            width: 20,
+            height: 20,
+            updatable: false,
+        }, scene);
+        const gridMaterial = new GridMaterial('ground-material');
+        gridMaterial.lineColor = Color3.Gray();
+        ground.material = gridMaterial;
 
         const submeshes: Mesh[] = [];
         for (const [i, f] of model.faces.entries()) {
-            if (!f.material.hasMaterialFlag(MaterialFlag.Enabled)) {
+            if (!f.material.hasMaterialFlag(MaterialFlag.Enabled) ||
+                !f.material.hasMaterialFlag(MaterialFlag.Texture)) {
                 continue;
             }
 
-            let tile: Tile;
+            console.log(i, f.material)
+
+            // let tile: Tile;
+            let texture: Texture;
             try {
-                tile = textureFile.tileMap.getTile(f.material.textureId);
+                // tile = textureFile.tileMap.getTile(f.material.textureId);
+                texture = textureFile.getTexture(f.material.textureId - textureFile.offset);
             } catch (e) {
                 console.warn(e);
                 continue;
             }
 
-            const uvRect = new Rect(
-                tile.rect.top / textureFile.tileMap.height,
-                tile.rect.right / textureFile.tileMap.width,
-                tile.rect.bottom / textureFile.tileMap.height,
-                tile.rect.left / textureFile.tileMap.width,
-            );
+            // const uvRect = new Rect(
+            //     tile.rect.top / textureFile.tileMap.height,
+            //     tile.rect.right / textureFile.tileMap.width,
+            //     tile.rect.bottom / textureFile.tileMap.height,
+            //     tile.rect.left / textureFile.tileMap.width,
+            // );
 
+            const uvRect = new Rect(0, 1, 1, 0);
             const positions = [
                 model.vertices[f.v1],
                 model.vertices[f.v2],
@@ -119,15 +124,15 @@ export function ModelViewer({ models }: ModelViewerProps) {
 
             const uvs = Array<number>(8);
             if (f.material.hasMaterialFlag(MaterialFlag.InvertX)) {
-                uvs[0] = uvRect.right;
-                uvs[2] = uvRect.left;
-                uvs[4] = uvRect.left;
-                uvs[6] = uvRect.right;
-            } else {
                 uvs[0] = uvRect.left;
                 uvs[2] = uvRect.right;
                 uvs[4] = uvRect.right;
                 uvs[6] = uvRect.left;
+            } else {
+                uvs[0] = uvRect.right;
+                uvs[2] = uvRect.left;
+                uvs[4] = uvRect.left;
+                uvs[6] = uvRect.right;
             }
 
             if (f.material.hasMaterialFlag(MaterialFlag.InvertY)) {
@@ -141,6 +146,23 @@ export function ModelViewer({ models }: ModelViewerProps) {
                 uvs[5] = uvRect.bottom;
                 uvs[7] = uvRect.bottom;
             }
+
+            if (texture.id === 75 || texture.id === 76) {
+                console.log(i, texture, f);
+            }
+
+            const rawTexture = RawTexture.CreateRGBATexture(
+                texture.pixels,
+                texture.info.width,
+                texture.info.height,
+                scene,
+                true,
+                false,
+                BabylonTexture.NEAREST_SAMPLINGMODE
+            );
+
+            const material = new StandardMaterial('material', scene);
+            material.emissiveTexture = rawTexture;
 
             const mesh = new Mesh(i.toString(), scene);
             mesh.material = material;
@@ -157,16 +179,51 @@ export function ModelViewer({ models }: ModelViewerProps) {
             submeshes.push(mesh);
         }
 
-        const finalMesh = Mesh.MergeMeshes(submeshes);
+        const finalMesh = Mesh.MergeMeshes(submeshes, true, undefined, undefined, undefined, true);
         if (!finalMesh) {
             console.warn('Final mesh could not be created');
             return;
         }
 
-        finalMesh.rotate(new Vector3(-1, 0, 0), Math.PI / 2);
+        finalMesh.enablePointerMoveEvents = true;
+
+        // scene.onPointerDown = function (evt, pickInfo, type) {
+        //     if (pickInfo.hit && pickInfo.subMeshId !== -1) {
+        //         const face = model.faces[pickInfo.subMeshId];
+        //         console.log(face);
+        //     }
+        // };
+
+        let prevPickedMeshId: number | undefined;
+        // TODO: refactor
+        scene.onPointerMove = function (_, pickInfo) {
+            if (pickInfo.hit && pickInfo.subMeshId !== -1 && pickInfo.pickedMesh) {
+                if (prevPickedMeshId !== undefined) {
+                    if (prevPickedMeshId === pickInfo.subMeshId) {
+                        return;
+                    }
+
+                    const prevMesh = finalMesh.subMeshes[prevPickedMeshId];
+                    const material = prevMesh.getMaterial() as StandardMaterial;
+                    material.emissiveColor = Color3.Black();
+                }
+
+                const subMesh = finalMesh.subMeshes[pickInfo.subMeshId];
+                const material = subMesh.getMaterial() as StandardMaterial;
+
+                material.emissiveColor = new Color3(0.3, 0.3, 0.3);
+                prevPickedMeshId = pickInfo.subMeshId;
+            } else if (!pickInfo.hit && prevPickedMeshId !== undefined) {
+                const prevMesh = finalMesh.subMeshes[prevPickedMeshId];
+                const material = prevMesh.getMaterial() as StandardMaterial;
+
+                material.emissiveColor = Color3.Black();
+                prevPickedMeshId = undefined;
+            }
+        };
 
         const gizmoManager = new GizmoManager(scene);
-        // gizmoManager.positionGizmoEnabled = true;
+        gizmoManager.positionGizmoEnabled = true;
         gizmoManager.attachToMesh(finalMesh);
 
         // Temp
@@ -179,7 +236,7 @@ export function ModelViewer({ models }: ModelViewerProps) {
         showFpsCounter(scene);
 
         return () => {
-            rawTexture.dispose();
+            // rawTexture.dispose();
             scene.dispose();
             engine.dispose();
         };
