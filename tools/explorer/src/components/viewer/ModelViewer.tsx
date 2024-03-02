@@ -120,19 +120,19 @@ export function ModelViewer({ models }: ModelViewerProps) {
                 model.vertices[f.v2],
                 model.vertices[f.v3],
                 model.vertices[f.v4],
-            ].flatMap(v => [v.x, v.y, v.z]);
+            ].flatMap(v => [-v.x, v.y, v.z]);
 
             const uvs = Array<number>(8);
             if (f.material.hasMaterialFlag(MaterialFlag.InvertX)) {
-                uvs[0] = uvRect.left;
-                uvs[2] = uvRect.right;
-                uvs[4] = uvRect.right;
-                uvs[6] = uvRect.left;
-            } else {
                 uvs[0] = uvRect.right;
                 uvs[2] = uvRect.left;
                 uvs[4] = uvRect.left;
                 uvs[6] = uvRect.right;
+            } else {
+                uvs[0] = uvRect.left;
+                uvs[2] = uvRect.right;
+                uvs[4] = uvRect.right;
+                uvs[6] = uvRect.left;
             }
 
             if (f.material.hasMaterialFlag(MaterialFlag.InvertY)) {
@@ -171,8 +171,8 @@ export function ModelViewer({ models }: ModelViewerProps) {
             vertexData.positions = positions;
             vertexData.uvs = uvs;
             vertexData.indices = [
-                0, 2, 1,
-                0, 3, 2,
+                0, 1, 2,
+                0, 2, 3,
             ];
 
             vertexData.applyToMesh(mesh);
