@@ -3,8 +3,9 @@ import { Tile } from '../../core/gamedata/Textures/TileMap';
 import './TileViewer.css';
 import { useContext, useEffect, useRef } from 'react';
 import { MainContext } from '../../contexts/MainContext';
-import { AssetType } from '../../core/gamedata/PackedAssetsFile';
-import { TextureFileName } from '../../core/gamedata/Textures/TexturesFile';
+import { AssetType } from '../../core/gamedata/AssetPack';
+import { TextureFileName } from '../../core/gamedata/Textures/TexturePack';
+import { GameData } from '../../core/gamedata/GameData';
 
 export type TileViewerProps = {
     textureFileName: TextureFileName;
@@ -31,11 +32,11 @@ function TileViewerCard({ children }: React.PropsWithChildren) {
 }
 
 export function TileViewer({ textureFileName, tile }: TileViewerProps) {
-    const mainCtx = useContext(MainContext);
+    const gameData = GameData.get();
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
-        if (!canvasRef?.current || !tile || !mainCtx.gameData.assets) {
+        if (!canvasRef?.current || !tile || !gameData.assets) {
             console.error('err');
             return;
         }
@@ -43,7 +44,7 @@ export function TileViewer({ textureFileName, tile }: TileViewerProps) {
         canvasRef.current.width = tile.rect.width;
         canvasRef.current.height = tile.rect.height;
 
-        const textureFile = mainCtx.gameData.assets[AssetType.Texture].get(textureFileName);
+        const textureFile = gameData.assets[AssetType.Texture].get(textureFileName);
         if (!textureFile) {
             console.error('No texture file');
             return;
@@ -60,7 +61,7 @@ export function TileViewer({ textureFileName, tile }: TileViewerProps) {
         imageData.data.set(texture.pixels);
         ctx.putImageData(imageData, 0, 0);
 
-    }, [mainCtx.gameData.assets, textureFileName, tile]);
+    }, [textureFileName, tile]);
 
     if (!tile) {
         return <TileViewerCard>

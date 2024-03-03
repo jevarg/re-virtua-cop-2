@@ -1,5 +1,5 @@
 import { FileSystemFileHandle } from 'native-file-system-adapter';
-import { AssetType, PackedAssetsFile } from '../PackedAssetsFile';
+import { AssetType, AssetPack } from '../AssetPack';
 import { Palette } from './PaletteFile';
 import { TextureFlag, TextureInfo } from './TextureInfo';
 import { Texture } from './Texture';
@@ -31,7 +31,7 @@ export enum TextureFileName {
     T_RANK = 'T_RANK.BIN',
 }
 
-export class TexturesFile extends PackedAssetsFile {
+export class TexturePack extends AssetPack {
     public readonly assetType: AssetType = AssetType.Texture;
     public readonly count: number;
     public readonly offset: number;

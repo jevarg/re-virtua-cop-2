@@ -1,20 +1,20 @@
-import { ModelsFile } from '../../core/gamedata/Models/ModelsFile';
-import { AssetType, PackedAssetsFile } from '../../core/gamedata/PackedAssetsFile';
-import { TexturesFile } from '../../core/gamedata/Textures/TexturesFile';
-import { ModelViewer } from './ModelViewer';
+import { ModelPack } from '../../core/gamedata/Models/ModelPack';
+import { AssetType, AssetPack } from '../../core/gamedata/AssetPack';
+import { TexturePack } from '../../core/gamedata/Textures/TexturePack';
+import { ModelViewer } from './model/ModelViewer';
 import { TextureViewer } from './TextureViewer';
 
 type AssetsViewerProps = {
-    asset?: PackedAssetsFile;
+    asset?: AssetPack;
 }
 
 export function AssetViewer({ asset }: AssetsViewerProps) {
     switch (asset?.assetType) {
         case AssetType.Texture:
-            return <TextureViewer textureFile={asset as TexturesFile} />;
+            return <TextureViewer textureFile={asset as TexturePack} />;
 
         case AssetType.Model:
-            return <ModelViewer models={asset as ModelsFile} />;
+            return <ModelViewer models={asset as ModelPack} />;
 
         default:
             return;

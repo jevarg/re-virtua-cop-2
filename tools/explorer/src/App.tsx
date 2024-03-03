@@ -1,8 +1,9 @@
-import { useContext, useEffect } from 'react';
-import { MainContext } from './contexts/MainContext';
+import { useCallback, useState } from 'react';
 import { Button } from './components/ButtonFix';
 import { Explorer } from './components/Explorer/Explorer';
 import { ButtonProps, Grid, Page } from '@geist-ui/core';
+import { GameData } from './core/gamedata/GameData';
+
 import './App.css';
 
 function SelectGameDir(props: ButtonProps) {
@@ -12,7 +13,14 @@ function SelectGameDir(props: ButtonProps) {
 }
 
 function App() {
-  const mainCtx = useContext(MainContext);
+  // const mainCtx = useContext(MainContext);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  const loadGameData = useCallback(async () => {
+    await GameData.init();
+    await GameData.get().build();
+    setIsInitialized(true);
+  }, []);
 
   return <>
     <div className='header-wrapper'>
@@ -27,7 +35,7 @@ function App() {
     </div>
     <Page id='main-section'>
       <Page.Content>
-        {mainCtx.isGameDataLoaded ? <Explorer /> : <SelectGameDir onClick={mainCtx.loadGameData} />}
+        {isInitialized ? <Explorer /> : <SelectGameDir onClick={loadGameData} />}
       </Page.Content>
     </Page>
   </>;

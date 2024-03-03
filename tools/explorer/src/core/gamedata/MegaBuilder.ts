@@ -1,16 +1,16 @@
 import { FileSystemDirectoryHandle } from 'native-file-system-adapter';
-import { TextureFileName, TexturesFile } from './Textures/TexturesFile';
+import { TextureFileName, TexturePack } from './Textures/TexturePack';
 import { ExeFile } from './ExeFile';
 import { Palette } from './Textures/PaletteFile';
 import { TextureInfo } from './Textures/TextureInfo';
-import { AssetType } from './PackedAssetsFile';
-import { ModelFileName, ModelsFile } from './Models/ModelsFile';
+import { AssetType } from './AssetPack';
+import { ModelFileName, ModelPack } from './Models/ModelPack';
 
 const texturesListAddr: number = ExeFile.toRawAddr(0x00458FD0);
 const textureListItemByteSize: number = 24;
 
-export type AssetsMap = Record<AssetType.Texture, Map<TextureFileName, TexturesFile>>
-                        & Record<AssetType.Model, Map<ModelFileName, ModelsFile>>
+export type AssetsMap = Record<AssetType.Texture, Map<TextureFileName, TexturePack>>
+                        & Record<AssetType.Model, Map<ModelFileName, ModelPack>>
 
 export class MegaBuilder {
     private _exeFile: ExeFile;
@@ -19,7 +19,7 @@ export class MegaBuilder {
         this._exeFile = exeFile;
     }
 
-    private async _makeTexture(assetsDir: FileSystemDirectoryHandle, textureItemOffset: number): Promise<TexturesFile | undefined> {
+    private async _makeTexture(assetsDir: FileSystemDirectoryHandle, textureItemOffset: number): Promise<TexturePack | undefined> {
         const dataView = new DataView(this._exeFile.buffer);
 
         const fileNameOffset = ExeFile.toRawAddr(dataView.getUint32(textureItemOffset, true));
@@ -41,7 +41,7 @@ export class MegaBuilder {
             const metadata = this._exeFile.buffer.sliceAt(texturesMetadataOffset, TextureInfo.byteSize * count);
 
             const palette = await Palette.make(paletteFileHandle);
-            return TexturesFile.make(fileHandle, palette, count, metadata, fileOffset);
+            return TexturePack.make(fileHandle, palette, count, metadata, fileOffset);
         } catch (err) {
             if ((err as { name?: string })?.name === 'NotFoundError') {
                 console.info(`Skipped ${fileName}: ${err}`);
@@ -52,11 +52,11 @@ export class MegaBuilder {
         }
     }
 
-    private async _makeTextures(assetsDir: FileSystemDirectoryHandle): Promise<Map<TextureFileName, TexturesFile>> {
+    private async _makeTextures(assetsDir: FileSystemDirectoryHandle): Promise<Map<TextureFileName, TexturePack>> {
         const numberOfTextures = Object.keys(TextureFileName).length;
-        const texturesMap = new Map<TextureFileName, TexturesFile>();
+        const texturesMap = new Map<TextureFileName, TexturePack>();
 
-        const promises: Promise<TexturesFile | undefined>[] = [];
+        const promises: Promise<TexturePack | undefined>[] = [];
         for (let i = 0; i < numberOfTextures; i++) {
             promises.push(this._makeTexture(assetsDir, texturesListAddr + textureListItemByteSize * i));
         }
@@ -73,12 +73,12 @@ export class MegaBuilder {
         return texturesMap;
     }
 
-    private async _makeModels(assetsDir: FileSystemDirectoryHandle): Promise<Map<ModelFileName, ModelsFile>> {
-        const modelsMap = new Map<ModelFileName, ModelsFile>();
+    private async _makeModels(assetsDir: FileSystemDirectoryHandle): Promise<Map<ModelFileName, ModelPack>> {
+        const modelsMap = new Map<ModelFileName, ModelPack>();
 
         for (const fileName of Object.values(ModelFileName)) {
             const file = await assetsDir.getFileHandle(fileName);
-            modelsMap.set(fileName as ModelFileName, await ModelsFile.make(file));
+            modelsMap.set(fileName as ModelFileName, await ModelPack.make(file));
         }
 
         return modelsMap;

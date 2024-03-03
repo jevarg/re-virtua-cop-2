@@ -1,6 +1,6 @@
 import { GameFile, GameFileType } from './GameFile';
-import { ModelFileName } from './Models/ModelsFile';
-import { TextureFileName } from './Textures/TexturesFile';
+import { ModelFileName } from './Models/ModelPack';
+import { TextureFileName } from './Textures/TexturePack';
 
 export enum AssetType {
     Texture = 'Texture',
@@ -19,7 +19,11 @@ export type ModelFileType = {
 
 export type AssetFileType = TextureFileType | ModelFileType;
 
-export abstract class PackedAssetsFile extends GameFile {
+export enum AssetPackType {
+
+}
+
+export abstract class AssetPack extends GameFile {
     public readonly fileType: GameFileType = GameFileType.PackedAsset;
     public abstract readonly assetType: AssetType;
 }

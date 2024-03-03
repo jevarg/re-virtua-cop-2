@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import './TextureViewer.css';
 import Konva from 'konva';
-import { TextureFileName, TexturesFile } from '../../core/gamedata/Textures/TexturesFile';
+import { TextureFileName, TexturePack } from '../../core/gamedata/Textures/TexturePack';
 import { Tile } from '../../core/gamedata/Textures/TileMap';
 import { Card, Grid } from '@geist-ui/core';
 import { TileViewer } from './TileViewer';
 
 export interface TextureViewerProps {
-    textureFile: TexturesFile;
+    textureFile: TexturePack;
 }
 
 type TileClickedFunction = (tile: Tile) => void;
 
-function buildTileMap(textureFile: TexturesFile, layer: Konva.Layer, onTileClicked: TileClickedFunction) {
+function buildTileMap(textureFile: TexturePack, layer: Konva.Layer, onTileClicked: TileClickedFunction) {
     if (!textureFile.tileMap) {
         console.warn('tileMap is not set!');
         return;

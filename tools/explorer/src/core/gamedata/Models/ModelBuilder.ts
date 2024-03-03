@@ -1,5 +1,6 @@
 import { Vec3 } from '../../types/Vec3';
 import { Face, FaceMaterial, Model } from './Model';
+import { ModelPack } from './ModelPack';
 
 export class ModelBuilder {
     public static readonly headerByteSize = 16;
@@ -8,7 +9,7 @@ export class ModelBuilder {
     private static readonly _bytesPerFace = 20; // // 20 bytes per face (v1-4 are 16bit ints + 12 unknown bytes);
     private static readonly _bytesPerMaterial = 10; // 10 bytes per face material
 
-    public static build(id: number, buffer: ArrayBufferLike): Model | undefined {
+    public static build(id: number, parent: ModelPack, buffer: ArrayBufferLike): Model | undefined {
         let view = new DataView(buffer, id * this.headerByteSize);
 
         const verticesOffset = view.getUint32(0, true);
@@ -55,6 +56,6 @@ export class ModelBuilder {
             ));
         }
 
-        return new Model(id, vertices, faces);
+        return new Model(id, parent, vertices, faces);
     }
 }

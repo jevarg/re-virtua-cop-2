@@ -1,18 +1,40 @@
 import { FileSystemDirectoryHandle } from 'native-file-system-adapter';
 import { AssetsMap, MegaBuilder } from './MegaBuilder';
 import { ExeFile } from './ExeFile';
-import { TextureFileName, TexturesFile } from './Textures/TexturesFile';
 import { TreeNode, TreeNodeType } from './FSTree';
-import prettyBytes from 'pretty-bytes';
-import { ModelFileName, ModelsFile } from './Models/ModelsFile';
-import { AssetType } from './PackedAssetsFile';
+import { AssetType } from './AssetPack';
+import { showDirectoryPicker } from 'native-file-system-adapter';
 
 enum KnownEntries {
     ExeFile = 'PPJ2DD.EXE',
     BinDir = 'BIN'
 }
 
-export class VC2GameData {
+export class GameData {
+    private static _instance?: GameData;
+
+    public static get isInitialized() {
+        return Boolean(GameData._instance);
+    }
+
+    public static get(): GameData {
+        if (!GameData._instance) {
+            throw new Error('GameData has not been initialized! (did you call GameData.init() ?)');
+        }
+
+        return GameData._instance;
+    }
+
+    public static async init() {
+        if (this._instance) {
+            console.warn('Ignored: GameData has already been initialized!');
+            return;
+        }
+
+        const rootDir = await showDirectoryPicker();
+        GameData._instance = new GameData(rootDir);
+    }
+
     private readonly _rootDir: FileSystemDirectoryHandle;
 
     private _builder?: MegaBuilder;

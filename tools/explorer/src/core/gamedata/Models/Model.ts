@@ -1,4 +1,5 @@
 import { Vec3 } from '../../types/Vec3';
+import { ModelPack } from './ModelPack';
 
 export class Face {
     public readonly v1: number;
@@ -35,12 +36,12 @@ export class FaceMaterial {
     private readonly _renderFlags: number;
 
     public readonly textureId: number;
-    public readonly textureFileId: number;
+    public readonly texturePackId: number;
 
-    constructor(mFlags: number, textureId: number, textureFileId: number, rFlags: number) {
+    constructor(mFlags: number, textureId: number, texturePackId: number, rFlags: number) {
         this._materialFlags = mFlags;
         this.textureId = textureId;
-        this.textureFileId = textureFileId;
+        this.texturePackId = texturePackId;
         this._renderFlags = rFlags;
     }
 
@@ -55,11 +56,13 @@ export class FaceMaterial {
 
 export class Model {
     public readonly id: number;
+    public readonly parent: ModelPack;
     public readonly vertices: Vec3[];
     public readonly faces: Face[];
 
-    constructor(id: number, vertices: Vec3[], faces: Face[]) {
+    constructor(id: number, parent: ModelPack, vertices: Vec3[], faces: Face[]) {
         this.id = id;
+        this.parent = parent;
         this.vertices = vertices;
         this.faces = faces;
     }

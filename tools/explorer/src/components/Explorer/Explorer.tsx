@@ -2,12 +2,12 @@ import { Grid } from '@geist-ui/core';
 import { FileTree } from '../FileTree/FileTree';
 import './Explorer.css';
 import { useCallback, useState } from 'react';
-import { PackedAssetsFile } from '../../core/gamedata/PackedAssetsFile';
+import { AssetPack } from '../../core/gamedata/AssetPack';
 import { AssetViewer } from '../viewer/AssetViewer';
 
 export function Explorer() {
-    const [asset, setAsset] = useState<PackedAssetsFile>();
-    const onClick = useCallback((asset: PackedAssetsFile) => {
+    const [asset, setAsset] = useState<AssetPack>();
+    const onClick = useCallback((asset: AssetPack) => {
         setAsset(asset);
     }, []);
 
