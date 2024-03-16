@@ -33,7 +33,7 @@ function buildTileMap(textureFile: TexturePack, layer: Konva.Layer, onTileClicke
     });
 
     for (const tile of textureFile.tileMap) {
-        const texture = textureFile.getTexture(tile.textureId);
+        const texture = textureFile.textures[tile.textureId];
 
         canvas.width = texture.info.width;
         canvas.height = texture.info.height;

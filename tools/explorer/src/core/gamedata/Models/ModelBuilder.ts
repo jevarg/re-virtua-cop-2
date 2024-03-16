@@ -21,6 +21,7 @@ export class ModelBuilder {
         const materialsOffset = view.getUint32(8, true);
         const verticesCount = view.getUint16(12, true);
         const facesCount = view.getUint8(14);
+        const unk = view.getUint8(15);
 
         view = new DataView(buffer);
 
@@ -42,20 +43,27 @@ export class ModelBuilder {
 
             const material = new FaceMaterial(
                 view.getUint8(materialOffset),
+                view.getUint8(materialOffset + 1),
                 view.getUint8(materialOffset + 2),
                 view.getUint8(materialOffset + 3),
                 view.getUint8(materialOffset + 5)
             );
 
             faces.push(new Face(
+                i,
                 view.getUint16(faceOffset, true),
                 view.getUint16(faceOffset + 2, true),
                 view.getUint16(faceOffset + 4, true),
                 view.getUint16(faceOffset + 6, true),
+                new Vec3(
+                    view.getFloat32(faceOffset + 8, true),
+                    view.getFloat32(faceOffset + 12, true),
+                    view.getFloat32(faceOffset + 16, true),
+                ),
                 material
             ));
         }
 
-        return new Model(id, parent, vertices, faces);
+        return new Model(id, parent, vertices, faces, unk);
     }
 }

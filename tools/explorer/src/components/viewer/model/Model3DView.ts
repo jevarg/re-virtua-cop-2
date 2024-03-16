@@ -8,7 +8,7 @@ import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { IPointerEvent } from '@babylonjs/core/Events/deviceInputEvents';
 import { PickingInfo } from '@babylonjs/core/Collisions/pickingInfo';
-import { HemisphericLight, MeshBuilder, StandardMaterial } from '@babylonjs/core';
+import { MeshBuilder, StandardMaterial } from '@babylonjs/core';
 import { GridMaterial } from '@babylonjs/materials/grid/gridMaterial';
 import { Control } from '@babylonjs/gui/2D/controls/control';
 import { AdvancedDynamicTexture } from '@babylonjs/gui/2D/advancedDynamicTexture';
@@ -37,9 +37,6 @@ export class Model3DView {
         this.scene.clearColor = Color3.Black().toColor4(1);
         this.scene.onPointerMove = this._onPointerMove.bind(this);
         this.scene.onPointerDown = this._onPointerDown.bind(this);
-
-        // var light = new HemisphericLight("light", new Vector3(1, 1, 1), this.scene);
-        // this.scene.reflec
 
         this.camera = new ArcRotateCamera(
             Model3DView.cameraName,
@@ -74,7 +71,7 @@ export class Model3DView {
         }
 
         this._modelMesh?.dispose();
-        this.camera.dispose()
+        this.camera.dispose();
         this.scene.dispose();
     }
 
@@ -152,7 +149,7 @@ export class Model3DView {
     public center() {
         const pos = this._modelMesh?.getBoundingInfo().boundingBox.centerWorld;
         this.camera.setTarget(pos || Vector3.Zero());
-        this.camera.radius = 5;
+        this.camera.radius = 10;
     }
 
     public render() {

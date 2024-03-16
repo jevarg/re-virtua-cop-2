@@ -34,7 +34,8 @@ export enum TextureFileName {
 export class TexturePack extends AssetPack {
     public readonly assetType: AssetType = AssetType.Texture;
     public readonly count: number;
-    public readonly offset: number;
+    public readonly pageSize: number;
+    public readonly pageOffset: number;
 
     private readonly _palette: Palette;
     private readonly _metadata: ArrayBuffer;
@@ -42,11 +43,12 @@ export class TexturePack extends AssetPack {
     public tileMap: TileMap | undefined;
     public textures: Texture[] = [];
 
-    constructor(file: FileSystemFileHandle, palette: Palette, count: number, metadata: ArrayBuffer, offset: number) {
+    constructor(file: FileSystemFileHandle, palette: Palette, count: number, metadata: ArrayBuffer, pageSize: number, pageOffset: number) {
         super(file);
 
         this.count = count;
-        this.offset = offset;
+        this.pageSize = pageSize;
+        this.pageOffset = pageOffset;
         this._palette = palette;
         this._metadata = metadata;
     }
@@ -68,9 +70,13 @@ export class TexturePack extends AssetPack {
         this.tileMap = new TileMap(this.textures);
     }
 
-    public getTexture(id: number): Texture {
-        const texture = this.textures[id];
+    public getTexture(id: number, page: number): Texture {
+        // const n = (page - this.pageOffset);
+        // const i = id + (256 * n) - ((n + 1) * this.pageSize);
+        const i = id;
+        const texture = this.textures[i];
         if (!texture) {
+            console.warn(`Computed i: ${i}`);
             throw new TextureNotFoundError(id);
         }
 

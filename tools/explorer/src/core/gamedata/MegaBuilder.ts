@@ -26,6 +26,7 @@ export class MegaBuilder {
         const paletteFileNameOffset = ExeFile.toRawAddr(dataView.getUint32(textureItemOffset + 4, true));
         const texturesMetadataOffset = ExeFile.toRawAddr(dataView.getUint32(textureItemOffset + 8, true));
         const fileOffset = dataView.getUint8(textureItemOffset + 12);
+        const unk = dataView.getUint8(textureItemOffset + 13);
         const texturesCountOffset = ExeFile.toRawAddr(dataView.getUint32(textureItemOffset + 16, true));
 
         const fileName = dataView.getAscii(fileNameOffset, 12);
@@ -41,7 +42,7 @@ export class MegaBuilder {
             const metadata = this._exeFile.buffer.sliceAt(texturesMetadataOffset, TextureInfo.byteSize * count);
 
             const palette = await Palette.make(paletteFileHandle);
-            return TexturePack.make(fileHandle, palette, count, metadata, fileOffset);
+            return TexturePack.make(fileHandle, palette, count, metadata, fileOffset, unk);
         } catch (err) {
             if ((err as { name?: string })?.name === 'NotFoundError') {
                 console.info(`Skipped ${fileName}: ${err}`);

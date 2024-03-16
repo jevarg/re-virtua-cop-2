@@ -38,6 +38,8 @@ export class GameData {
     private readonly _rootDir: FileSystemDirectoryHandle;
 
     private _builder?: MegaBuilder;
+    // private _stages: ;
+
     public assets: AssetsMap | undefined;
 
     constructor(rootDir: FileSystemDirectoryHandle) {

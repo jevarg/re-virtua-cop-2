@@ -32,16 +32,15 @@ struct Texture {
     u32 unk0;
     
     TextureFlags flags;
-//    u8 [[hidden]];
- //   u8 [[hidden]];
-  //  u8 [[hidden]];
 };
 
 struct TextureFile {
     char *fileName[16] : u32 [[pointer_base("ptrToRaw")]];
     char *paletteFileName[16] : u32 [[pointer_base("ptrToRaw")]];
     u32 ptrTextures [[transform("rawAddr")]];
-    u32 unknown0 [[hidden]];
+    u8 offset;
+    u8 id;
+    padding[2];
     u32 *count : u32 [[export, pointer_base("ptrToRaw")]];
     u32 unknown1;
 
@@ -51,7 +50,6 @@ struct TextureFile {
 struct ModelFile {
     char name[16];
     u32 *ptr : u32 [[pointer_base("ptrToRaw")]];
-//    padding[20 - sizeof(name)];
 };
 
 enum MOT : u8 {

@@ -2,18 +2,22 @@ import { Vec3 } from '../../types/Vec3';
 import { ModelPack } from './ModelPack';
 
 export class Face {
+    public readonly id: number;
     public readonly v1: number;
     public readonly v2: number;
     public readonly v3: number;
     public readonly v4: number;
+    public readonly normal: Vec3;
 
     public readonly material: FaceMaterial;
 
-    constructor(v1: number, v2: number, v3: number, v4: number, material: FaceMaterial) {
+    constructor(id: number, v1: number, v2: number, v3: number, v4: number, normal: Vec3, material: FaceMaterial) {
+        this.id = id;
         this.v1 = v1;
         this.v2 = v2;
         this.v3 = v3;
         this.v4 = v4;
+        this.normal = normal;
         this.material = material;
     }
 }
@@ -27,19 +31,21 @@ export enum MaterialFlag {
 }
 
 export enum RenderFlag {
-    Dithered = 0x1,
+    Transparent = 0x1,
     Unknown = 0x2,
 }
 
 export class FaceMaterial {
     private readonly _materialFlags: number;
     private readonly _renderFlags: number;
+    private readonly _textureFlags: number;
 
     public readonly textureId: number;
     public readonly texturePackId: number;
 
-    constructor(mFlags: number, textureId: number, texturePackId: number, rFlags: number) {
+    constructor(mFlags: number, tFlags: number, textureId: number, texturePackId: number, rFlags: number) {
         this._materialFlags = mFlags;
+        this._textureFlags = tFlags;
         this.textureId = textureId;
         this.texturePackId = texturePackId;
         this._renderFlags = rFlags;
@@ -52,6 +58,14 @@ export class FaceMaterial {
     public hasRenderFlag(flag: RenderFlag) {
         return Boolean(this._renderFlags & flag);
     }
+
+    public textureOffset() {
+        if (this._textureFlags == 0x4) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
 }
 
 export class Model {
@@ -59,11 +73,13 @@ export class Model {
     public readonly parent: ModelPack;
     public readonly vertices: Vec3[];
     public readonly faces: Face[];
+    public readonly unk: number;
 
-    constructor(id: number, parent: ModelPack, vertices: Vec3[], faces: Face[]) {
+    constructor(id: number, parent: ModelPack, vertices: Vec3[], faces: Face[], unk: number) {
         this.id = id;
         this.parent = parent;
         this.vertices = vertices;
         this.faces = faces;
+        this.unk = unk;
     }
 }

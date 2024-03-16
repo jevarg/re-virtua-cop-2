@@ -52,6 +52,11 @@ export class ModelPack extends AssetPack {
                 return TextureFileName.T_STG2C;
             case ModelFileName.P_STG20:
                 return TextureFileName.T_STG20;
+                // if (type === 7)
+                //     return TextureFileName.T_STG2C;
+                // else if (type === 6)
+                //     return TextureFileName.T_STG20;
+                // return undefined;
             case ModelFileName.P_STG21:
                 return TextureFileName.T_STG21;
             case ModelFileName.P_STG22:
@@ -95,9 +100,21 @@ export class ModelPack extends AssetPack {
     }
 
     public getTexturePackName(type: TexturePackIdType): TextureFileName | undefined {
+        // switch (type) {
+        //     case TexturePackIdType.Common:
+        //         return TextureFileName.T_COMMON;
+        //     case 6: {
+        //         let name = this._fileHandle.name.substring(0, this._fileHandle.name.length - 5); // .BIN
+        //         name += '';
+        //         break;
+        //     }
+        //     default:
+        //         break;
+        // }
         if (type === TexturePackIdType.Common) {
             return TextureFileName.T_COMMON;
         } else {
+
             return this._getAssociatedTexturePack();
         }
     }
