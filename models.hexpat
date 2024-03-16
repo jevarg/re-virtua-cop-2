@@ -1,5 +1,6 @@
 #include <std/io.pat>
 #include <std/mem.pat>
+#include <std/math.pat>
 
 #pragma pattern_limit 999999
 
@@ -8,8 +9,12 @@
 #define VERTEX_COMPONENTS_COUNT 3
 
 
-fn calc_vertices_size(u16 vertices_count) {
-    return vertices_count * VERTEX_COMPONENTS_COUNT;
+struct Vec3 {
+    float x;
+    float y;
+    float z;
+    
+    float length = std::math::sqrt(std::math::pow(x, 2) + std::math::pow(y, 2) + std::math::pow(z, 2));
 };
 
 bitfield MaterialFlags {
@@ -34,7 +39,7 @@ bitfield RenderFlags {
 
 struct Face {
     u16 indices[4];
-    padding[12];
+    Vec3 normal;
 };
 
 struct Material {
@@ -48,12 +53,6 @@ struct Material {
     padding[2];
 };
 
-struct Vertex {
-    float x;
-    float y;
-    float z;
-};
-
 struct Model {
     float *vertices_addr : u32;
     u16 *faces_addr : u32;
@@ -62,7 +61,7 @@ struct Model {
     u8 faces_count;
     u8;
 
-    Vertex vertices[vertices_count] @ addressof(vertices_addr);
+    Vec3 vertices[vertices_count] @ addressof(vertices_addr);
     Face faces[faces_count] @ addressof(faces_addr);
     Material materials[faces_count] @ addressof(material_addr);
    

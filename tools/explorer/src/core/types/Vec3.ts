@@ -8,4 +8,12 @@ export class Vec3 {
         this.y = y;
         this.z = z;
     }
+
+    public toArray() {
+        return [
+            this.x,
+            this.y,
+            this.z,
+        ];
+    }
 }

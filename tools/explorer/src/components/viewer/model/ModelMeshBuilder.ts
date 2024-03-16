@@ -11,7 +11,7 @@ import { GameData } from '../../../core/gamedata/GameData';
 import { AssetType } from '../../../core/gamedata/AssetPack';
 import { Rect } from '../../../core/types/Rect';
 import { ModelPack } from '../../../core/gamedata/Models/ModelPack';
-import { Color3 } from '@babylonjs/core';
+import { Color3, MeshBuilder } from '@babylonjs/core';
 import { TextureFileName, TexturePack } from '../../../core/gamedata/Textures/TexturePack';
 
 export class ModelMeshBuilder {
@@ -152,6 +152,13 @@ export class ModelMeshBuilder {
                 ];
             }
 
+            vertexData.normals = [
+                ...face.normal.toArray(),
+                ...face.normal.toArray(),
+                ...face.normal.toArray(),
+                ...face.normal.toArray()
+            ];
+
             let material: StandardMaterial;
             if (face.material.hasMaterialFlag(MaterialFlag.Texture)) {
                 material = this._createTexturedMaterial(model, face, scene)!;
@@ -188,6 +195,17 @@ export class ModelMeshBuilder {
 
         finalMesh.id = model.id.toString();
         finalMesh.name = `Model ${model.id}`;
+
+        const positions = finalMesh.getFacetLocalPositions();
+        const normals = finalMesh.getFacetLocalNormals();
+
+        const lines = [];
+        for (let i = 0; i < positions.length; i++) {
+            const line = [ positions[i], positions[i].add(normals[i]) ];
+            lines.push(line);
+        }
+        const lineSystem = MeshBuilder.CreateLineSystem("ls", {lines: lines}, scene);
+        lineSystem.color = Color3.Green();
 
         return finalMesh;
     }
