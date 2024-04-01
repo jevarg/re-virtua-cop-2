@@ -16,10 +16,11 @@ export function AssetViewer({ asset }: AssetsViewerProps) {
 
         case AssetType.Model: {
             // return <ModelViewer models={asset as ModelPack} />;
-            if (asset.name.includes('P_STG')) {
-                return <StageViewer modelPack={asset as ModelPack} />;
+            const modelPack = asset as ModelPack;
+            if (modelPack.isStage) {
+                return <StageViewer modelPack={modelPack} />;
             } else {
-                return <ModelViewer models={asset as ModelPack} />;
+                return <ModelViewer modelPack={modelPack} />;
             }
         }
 

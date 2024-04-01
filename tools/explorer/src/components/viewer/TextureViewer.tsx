@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import './TextureViewer.css';
 import Konva from 'konva';
-import { TextureFileName, TexturePack } from '../../core/gamedata/Textures/TexturePack';
+import { TexturePackName, TexturePack } from '../../core/gamedata/Textures/TexturePack';
 import { Tile } from '../../core/gamedata/Textures/TileMap';
 import { Card, Grid } from '@geist-ui/core';
 import { TileViewer } from './TileViewer';
@@ -158,7 +158,7 @@ export function TextureViewer({ textureFile }: TextureViewerProps) {
             </Card>
         </Grid>
         <Grid xs={7} width="100%">
-            <TileViewer textureFileName={textureFile.name as TextureFileName} tile={selectedTile} />
+            <TileViewer textureFileName={textureFile.name as TexturePackName} tile={selectedTile} />
         </Grid>
     </Grid.Container>;
 }

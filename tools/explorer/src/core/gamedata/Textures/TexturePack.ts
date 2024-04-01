@@ -6,7 +6,7 @@ import { Texture } from './Texture';
 import { TileMap } from './TileMap';
 import { TextureNotFoundError } from '../../errors/TextureNotFoundError';
 
-export enum TextureFileName {
+export enum TexturePackName {
     T_COMMON = 'T_COMMON.BIN',
     T_STG1C = 'T_STG1C.BIN',
     T_STG10 = 'T_STG10.BIN',

@@ -2,10 +2,10 @@ import { Tree } from '@geist-ui/core';
 import { useCallback, useMemo } from 'react';
 import { TreeFile } from '@geist-ui/core/esm/tree';
 import { TreeNode, TreeNodeType } from '../../core/gamedata/FSTree';
-import { TextureFileName } from '../../core/gamedata/Textures/TexturePack';
+import { TexturePackName } from '../../core/gamedata/Textures/TexturePack';
 import { Texture } from '../../core/gamedata/Textures/Texture';
 import { AssetType, AssetPack } from '../../core/gamedata/AssetPack';
-import { ModelFileName } from '../../core/gamedata/Models/ModelPack';
+import { ModelPackName } from '../../core/gamedata/Models/ModelPack';
 import { GameData } from '../../core/gamedata/GameData';
 
 export type ClickedTexture = {
@@ -54,7 +54,7 @@ export function FileTree({ onClick }: FileTreeProps) {
 
         const strings = path.split('/');
         const assetType = strings[0] as AssetType;
-        const assetFileName = strings[1] as TextureFileName | ModelFileName;
+        const assetFileName = strings[1] as TexturePackName | ModelPackName;
 
         if (!assetType || !assetFileName) {
             console.warn('Invalid file was clicked:', path);

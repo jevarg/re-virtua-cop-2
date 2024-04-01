@@ -1,6 +1,6 @@
 import { GameFile, GameFileType } from './GameFile';
-import { ModelFileName } from './Models/ModelPack';
-import { TextureFileName } from './Textures/TexturePack';
+import { ModelPackName } from './Models/ModelPack';
+import { TexturePackName } from './Textures/TexturePack';
 
 export enum AssetType {
     Texture = 'Texture',
@@ -9,12 +9,12 @@ export enum AssetType {
 
 export type TextureFileType = {
     assetType: AssetType.Texture;
-    fileName: TextureFileName;
+    fileName: TexturePackName;
 }
 
 export type ModelFileType = {
     assetType: AssetType.Model;
-    fileName: ModelFileName;
+    fileName: ModelPackName;
 }
 
 export type AssetFileType = TextureFileType | ModelFileType;

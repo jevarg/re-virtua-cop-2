@@ -73,13 +73,15 @@ export class Model {
     public readonly parent: ModelPack;
     public readonly vertices: Vec3[];
     public readonly faces: Face[];
+    public readonly depth: number;
     public readonly unk: number;
 
-    constructor(id: number, parent: ModelPack, vertices: Vec3[], faces: Face[], unk: number) {
+    constructor(id: number, parent: ModelPack, vertices: Vec3[], faces: Face[], depth: number, unk: number) {
         this.id = id;
         this.parent = parent;
         this.vertices = vertices;
         this.faces = faces;
+        this.depth = depth;
         this.unk = unk;
     }
 }

@@ -10,12 +10,12 @@ import { Model } from '../../../core/gamedata/Models/Model';
 import { Button } from '@geist-ui/core';
 
 export type ModelViewerProps = {
-    models: ModelPack;
+    modelPack: ModelPack;
 }
 
 let intervalId: number | undefined;
 
-export function ModelViewer({ models }: ModelViewerProps) {
+export function ModelViewer({ modelPack }: ModelViewerProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [model, setModel] = useState<Model>();
     const [modelId, setModelId] = useState<number>();
@@ -25,8 +25,8 @@ export function ModelViewer({ models }: ModelViewerProps) {
             return;
         }
 
-        setModel(models.getModel(modelId));
-    }, [modelId, models]);
+        setModel(modelPack.getModel(modelId));
+    }, [modelId, modelPack]);
 
     useEffect(() => {
         if (!canvasRef.current || !model) {

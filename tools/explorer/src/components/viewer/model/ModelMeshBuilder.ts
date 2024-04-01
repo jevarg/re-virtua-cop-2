@@ -4,32 +4,32 @@ import { RawTexture } from '@babylonjs/core/Materials/Textures/rawTexture';
 import { Texture as BabylonTexture } from '@babylonjs/core/Materials/Textures/texture';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
+import { Color3 } from '@babylonjs/core/Maths/math.color';
 
 import { Face, MaterialFlag, Model, RenderFlag } from '../../../core/gamedata/Models/Model';
 import { Texture } from '../../../core/gamedata/Textures/Texture';
 import { GameData } from '../../../core/gamedata/GameData';
 import { AssetType } from '../../../core/gamedata/AssetPack';
 import { Rect } from '../../../core/types/Rect';
-import { ModelPack } from '../../../core/gamedata/Models/ModelPack';
-import { Color3, MeshBuilder } from '@babylonjs/core';
-import { TextureFileName, TexturePack } from '../../../core/gamedata/Textures/TexturePack';
+import { TexturePackName, TexturePack } from '../../../core/gamedata/Textures/TexturePack';
+import { TextureFlag } from '../../../core/gamedata/Textures/TextureInfo';
 
 export class ModelMeshBuilder {
     private static _findTexturePack(model: Model, packId: number) {
-        const packName = model.parent.getTexturePackName(packId);
-        if (!packName) {
-            throw new Error(`Cannot find texture pack with id ${packId}`);
-        }
-
-        // let packName: TextureFileName;
-
-        // if (!packId) {
-        //     packName = TextureFileName.T_COMMON;
-        // } else if (model.unk) {
-        //     packName = TextureFileName.T_STG2C;
-        // } else {
-        //     packName = TextureFileName.T_STG20;
+        // const packName = model.parent.getTexturePackName(packId);
+        // if (!packName) {
+        //     throw new Error(`Cannot find texture pack with id ${packId}`);
         // }
+
+        let packName: TexturePackName;
+
+        if (!packId) {
+            packName = TexturePackName.T_COMMON;
+        } else if (model.unk || model.depth) {
+            packName = TexturePackName.T_STG2C;
+        } else {
+            packName = TexturePackName.T_STG20;
+        }
 
         const texturePack = GameData.get().assets![AssetType.Texture].get(packName);
         if (!texturePack) {
@@ -39,10 +39,11 @@ export class ModelMeshBuilder {
         return texturePack;
     }
 
-    private static _createTexturedMaterial(model: Model, face: Face, scene: Scene) {
+    private static _createTexturedMaterial(model: Model, face: Face, scene: Scene, textures: Map<string, RawTexture>) {
         let texture: Texture;
+        let texturePack: TexturePack;
         try {
-            const texturePack = this._findTexturePack(model, face.material.texturePackId);
+            texturePack = this._findTexturePack(model, face.material.texturePackId);
             console.log(`textureId: ${face.material.textureId}`);
             console.log(`texturePackId: ${face.material.texturePackId}`);
             console.log(`pack: ${texturePack.name}`);
@@ -70,19 +71,26 @@ export class ModelMeshBuilder {
             return material;
         }
 
-        const rawTexture = RawTexture.CreateRGBATexture(
-            texture.pixels,
-            texture.info.width,
-            texture.info.height,
-            scene,
-            true,
-            false,
-            BabylonTexture.NEAREST_SAMPLINGMODE
-        );
+        const textureKey = `${texturePack.name}/${face.material.textureId}`;
+        let rawTexture = textures.get(textureKey);
+        if (!rawTexture) {
+            rawTexture = RawTexture.CreateRGBATexture(
+                texture.pixels,
+                texture.info.width,
+                texture.info.height,
+                scene,
+                true,
+                false,
+                BabylonTexture.NEAREST_SAMPLINGMODE
+            );
+            textures.set(textureKey, rawTexture);
+        }
 
         const material = new StandardMaterial('texturedMaterial', scene);
-        // material.opacityTexture = rawTexture;
         material.emissiveTexture = rawTexture;
+        if (texture.info.hasFlag(TextureFlag.Alpha)) {
+            material.opacityTexture = rawTexture;
+        }
 
         return material;
     }
@@ -126,6 +134,7 @@ export class ModelMeshBuilder {
 
     public static CreateMesh(model: Model, scene: Scene): Mesh {
         const submeshes: Mesh[] = [];
+        const textures = new Map<string, RawTexture>();
         for (const face of model.faces) {
             if (!face.material.hasMaterialFlag(MaterialFlag.Enabled)) {
                 continue;
@@ -145,7 +154,7 @@ export class ModelMeshBuilder {
                 0, 2, 3,
             ];
 
-            if (model.unk) {
+            if (model.depth) {
                 vertexData.indices = [
                     0, 2, 1,
                     0, 3, 2,
@@ -161,7 +170,7 @@ export class ModelMeshBuilder {
 
             let material: StandardMaterial;
             if (face.material.hasMaterialFlag(MaterialFlag.Texture)) {
-                material = this._createTexturedMaterial(model, face, scene)!;
+                material = this._createTexturedMaterial(model, face, scene, textures)!;
                 if (face.material.hasRenderFlag(RenderFlag.Transparent)) {
                     material.alpha = 0.5; // TODO: Make it dithered like the game does
                 }
@@ -173,6 +182,7 @@ export class ModelMeshBuilder {
 
             const mesh = new Mesh(face.id.toString());
             mesh.material = material!;
+            material!.useLogarithmicDepth = true;
 
             // if (model.unk && mesh.material) {
                 // mesh.material.backFaceCulling = false;
@@ -196,16 +206,37 @@ export class ModelMeshBuilder {
         finalMesh.id = model.id.toString();
         finalMesh.name = `Model ${model.id}`;
 
-        const positions = finalMesh.getFacetLocalPositions();
-        const normals = finalMesh.getFacetLocalNormals();
+        // switch (model.depth) {
+        //     case 12:
+        //         finalMesh.renderingGroupId = 0;
+        //         break;
+        //     // case 8:
+        //     //     finalMesh.renderingGroupId = 1;
+        //     //     break;
+        //     // case 4:
+        //     //     finalMesh.renderingGroupId = 2;
+        //     //     break;
+        //     default:
+        //         finalMesh.renderingGroupId = 1;
+        //         break;
+        // }
 
-        const lines = [];
-        for (let i = 0; i < positions.length; i++) {
-            const line = [ positions[i], positions[i].add(normals[i]) ];
-            lines.push(line);
-        }
-        const lineSystem = MeshBuilder.CreateLineSystem("ls", {lines: lines}, scene);
-        lineSystem.color = Color3.Green();
+        // if (model.depth & 0x4) {
+        //     finalMesh.renderingGroupId = 0;
+        // } else {
+        //     finalMesh.renderingGroupId = 1;
+        // }
+
+        // const positions = finalMesh.getFacetLocalPositions();
+        // const normals = finalMesh.getFacetLocalNormals();
+
+        // const lines = [];
+        // for (let i = 0; i < positions.length; i++) {
+        //     const line = [ positions[i], positions[i].add(normals[i]) ];
+        //     lines.push(line);
+        // }
+        // const lineSystem = MeshBuilder.CreateLineSystem("ls", {lines: lines}, scene);
+        // lineSystem.color = Color3.Green();
 
         return finalMesh;
     }

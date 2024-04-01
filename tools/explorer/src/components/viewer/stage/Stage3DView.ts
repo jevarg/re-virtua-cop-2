@@ -5,12 +5,15 @@ import { Color3 } from '@babylonjs/core/Maths/math.color';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { ModelPack } from '../../../core/gamedata/Models/ModelPack';
 import { ModelMeshBuilder } from '../model/ModelMeshBuilder';
-import { IPointerEvent, PickingInfo } from '@babylonjs/core';
+import { IPointerEvent, Mesh, PickingInfo } from '@babylonjs/core';
+import { Model } from '../../../core/gamedata/Models/Model';
 
 export class Stage3DView {
     public readonly engine: Engine;
     public readonly scene: Scene;
     public readonly camera: UniversalCamera;
+
+    private _models = new Map<number, Model>();
 
     constructor(engine: Engine, canvas: HTMLCanvasElement) {
         this.engine = engine;
@@ -40,7 +43,12 @@ export class Stage3DView {
         // }
 
         if (pickInfo.hit && pickInfo.pickedMesh) {
-            console.log(pickInfo.pickedMesh.name);
+            // const submesh = pickInfo.pickedMesh.subMeshes[pickInfo.subMeshId];
+            // console.log(pickInfo.pickedMesh.name, `submesh: ${pickInfo.subMeshId}`);
+            const model = this._models.get(Number(pickInfo.pickedMesh.id));
+            console.log('Mesh', pickInfo.pickedMesh.getPositionData());
+            console.log('Model', model);
+            console.log('Face', model?.faces[pickInfo.subMeshId]);
             // const face = this._model?.faces[pickInfo.subMeshId];
             // console.log(face);
             // if (!face) {
@@ -52,17 +60,31 @@ export class Stage3DView {
     }
 
     public async loadStage(stage: ModelPack, min: number | undefined = undefined, max: number | undefined = undefined) {
+        const meshes: Mesh[] = [];
         for (const model of stage.models) {
             if (model.id < (min || -1)) {
                 continue;
             }
 
             if (model.id === max) {
-                return;
+                break;
             }
 
-            const mesh = ModelMeshBuilder.CreateMesh(model, this.scene);
+            meshes.push(ModelMeshBuilder.CreateMesh(model, this.scene));
+            this._models.set(model.id, model);
             // break;
         }
+
+        // console.log(`Before pack: ${this.scene.textures.length}`);
+
+        // const pack = new TexturePacker('TestPack', meshes, {
+        //     frameSize: 256,
+        //     layout: TexturePacker.LAYOUT_POWER2,
+        //     paddingMode: TexturePacker.SUBUV_EXTEND,
+        // }, this.scene);
+
+        // await pack.processAsync();
+
+        // console.log(`After pack: ${this.scene.textures.length}`);
     }
 }

@@ -4,11 +4,11 @@ import './TileViewer.css';
 import { useContext, useEffect, useRef } from 'react';
 import { MainContext } from '../../contexts/MainContext';
 import { AssetType } from '../../core/gamedata/AssetPack';
-import { TextureFileName } from '../../core/gamedata/Textures/TexturePack';
+import { TexturePackName } from '../../core/gamedata/Textures/TexturePack';
 import { GameData } from '../../core/gamedata/GameData';
 
 export type TileViewerProps = {
-    textureFileName: TextureFileName;
+    textureFileName: TexturePackName;
     tile?: Tile;
 }
 

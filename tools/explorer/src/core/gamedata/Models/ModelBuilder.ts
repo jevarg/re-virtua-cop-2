@@ -6,7 +6,7 @@ export class ModelBuilder {
     public static readonly headerByteSize = 16;
 
     private static readonly _bytesPerVertex = 12; // 12 bytes per vertex (x, y, z are 32bit floats);
-    private static readonly _bytesPerFace = 20; // // 20 bytes per face (v1-4 are 16bit ints + 12 unknown bytes);
+    private static readonly _bytesPerFace = 20; // 20 bytes per face (v1-4 are 2bytes ints + 12bytes normal (3 * 4bytes floats));
     private static readonly _bytesPerMaterial = 10; // 10 bytes per face material
 
     public static build(id: number, parent: ModelPack, buffer: ArrayBufferLike): Model | undefined {
@@ -21,7 +21,10 @@ export class ModelBuilder {
         const materialsOffset = view.getUint32(8, true);
         const verticesCount = view.getUint16(12, true);
         const facesCount = view.getUint8(14);
-        const unk = view.getUint8(15);
+        const flags = view.getUint8(15);
+
+        const depth = (flags & 0xf0) >> 4; // High nibble
+        const unk = (flags & 0x0f); // Low nibble
 
         view = new DataView(buffer);
 
@@ -51,19 +54,19 @@ export class ModelBuilder {
 
             faces.push(new Face(
                 i,
-                view.getUint16(faceOffset, true),
-                view.getUint16(faceOffset + 2, true),
-                view.getUint16(faceOffset + 4, true),
-                view.getUint16(faceOffset + 6, true),
-                new Vec3(
-                    view.getFloat32(faceOffset + 8, true),
-                    view.getFloat32(faceOffset + 12, true),
-                    view.getFloat32(faceOffset + 16, true),
+                view.getUint16(faceOffset, true), // v1
+                view.getUint16(faceOffset + 2, true), // v2
+                view.getUint16(faceOffset + 4, true), // v3
+                view.getUint16(faceOffset + 6, true), // v4
+                new Vec3( // Normal
+                    view.getFloat32(faceOffset + 8, true), // X
+                    view.getFloat32(faceOffset + 12, true), // Y
+                    view.getFloat32(faceOffset + 16, true), // Z
                 ),
                 material
             ));
         }
 
-        return new Model(id, parent, vertices, faces, unk);
+        return new Model(id, parent, vertices, faces, depth, unk);
     }
 }

@@ -28,6 +28,14 @@ export function StageViewer({ modelPack }: StageViewerProps) {
         // const model3DView = new Model3DView(engine, canvasRef.current);
         // model3DView.setModel(model);
 
+        stageViewer.loadStage(modelPack);
+        // stageViewer.loadStage(modelPack, 40, 44);
+        // stageViewer.loadStage(modelPack, 23, 24);
+        // stageViewer.loadStage(modelPack, 561, 562);
+        console.info(`Active textures: ${stageViewer.scene.textures.length}`);
+
+        // stageViewer.loadStage(modelPack, 560, 566);
+
         engine.runRenderLoop(function () {
             stageViewer.scene.render();
         });
@@ -36,12 +44,6 @@ export function StageViewer({ modelPack }: StageViewerProps) {
             sessionStorage.setItem('camPos', JSON.stringify(stageViewer.camera.position.asArray()));
             sessionStorage.setItem('camRot', JSON.stringify(stageViewer.camera.rotation.asArray()));
         }, 1000);
-
-        // stageViewer.loadStage(modelPack);
-        stageViewer.loadStage(modelPack, 350, 360);
-        stageViewer.loadStage(modelPack, 540, 650);
-        // stageViewer.loadStage(modelPack, 600, 620);
-        // stageViewer.loadStage(modelPack, 0, 564);
 
         return () => {
             clearInterval(intervalId);
