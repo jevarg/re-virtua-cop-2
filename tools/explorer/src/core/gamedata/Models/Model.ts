@@ -1,5 +1,6 @@
 import { Vec3 } from '../../types/Vec3';
-import { ModelPack } from './ModelPack';
+import { TexturePackName } from '../Textures/TexturePack';
+import { ModelPack, ModelPackName } from './ModelPack';
 
 export class Face {
     public readonly id: number;
@@ -70,18 +71,35 @@ export class FaceMaterial {
 
 export class Model {
     public readonly id: number;
+    public readonly headerOffset: number;
     public readonly parent: ModelPack;
     public readonly vertices: Vec3[];
     public readonly faces: Face[];
     public readonly depth: number;
     public readonly unk: number;
 
-    constructor(id: number, parent: ModelPack, vertices: Vec3[], faces: Face[], depth: number, unk: number) {
+    constructor(id: number, headerOffset: number, parent: ModelPack, vertices: Vec3[], faces: Face[], depth: number, unk: number) {
         this.id = id;
+        this.headerOffset = headerOffset;
         this.parent = parent;
         this.vertices = vertices;
         this.faces = faces;
         this.depth = depth;
         this.unk = unk;
+    }
+
+    public getTexturePack(packId: number) {
+        if (packId === 0) {
+            return TexturePackName.T_COMMON;
+        }
+
+        const modelPackType = this.parent.name as ModelPackName;
+        if (this.parent.isStage && (this.unk || this.depth)) {
+            return `T_${modelPackType.substring(2, 6)}C.BIN` as TexturePackName;
+        } else if (modelPackType === ModelPackName.P_SEL) {
+            return TexturePackName.T_SELECT;
+        } else {
+            return `T_${modelPackType.substring(2)}` as TexturePackName;
+        }
     }
 }

@@ -29,12 +29,13 @@ export function StageViewer({ modelPack }: StageViewerProps) {
         // model3DView.setModel(model);
 
         stageViewer.loadStage(modelPack);
+        // stageViewer.loadStage(modelPack, 1060, 1076);
         // stageViewer.loadStage(modelPack, 40, 44);
         // stageViewer.loadStage(modelPack, 23, 24);
         // stageViewer.loadStage(modelPack, 561, 562);
+        // stageViewer.loadStage(modelPack, 560, 566);
         console.info(`Active textures: ${stageViewer.scene.textures.length}`);
 
-        // stageViewer.loadStage(modelPack, 560, 566);
 
         engine.runRenderLoop(function () {
             stageViewer.scene.render();

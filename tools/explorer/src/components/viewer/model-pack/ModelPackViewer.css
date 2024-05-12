@@ -1,0 +1,18 @@
+.model-static-viewer {
+    margin: 5px 0;
+    width: 128px;
+    height: 128px;
+}
+
+.model-static-viewer-loader {
+    width: 128px;
+    height: 128px;
+}
+
+.table-preview-cell {
+    cursor: pointer;
+}
+
+.modal-close {
+    border: none !important;
+}

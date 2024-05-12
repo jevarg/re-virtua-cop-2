@@ -11,29 +11,20 @@ import { Texture } from '../../../core/gamedata/Textures/Texture';
 import { GameData } from '../../../core/gamedata/GameData';
 import { AssetType } from '../../../core/gamedata/AssetPack';
 import { Rect } from '../../../core/types/Rect';
-import { TexturePackName, TexturePack } from '../../../core/gamedata/Textures/TexturePack';
+import { TexturePack, TexturePackName } from '../../../core/gamedata/Textures/TexturePack';
 import { TextureFlag } from '../../../core/gamedata/Textures/TextureInfo';
+import { MeshBuilder } from '@babylonjs/core';
 
 export class ModelMeshBuilder {
     private static _findTexturePack(model: Model, packId: number) {
-        // const packName = model.parent.getTexturePackName(packId);
-        // if (!packName) {
-        //     throw new Error(`Cannot find texture pack with id ${packId}`);
-        // }
-
-        let packName: TexturePackName;
-
-        if (!packId) {
-            packName = TexturePackName.T_COMMON;
-        } else if (model.unk || model.depth) {
-            packName = TexturePackName.T_STG2C;
-        } else {
-            packName = TexturePackName.T_STG20;
+        const packType = model.getTexturePack(packId);
+        if (!packType) {
+            throw new Error(`Cannot find texture pack with id ${packId}`);
         }
 
-        const texturePack = GameData.get().assets![AssetType.Texture].get(packName);
+        const texturePack = GameData.get().assets![AssetType.Texture].get(packType);
         if (!texturePack) {
-            throw new Error(`Cannot find texture pack ${packName}`);
+            throw new Error(`Cannot find texture pack ${packType}`);
         }
 
         return texturePack;

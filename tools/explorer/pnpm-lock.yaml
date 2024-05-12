@@ -17,6 +17,9 @@ dependencies:
   '@geist-ui/core':
     specifier: ^2.3.8
     version: 2.3.8(react-dom@18.2.0)(react@18.2.0)
+  babylonjs-serializers:
+    specifier: ^7.6.0
+    version: 7.6.0
   inter-ui:
     specifier: ^4.0.2
     version: 4.0.2
@@ -35,6 +38,9 @@ dependencies:
   react-dom:
     specifier: ^18.2.0
     version: 18.2.0(react@18.2.0)
+  react-router-dom:
+    specifier: ^6.23.0
+    version: 6.23.0(react-dom@18.2.0)(react@18.2.0)
 
 devDependencies:
   '@babylonjs/inspector':
@@ -493,6 +499,11 @@ packages:
       fastq: 1.17.1
     dev: true
 
+  /@remix-run/router@1.16.0:
+    resolution: {integrity: sha512-Quz1KOffeEf/zwkCBM3kBtH4ZoZ+pT3xIXBG4PPW/XFtDP7EGhtTiC2+gpL9GnR7+Qdet5Oa6cYSvwKYg6kN9Q==}
+    engines: {node: '>=14.0.0'}
+    dev: false
+
   /@rollup/rollup-android-arm-eabi@4.12.0:
     resolution: {integrity: sha512-+ac02NL/2TCKRrJu2wffk1kZ+RyqxVUlbjSagNgPm94frxtr+XDL12E5Ll1enWskLrtrZ2r8L3wED1orIibV/w==}
     cpu: [arm]
@@ -947,6 +958,22 @@ packages:
 
   /babylonjs-gltf2interface@6.45.1:
     resolution: {integrity: sha512-D7Z8y333VZg1lOIJsrv3yr5C9JyMShoTng49I/TRIPJH64I2T51DVroyh04tACVuM00AX1sI9fys/5a5YK3+Bw==}
+
+  /babylonjs-gltf2interface@7.6.0:
+    resolution: {integrity: sha512-dE/Npkvwzj+NRnnJKoAKGxziFkHkvbwoRRrStdF6RXB0mu0ht5jZ+3KSr9Bi36i7s/S0iOIUkLznTuet4ySQTQ==}
+    dev: false
+
+  /babylonjs-serializers@7.6.0:
+    resolution: {integrity: sha512-svOsQ0pFpKkRdRxM4ImqBhcPvLwC2Qs/ojdcx7FcdLip74Uk0a+lP0iJZ6JtI83c6J2i0fP2zLm/RcbqbiM90g==}
+    dependencies:
+      babylonjs: 7.6.0
+      babylonjs-gltf2interface: 7.6.0
+    dev: false
+
+  /babylonjs@7.6.0:
+    resolution: {integrity: sha512-vfeIlxxtv8n3sTeP6QvBZo8crKTKHoRyHTrcE9W/dqixWLzYoUspCXnH/nQNyoXYfsRlsQ9JgbIZqCFivGYVlA==}
+    requiresBuild: true
+    dev: false
 
   /balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -1619,6 +1646,29 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
+
+  /react-router-dom@6.23.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-Q9YaSYvubwgbal2c9DJKfx6hTNoBp3iJDsl+Duva/DwxoJH+OTXkxGpql4iUK2sla/8z4RpjAm6EWx1qUDuopQ==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@remix-run/router': 1.16.0
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-router: 6.23.0(react@18.2.0)
+    dev: false
+
+  /react-router@6.23.0(react@18.2.0):
+    resolution: {integrity: sha512-wPMZ8S2TuPadH0sF5irFGjkNLIcRvOSaEe7v+JER8508dyJumm6XZB1u5kztlX0RVq6AzRVndzqcUh6sFIauzA==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      '@remix-run/router': 1.16.0
+      react: 18.2.0
     dev: false
 
   /react@18.2.0:

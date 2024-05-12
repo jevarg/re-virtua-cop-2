@@ -14,12 +14,14 @@
     "@babylonjs/gui": "^6.44.0",
     "@babylonjs/loaders": "^6.44.0",
     "@geist-ui/core": "^2.3.8",
+    "babylonjs-serializers": "^7.6.0",
     "inter-ui": "^4.0.2",
     "konva": "^9.3.3",
     "native-file-system-adapter": "^3.0.0",
     "pretty-bytes": "^6.1.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.23.0"
   },
   "devDependencies": {
     "@babylonjs/inspector": "^6.45.1",

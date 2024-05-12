@@ -3,18 +3,31 @@ import { ModelMeshBuilder } from './ModelMeshBuilder';
 
 import { Scene } from '@babylonjs/core/scene';
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { Color3, Vector3 } from '@babylonjs/core/Maths';
+import { Color3, Color4, Vector3 } from '@babylonjs/core/Maths';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { IPointerEvent } from '@babylonjs/core/Events/deviceInputEvents';
 import { PickingInfo } from '@babylonjs/core/Collisions/pickingInfo';
-import { MeshBuilder, StandardMaterial } from '@babylonjs/core';
-import { GridMaterial } from '@babylonjs/materials/grid/gridMaterial';
+import { StandardMaterial } from '@babylonjs/core';
 import { Control } from '@babylonjs/gui/2D/controls/control';
 import { AdvancedDynamicTexture } from '@babylonjs/gui/2D/advancedDynamicTexture';
 import { TextBlock } from '@babylonjs/gui/2D/controls/textBlock';
 
 export type FaceClickedFunction = (face: Face) => void;
+
+export type ViewOptions = {
+    showFPSCounter: boolean;
+    controllableCamera: boolean;
+    highlightHoveredFace: boolean;
+    logClickedFace: boolean;
+};
+
+const defaultViewOptions: ViewOptions = {
+    showFPSCounter: false,
+    controllableCamera: true,
+    highlightHoveredFace: false,
+    logClickedFace: false
+};
 
 export class Model3DView {
     public static readonly cameraName = 'mainCamera';
@@ -29,49 +42,49 @@ export class Model3DView {
     private _highlightedSubMeshId?: number;
 
     private _fpsCounterIntervalId?: number;
+    private _options: ViewOptions;
 
-    constructor(engine: Engine, canvas: HTMLCanvasElement) {
+    constructor(engine: Engine, options: ViewOptions = defaultViewOptions) {
+        this._options = options;
         this.engine = engine;
 
         this.scene = new Scene(engine);
-        this.scene.clearColor = Color3.Black().toColor4(1);
-        this.scene.onPointerMove = this._onPointerMove.bind(this);
-        this.scene.onPointerDown = this._onPointerDown.bind(this);
+        this.scene.clearColor = new Color4(0.12, 0.12, 0.12, 1);
+
+        if (this._options.highlightHoveredFace) {
+            this.scene.onPointerMove = this._onPointerMove.bind(this);
+        }
+
+        if (this._options.logClickedFace) {
+            this.scene.onPointerDown = this._onPointerDown.bind(this);
+        }
 
         this.camera = new ArcRotateCamera(
             Model3DView.cameraName,
-            -Math.PI / 3,
-            Math.PI / 3,
+            Math.PI / 1.2,
+            Math.PI / 2.5,
             5,
             new Vector3(0, 0, 0),
             this.scene
         );
+
         this.camera.minZ = 0;
-        this.camera.wheelPrecision = 100;
-        this.camera.attachControl(canvas, true);
+        if (this._options.controllableCamera) {
+            this.camera.wheelPrecision = 100;
+            this.camera.attachControl(undefined, false);
+            this.scene.attachControl(true, true, true);
+        }
 
-        const gridMaterial = new GridMaterial('ground-material');
-        gridMaterial.lineColor = Color3.Gray();
-
-        const ground = MeshBuilder.CreateGround('ground', {
-            width: 20,
-            height: 20,
-            updatable: false,
-        }, this.scene);
-        ground.isPickable = false;
-        ground.isVisible = false;
-        ground.material = gridMaterial;
-
-        this._setupFPSCounter();
+        if (this._options.showFPSCounter) {
+            this._setupFPSCounter();
+        }
     }
 
     public destroy() {
-        if (this._fpsCounterIntervalId) {
+        if (this._fpsCounterIntervalId !== undefined) {
             clearInterval(this._fpsCounterIntervalId);
         }
 
-        this._modelMesh?.dispose();
-        this.camera.dispose();
         this.scene.dispose();
     }
 
@@ -139,17 +152,23 @@ export class Model3DView {
     }
 
     public setModel(model: Model) {
-        this._modelMesh = ModelMeshBuilder.CreateMesh(model, this.scene);
-        this._modelMesh.enablePointerMoveEvents = true;
         this._model = model;
+        this._modelMesh = ModelMeshBuilder.CreateMesh(model, this.scene);
+
+        if (this._options.highlightHoveredFace) {
+            this._modelMesh.enablePointerMoveEvents = true;
+        }
 
         this.center();
     }
 
     public center() {
-        const pos = this._modelMesh?.getBoundingInfo().boundingBox.centerWorld;
-        this.camera.setTarget(pos || Vector3.Zero());
-        this.camera.radius = 10;
+        if (!this._modelMesh) {
+            return;
+        }
+
+        this.camera.focusOn([this._modelMesh], true);
+        this.camera.zoomOn([this._modelMesh], true);
     }
 
     public render() {

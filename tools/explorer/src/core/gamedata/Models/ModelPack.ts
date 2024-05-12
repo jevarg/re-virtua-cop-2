@@ -1,6 +1,5 @@
 import { FileSystemFileHandle } from 'native-file-system-adapter';
 import { AssetType, AssetPack } from '../AssetPack';
-import { TexturePackName } from '../Textures/TexturePack';
 import { Model } from './Model';
 import { ModelBuilder } from './ModelBuilder';
 
@@ -26,10 +25,10 @@ export enum ModelPackName {
     P_MINI_C = 'P_MINI_C.BIN',
 }
 
-enum TexturePackType {
-    Common = 0,
-    Matching = 6
-}
+// enum TexturePackType {
+//     Common = 0,
+//     Matching = 6
+// }
 
 export class ModelPack extends AssetPack {
     public readonly assetType: AssetType = AssetType.Model;
@@ -40,54 +39,7 @@ export class ModelPack extends AssetPack {
     constructor(file: FileSystemFileHandle) {
         super(file);
 
-        this.isStage = file.name.startsWith("P_STG");
-    }
-
-    private _getAssociatedTexturePack(): TexturePackName | undefined {
-        switch (this._fileHandle.name) {
-            case ModelPackName.P_COMMON:
-                return TexturePackName.T_COMMON;
-            case ModelPackName.P_STG1C:
-                return TexturePackName.T_STG1C;
-            case ModelPackName.P_STG10:
-                return TexturePackName.T_STG10;
-            case ModelPackName.P_STG11:
-                return TexturePackName.T_STG11;
-            case ModelPackName.P_STG12:
-                return TexturePackName.T_STG12;
-            case ModelPackName.P_SEL:
-                return TexturePackName.T_SELECT;
-            case ModelPackName.P_STG2C:
-                return TexturePackName.T_STG2C;
-            case ModelPackName.P_STG20:
-                return TexturePackName.T_STG20;
-                // if (type === 7)
-                //     return TextureFileName.T_STG2C;
-                // else if (type === 6)
-                //     return TextureFileName.T_STG20;
-                // return undefined;
-            case ModelPackName.P_STG21:
-                return TexturePackName.T_STG21;
-            case ModelPackName.P_STG22:
-                return TexturePackName.T_STG22;
-            case ModelPackName.P_STG3C:
-                return TexturePackName.T_STG3C;
-            case ModelPackName.P_STG30:
-                return TexturePackName.T_STG30;
-            case ModelPackName.P_STG31:
-                return TexturePackName.T_STG31;
-            case ModelPackName.P_STG32:
-                return TexturePackName.T_STG32;
-            case ModelPackName.P_FANG:
-                return TexturePackName.T_FANG;
-            case ModelPackName.P_ADV:
-                return TexturePackName.T_ADV;
-            case ModelPackName.P_MINI_C:
-                return TexturePackName.T_MINI_C;
-
-        default:
-                return undefined;
-        }
+        this.isStage = file.name.startsWith("P_STG") && !file.name.endsWith("C.BIN");
     }
 
     protected override async _init(): Promise<void> {
@@ -106,25 +58,5 @@ export class ModelPack extends AssetPack {
 
     public getModel(id: number): Model | undefined {
         return this.models[id];
-    }
-
-    public getTexturePackName(type: TexturePackType): TexturePackName | undefined {
-        // switch (type) {
-        //     case TexturePackIdType.Common:
-        //         return TextureFileName.T_COMMON;
-        //     case 6: {
-        //         let name = this._fileHandle.name.substring(0, this._fileHandle.name.length - 5); // .BIN
-        //         name += '';
-        //         break;
-        //     }
-        //     default:
-        //         break;
-        // }
-        if (type === TexturePackType.Common) {
-            return TexturePackName.T_COMMON;
-        } else {
-
-            return this._getAssociatedTexturePack();
-        }
     }
 }

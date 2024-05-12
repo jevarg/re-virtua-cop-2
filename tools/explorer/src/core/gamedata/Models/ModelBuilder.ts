@@ -10,7 +10,8 @@ export class ModelBuilder {
     private static readonly _bytesPerMaterial = 10; // 10 bytes per face material
 
     public static build(id: number, parent: ModelPack, buffer: ArrayBufferLike): Model | undefined {
-        let view = new DataView(buffer, id * this.headerByteSize);
+        const modelHeaderOffset = id * this.headerByteSize;
+        let view = new DataView(buffer, modelHeaderOffset);
 
         const verticesOffset = view.getUint32(0, true);
         if (!verticesOffset) {
@@ -26,7 +27,7 @@ export class ModelBuilder {
         const depth = (flags & 0xf0) >> 4; // High nibble
         const unk = (flags & 0x0f); // Low nibble
 
-        view = new DataView(buffer);
+        view = new DataView(buffer); // Reset model pack offset
 
         const vertices: Vec3[] = [];
         for (let i = 0; i < verticesCount; i++) {
@@ -67,6 +68,6 @@ export class ModelBuilder {
             ));
         }
 
-        return new Model(id, parent, vertices, faces, depth, unk);
+        return new Model(id, modelHeaderOffset, parent, vertices, faces, depth, unk);
     }
 }

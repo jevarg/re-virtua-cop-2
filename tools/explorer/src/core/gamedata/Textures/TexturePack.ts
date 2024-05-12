@@ -70,9 +70,7 @@ export class TexturePack extends AssetPack {
         this.tileMap = new TileMap(this.textures);
     }
 
-    public getTexture(id: number, page: number): Texture {
-        // const n = (page - this.pageOffset);
-        // const i = id + (256 * n) - ((n + 1) * this.pageSize);
+    public getTexture(id: number): Texture {
         const i = id;
         const texture = this.textures[i];
         if (!texture) {

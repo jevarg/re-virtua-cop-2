@@ -13,7 +13,6 @@ function SelectGameDir(props: ButtonProps) {
 }
 
 function App() {
-  // const mainCtx = useContext(MainContext);
   const [isInitialized, setIsInitialized] = useState(false);
 
   const loadGameData = useCallback(async () => {
