@@ -118,7 +118,7 @@ export class ModelMeshBuilder {
 
     private static _createColorMaterial(face: Face, scene: Scene) {
         const material = new StandardMaterial('colorMaterial', scene);
-        material.emissiveColor = Color3.Red();
+        material.emissiveColor = Color3.FromArray(face.material.color || []);
 
         return material;
     }

@@ -50,7 +50,8 @@ export class ModelBuilder {
                 view.getUint8(materialOffset + 1),
                 view.getUint8(materialOffset + 2),
                 view.getUint8(materialOffset + 3),
-                view.getUint8(materialOffset + 5)
+                view.getUint8(materialOffset + 5),
+                view.getUint16(materialOffset + 6, true),
             );
 
             faces.push(new Face(

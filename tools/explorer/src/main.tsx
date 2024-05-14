@@ -1,5 +1,6 @@
 import '@babylonjs/loaders/OBJ/objFileLoader';
 import '@babylonjs/core/Loading/loadingScreen';
+import '@babylonjs/core/Culling/ray';
 
 import './core/extensions';
 

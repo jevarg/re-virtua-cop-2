@@ -43,13 +43,28 @@ export class FaceMaterial {
 
     public readonly textureId: number;
     public readonly texturePackId: number;
+    public readonly paletteId?: number;
+    public readonly color?: number[];
+    public readonly colorData: number;
 
-    constructor(mFlags: number, tFlags: number, textureId: number, texturePackId: number, rFlags: number) {
+    constructor(mFlags: number, tFlags: number, textureId: number, texturePackId: number, rFlags: number, colorData: number) {
         this._materialFlags = mFlags;
         this._textureFlags = tFlags;
         this.textureId = textureId;
         this.texturePackId = texturePackId;
         this._renderFlags = rFlags;
+        this.colorData = colorData;
+
+        if (this.hasMaterialFlag(MaterialFlag.Texture)) {
+            this.paletteId = colorData;
+        } else {
+            // 15bit encoded color
+            const r = (colorData & 0b11111) / 31;
+            const g = ((colorData >> 5) & 0b11111) / 31;
+            const b = ((colorData >> 10) & 0b11111) / 31;
+
+            this.color = [r, g, b];
+        }
     }
 
     public hasMaterialFlag(flag: MaterialFlag) {

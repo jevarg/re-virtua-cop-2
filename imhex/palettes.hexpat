@@ -5,5 +5,8 @@ struct Color {
     u8 r, g, b, x;
 } [[color(std::format("{:02X}{:02X}{:02X}", r, g, b))]];
 
+struct Palette {
+    Color colors[64 / 4];
+};
 
-Color colors[while(!std::mem::eof())] @ 0x00;
+Palette palettes[while(!std::mem::eof())] @ 0x00;
