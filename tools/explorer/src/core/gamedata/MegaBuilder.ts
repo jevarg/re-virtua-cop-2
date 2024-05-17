@@ -1,10 +1,8 @@
+import { ModelPack, ModelPackName, Palette, TextureInfo, TexturePack, TexturePackName } from '@VCRE/core/gamedata';
 import { FileSystemDirectoryHandle } from 'native-file-system-adapter';
-import { TexturePackName, TexturePack } from './Textures/TexturePack';
-import { ExeFile } from './ExeFile';
-import { Palette } from './Textures/PaletteFile';
-import { TextureInfo } from './Textures/TextureInfo';
+
 import { AssetType } from './AssetPack';
-import { ModelPackName, ModelPack } from './Models/ModelPack';
+import { ExeFile } from './ExeFile';
 
 const texturesListAddr: number = ExeFile.toRawAddr(0x00458FD0);
 const textureListItemByteSize: number = 24;
@@ -12,6 +10,9 @@ const textureListItemByteSize: number = 24;
 export type AssetsMap = Record<AssetType.Texture, Map<TexturePackName, TexturePack>>
                         & Record<AssetType.Model, Map<ModelPackName, ModelPack>>
 
+/**
+ * TODO: Please rename and refactor me!
+ */
 export class MegaBuilder {
     private _exeFile: ExeFile;
 

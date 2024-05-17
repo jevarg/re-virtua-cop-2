@@ -1,17 +1,17 @@
-import { Face, Model } from '../../../core/gamedata/Models/Model';
-import { ModelMeshBuilder } from './ModelMeshBuilder';
-
-import { Scene } from '@babylonjs/core/scene';
-import { Engine } from '@babylonjs/core/Engines/engine';
-import { Color3, Color4, Vector3 } from '@babylonjs/core/Maths';
-import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
-import { Mesh } from '@babylonjs/core/Meshes/mesh';
-import { IPointerEvent } from '@babylonjs/core/Events/deviceInputEvents';
-import { PickingInfo } from '@babylonjs/core/Collisions/pickingInfo';
 import { StandardMaterial } from '@babylonjs/core';
-import { Control } from '@babylonjs/gui/2D/controls/control';
+import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
+import { PickingInfo } from '@babylonjs/core/Collisions/pickingInfo';
+import { Engine } from '@babylonjs/core/Engines/engine';
+import { IPointerEvent } from '@babylonjs/core/Events/deviceInputEvents';
+import { Color3, Color4, Vector3 } from '@babylonjs/core/Maths';
+import { Mesh } from '@babylonjs/core/Meshes/mesh';
+import { Scene } from '@babylonjs/core/scene';
 import { AdvancedDynamicTexture } from '@babylonjs/gui/2D/advancedDynamicTexture';
+import { Control } from '@babylonjs/gui/2D/controls/control';
 import { TextBlock } from '@babylonjs/gui/2D/controls/textBlock';
+import { Face, Model } from '@VCRE/core/gamedata';
+
+import { ModelMeshBuilder } from './ModelMeshBuilder';
 
 export type FaceClickedFunction = (face: Face) => void;
 
@@ -113,7 +113,7 @@ export class Model3DView {
         if (material.emissiveColor.r === 0) {
             material.emissiveColor = new Color3(0.3, 0.3, 0.3);
         } else {
-            material.emissiveColor = Color3.BlackReadOnly;
+            material.emissiveColor = Color3.Black();
         }
     }
 

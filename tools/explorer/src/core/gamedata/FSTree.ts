@@ -1,4 +1,3 @@
-
 export enum TreeNodeType {
     Directory = 'directory',
     File = 'file',

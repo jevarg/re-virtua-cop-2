@@ -1,14 +1,12 @@
-import { useCallback, useMemo, useState } from 'react';
-import { ModelPack } from '../../../core/gamedata/Models/ModelPack';
-
 import './ModelPackViewer.css';
 
-// import { GLTF2Export } from 'babylonjs-serializers';
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { Button, Grid, Modal, Table } from '@geist-ui/core';
+import { Grid, Modal, Table, Text } from '@geist-ui/core';
 import X from '@geist-ui/icons/x';
-import { ModelViewer } from '../model/ModelViewer';
-import { StaticModelViewer, StaticModelViewerProps } from '../model/StaticModelViewer';
+import { Button, ModalAction } from '@VCRE/components/GeistFix';
+import { ModelViewer, StaticModelViewer, StaticModelViewerProps } from '@VCRE/components/viewers';
+import { ModelPack } from '@VCRE/core/gamedata';
+import { useCallback, useMemo, useState } from 'react';
 
 export type ModelPackViewerProps = {
     modelPack: ModelPack;
@@ -70,6 +68,7 @@ export function ModelPackViewer({ modelPack }: ModelPackViewerProps) {
     }, []);
 
     return <>
+        <Text h3>{modelPack.name}</Text>
         <Table data={models} onCell={onCellClicked}>
             <Table.Column prop="id" label="id" />
             <Table.Column prop="offset" label="offset" />
@@ -79,12 +78,11 @@ export function ModelPackViewer({ modelPack }: ModelPackViewerProps) {
             <Table.Column prop="depth" label="depth" />
             <Table.Column prop="unk" label="unknown" />
         </Table>
-        <Modal width={"80%"} visible={selectedModelId !== undefined} disableBackdropClick onClose={closeModal}>
+        <Modal width={'80%'} visible={selectedModelId !== undefined} disableBackdropClick onClose={closeModal}>
             <Modal.Title>
                 <Grid.Container justify='flex-end'>
                     <Grid>
                         <Button
-                            placeholder=""
                             className='modal-close'
                             icon={<X />}
                             auto
@@ -98,7 +96,7 @@ export function ModelPackViewer({ modelPack }: ModelPackViewerProps) {
             <Modal.Content>
                 <ModelViewer model={modelPack.getModel(selectedModelId!)!} />
             </Modal.Content>
-            <Modal.Action passive placeholder="" onClick={e => e.close()}>Close</Modal.Action>
+            <ModalAction passive onClick={e => e.close()}>Close</ModalAction>
             {/* <Modal.Action placeholder="" onClick={GLTF2Export.GLBAsync()}>Close</Modal.Action> */}
         </Modal>
     </>;

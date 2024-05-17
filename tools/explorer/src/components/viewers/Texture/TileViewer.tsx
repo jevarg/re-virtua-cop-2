@@ -1,11 +1,8 @@
-import { Card, Divider, Text } from '@geist-ui/core';
-import { Tile } from '../../core/gamedata/Textures/TileMap';
 import './TileViewer.css';
-import { useContext, useEffect, useRef } from 'react';
-import { MainContext } from '../../contexts/MainContext';
-import { AssetType } from '../../core/gamedata/AssetPack';
-import { TexturePackName } from '../../core/gamedata/Textures/TexturePack';
-import { GameData } from '../../core/gamedata/GameData';
+
+import { Card, Divider, Text } from '@geist-ui/core';
+import { AssetType, GameData, TexturePackName, Tile} from '@VCRE/core/gamedata';
+import { useEffect, useRef } from 'react';
 
 export type TileViewerProps = {
     textureFileName: TexturePackName;
@@ -32,10 +29,10 @@ function TileViewerCard({ children }: React.PropsWithChildren) {
 }
 
 export function TileViewer({ textureFileName, tile }: TileViewerProps) {
-    const gameData = GameData.get();
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
+        const gameData = GameData.get();
         if (!canvasRef?.current || !tile || !gameData.assets) {
             console.error('err');
             return;

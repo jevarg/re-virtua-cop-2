@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
 import './TextureViewer.css';
-import Konva from 'konva';
-import { TexturePackName, TexturePack } from '../../core/gamedata/Textures/TexturePack';
-import { Tile } from '../../core/gamedata/Textures/TileMap';
+
 import { Card, Grid } from '@geist-ui/core';
+import { TexturePack, TexturePackName, Tile } from '@VCRE/core/gamedata';
+import Konva from 'konva';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import { TileViewer } from './TileViewer';
 
 export interface TextureViewerProps {

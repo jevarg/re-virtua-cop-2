@@ -1,4 +1,4 @@
-import { GameFile, GameFileType } from '../GameFile';
+import { GameFile, GameFileType } from '@VCRE/core/gamedata';
 
 export enum PaletteFileName {
     L_COMMON = 'L_COMMON.BIN',

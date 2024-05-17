@@ -1,4 +1,5 @@
-import { GameFileType } from '../GameFile';
+import { GameFileType } from '@VCRE/core/gamedata';
+
 import { TextureInfo } from './TextureInfo';
 
 export class Texture {

@@ -1,10 +1,11 @@
+import { TextureNotFoundError } from '@VCRE/core/errors';
+import { AssetPack, AssetType } from '@VCRE/core/gamedata';
 import { FileSystemFileHandle } from 'native-file-system-adapter';
-import { AssetType, AssetPack } from '../AssetPack';
+
 import { Palette } from './PaletteFile';
-import { TextureFlag, TextureInfo } from './TextureInfo';
 import { Texture } from './Texture';
+import { TextureFlag, TextureInfo } from './TextureInfo';
 import { TileMap } from './TileMap';
-import { TextureNotFoundError } from '../../errors/TextureNotFoundError';
 
 export enum TexturePackName {
     T_COMMON = 'T_COMMON.BIN',

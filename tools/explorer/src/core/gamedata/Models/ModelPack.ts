@@ -1,5 +1,6 @@
+import { AssetPack, AssetType } from '@VCRE/core/gamedata';
 import { FileSystemFileHandle } from 'native-file-system-adapter';
-import { AssetType, AssetPack } from '../AssetPack';
+
 import { Model } from './Model';
 import { ModelBuilder } from './ModelBuilder';
 
@@ -39,7 +40,7 @@ export class ModelPack extends AssetPack {
     constructor(file: FileSystemFileHandle) {
         super(file);
 
-        this.isStage = file.name.startsWith("P_STG") && !file.name.endsWith("C.BIN");
+        this.isStage = file.name.startsWith('P_STG') && !file.name.endsWith('C.BIN');
     }
 
     protected override async _init(): Promise<void> {

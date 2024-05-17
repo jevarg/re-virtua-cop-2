@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Model } from '../../../core/gamedata/Models/Model';
-import { isElementInViewport } from '../../utils';
-import { Model3DView } from './Model3DView';
 import { Engine } from '@babylonjs/core';
 import { Loading } from '@geist-ui/core';
+import { isElementInViewport } from '@VCRE/components/utils';
+import { Model3DView } from '@VCRE/core/3d';
+import { Model } from '@VCRE/core/gamedata';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type StaticModelViewerProps = {
     engine: Engine;
@@ -15,6 +15,7 @@ export function StaticModelViewer({ engine, model }: StaticModelViewerProps) {
     const [isLoaded, setIsLoaded] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
 
+    // This component will only load the model if it is visible by the user
     const onVisibilityChanged = useCallback(() => {
         if (!canvasRef.current) {
             return;

@@ -19,10 +19,6 @@ export type ModelFileType = {
 
 export type AssetFileType = TextureFileType | ModelFileType;
 
-export enum AssetPackType {
-
-}
-
 export abstract class AssetPack extends GameFile {
     public readonly fileType: GameFileType = GameFileType.PackedAsset;
     public abstract readonly assetType: AssetType;

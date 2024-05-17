@@ -1,4 +1,5 @@
-import { Vec3 } from '../../types/Vec3';
+import { Vec3 } from '@VCRE/core/types';
+
 import { Face, FaceMaterial, Model } from './Model';
 import { ModelPack } from './ModelPack';
 

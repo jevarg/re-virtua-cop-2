@@ -1,11 +1,11 @@
-import { FileSystemDirectoryHandle } from 'native-file-system-adapter';
-import { AssetsMap, MegaBuilder } from './MegaBuilder';
+import { FileSystemDirectoryHandle, showDirectoryPicker } from 'native-file-system-adapter';
+
+import { AssetType } from './AssetPack';
 import { ExeFile } from './ExeFile';
 import { TreeNode, TreeNodeType } from './FSTree';
-import { AssetType } from './AssetPack';
-import { showDirectoryPicker } from 'native-file-system-adapter';
+import { AssetsMap, MegaBuilder } from './MegaBuilder';
 
-enum KnownEntries {
+enum KnownDiskEntries {
     ExeFile = 'PPJ2DD.EXE',
     BinDir = 'BIN'
 }
@@ -50,9 +50,9 @@ export class GameData {
         let binDir: FileSystemDirectoryHandle | undefined;
 
         for await (const entry of dir.values()) {
-            if (entry.kind === 'directory' && entry.name === KnownEntries.BinDir) {
+            if (entry.kind === 'directory' && entry.name === KnownDiskEntries.BinDir) {
                 binDir = entry as FileSystemDirectoryHandle;
-            } else if (entry.kind === 'file' && entry.name === KnownEntries.ExeFile) {
+            } else if (entry.kind === 'file' && entry.name === KnownDiskEntries.ExeFile) {
                 const fileHnd = await dir.getFileHandle(entry.name);
                 this._builder = new MegaBuilder(await ExeFile.make(fileHnd));
             }
@@ -81,7 +81,6 @@ export class GameData {
                 const childNode: TreeNode = {
                     type: TreeNodeType.File,
                     name: assetFileType,
-                    // extra: `${texturesFile.textures.length} texture(s)`,
                 };
 
                 node.children.push(childNode);

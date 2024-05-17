@@ -1,7 +1,6 @@
-import { TileNotFoundError } from '../../errors/TileNotFoundError';
-import { Rect } from '../../types/Rect';
-import { Size } from '../../types/Size';
-import { Vec2 } from '../../types/Vec2';
+import { TileNotFoundError } from '@VCRE/core/errors';
+import { Rect, Size, Vec2 } from '@VCRE/core/types';
+
 import { Texture } from './Texture';
 import { TextureFlag } from './TextureInfo';
 

@@ -1,10 +1,9 @@
-import { useEffect, useRef } from 'react';
-
 import './ModelViewer.css';
 
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { Model3DView } from './Model3DView';
-import { Model } from '../../../core/gamedata/Models/Model';
+import { Model3DView } from '@VCRE/core/3d';
+import { Model } from '@VCRE/core/gamedata';
+import { useEffect, useRef } from 'react';
 
 export type ModelViewerProps = {
     model: Model;

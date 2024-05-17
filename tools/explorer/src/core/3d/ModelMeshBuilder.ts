@@ -1,19 +1,12 @@
-import { Mesh } from '@babylonjs/core/Meshes/mesh';
-import { Scene } from '@babylonjs/core/scene';
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { RawTexture } from '@babylonjs/core/Materials/Textures/rawTexture';
 import { Texture as BabylonTexture } from '@babylonjs/core/Materials/Textures/texture';
-import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
-import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
 import { Color3 } from '@babylonjs/core/Maths/math.color';
-
-import { Face, MaterialFlag, Model, RenderFlag } from '../../../core/gamedata/Models/Model';
-import { Texture } from '../../../core/gamedata/Textures/Texture';
-import { GameData } from '../../../core/gamedata/GameData';
-import { AssetType } from '../../../core/gamedata/AssetPack';
-import { Rect } from '../../../core/types/Rect';
-import { TexturePack, TexturePackName } from '../../../core/gamedata/Textures/TexturePack';
-import { TextureFlag } from '../../../core/gamedata/Textures/TextureInfo';
-import { MeshBuilder } from '@babylonjs/core';
+import { Mesh } from '@babylonjs/core/Meshes/mesh';
+import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
+import { Scene } from '@babylonjs/core/scene';
+import { AssetType, Face, GameData, MaterialFlag, Model, RenderFlag, Texture, TextureFlag, TexturePack } from '@VCRE/core/gamedata';
+import { Rect } from '@VCRE/core/types';
 
 export class ModelMeshBuilder {
     private static _findTexturePack(model: Model, packId: number) {
@@ -50,8 +43,7 @@ export class ModelMeshBuilder {
             console.log(`n2: ${n2}`);
 
             const i = face.material.textureId + (256 * n) - ((n2) * texturePack.pageSize);
-
-            texture = texturePack.getTexture(i, face.material.texturePackId);
+            texture = texturePack.getTexture(i);
             // texture = texturePack.getTexture(face.material.textureId, face.material.texturePackId);
         } catch (e) {
             console.warn(model, face, e);

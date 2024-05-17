@@ -1,12 +1,12 @@
-import { Scene } from '@babylonjs/core/scene';
-import { Engine } from '@babylonjs/core/Engines/engine';
+import { IPointerEvent, Mesh, PickingInfo } from '@babylonjs/core';
 import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera';
+import { Engine } from '@babylonjs/core/Engines/engine';
 import { Color3 } from '@babylonjs/core/Maths/math.color';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
-import { ModelPack } from '../../../core/gamedata/Models/ModelPack';
-import { ModelMeshBuilder } from '../model/ModelMeshBuilder';
-import { IPointerEvent, Mesh, PickingInfo } from '@babylonjs/core';
-import { Model } from '../../../core/gamedata/Models/Model';
+import { Scene } from '@babylonjs/core/scene';
+import { Model, ModelPack } from '@VCRE/core/gamedata';
+
+import { ModelMeshBuilder } from './ModelMeshBuilder';
 
 export class Stage3DView {
     public readonly engine: Engine;

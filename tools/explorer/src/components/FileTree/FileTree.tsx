@@ -1,23 +1,15 @@
 import { Tree } from '@geist-ui/core';
-import { useCallback, useMemo } from 'react';
 import { TreeFile } from '@geist-ui/core/esm/tree';
-import { TreeNode, TreeNodeType } from '../../core/gamedata/FSTree';
-import { TexturePackName } from '../../core/gamedata/Textures/TexturePack';
-import { Texture } from '../../core/gamedata/Textures/Texture';
-import { AssetType, AssetPack } from '../../core/gamedata/AssetPack';
-import { ModelPackName } from '../../core/gamedata/Models/ModelPack';
-import { GameData } from '../../core/gamedata/GameData';
+import { AssetName, AssetType, GameData, Texture, TreeNode, TreeNodeType } from '@VCRE/core/gamedata';
+import { useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export type ClickedTexture = {
     texture: Texture
 }
 
-export interface FileTreeProps {
-    onClick: (item: AssetPack) => void;
-}
-
-export function FileTree({ onClick }: FileTreeProps) {
-    const gameData = GameData.get();
+export function FileTree() {
+    const navigate = useNavigate();
 
     const tree = useMemo(() => {
         const buildTree = (nodes: TreeNode[]) => {
@@ -42,33 +34,22 @@ export function FileTree({ onClick }: FileTreeProps) {
             return tree;
         };
 
-        const list = gameData.getFileStructure();
-
+        const list = GameData.get().getFileStructure();
         return buildTree(list);
     }, []);
 
     const onTreeClicked = useCallback((path: string) => {
-        if (!gameData.assets) {
-            return;
-        }
-
         const strings = path.split('/');
         const assetType = strings[0] as AssetType;
-        const assetFileName = strings[1] as TexturePackName | ModelPackName;
+        const assetFileName = strings[1] as AssetName;
 
         if (!assetType || !assetFileName) {
             console.warn('Invalid file was clicked:', path);
             return;
         }
 
-        const asset = gameData.assets[assetType].get(assetFileName as never);
-        if (!asset) {
-            console.warn(`Unable to find ${assetFileName} in game data`);
-            return;
-        }
-
-        onClick(asset);
-    }, [onClick]);
+        navigate(`/${assetType}/${assetFileName}`);
+    }, [navigate]);
 
 
     return (

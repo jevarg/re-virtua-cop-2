@@ -1,10 +1,9 @@
-import { useEffect, useRef } from 'react';
-import { ModelPack } from '../../../core/gamedata/Models/ModelPack';
-
 import './StageViewer.css';
 
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { Stage3DView } from './Stage3DView';
+import { Stage3DView } from '@VCRE/core/3d';
+import { ModelPack } from '@VCRE/core/gamedata';
+import { useEffect, useRef } from 'react';
 
 export type StageViewerProps = {
     modelPack: ModelPack;
