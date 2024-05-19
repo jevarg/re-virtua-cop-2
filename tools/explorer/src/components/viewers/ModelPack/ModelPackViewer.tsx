@@ -1,7 +1,7 @@
 import './ModelPackViewer.css';
 
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { Grid, Modal, Spacer, Table, Text } from '@geist-ui/core';
+import { Grid, Keyboard, Modal, Spacer, Table, Text } from '@geist-ui/core';
 import X from '@geist-ui/icons/x';
 import { Button, ModalAction } from '@VCRE/components/GeistFix';
 import { ModelViewer, StaticModelViewer, StaticModelViewerProps } from '@VCRE/components/viewers';
@@ -86,13 +86,13 @@ export function ModelPackViewer({ modelPack }: ModelPackViewerProps) {
             </Grid>
         </Grid.Container>
 
-        <Modal width={'80%'} visible={selectedModelId !== undefined} disableBackdropClick onClose={closeModal}>
+        <Modal width={3} className='modal-preview' visible={selectedModelId !== undefined} disableBackdropClick onClose={closeModal}>
             <Modal.Title>
                 <Grid.Container justify='flex-end'>
                     <Grid>
                         <Button
                             className='modal-close'
-                            icon={<X />}
+                            icon={<Keyboard>Esc</Keyboard>}
                             auto
                             scale={1}
                             px={0.6}
@@ -104,7 +104,15 @@ export function ModelPackViewer({ modelPack }: ModelPackViewerProps) {
             <Modal.Content>
                 <ModelViewer model={modelPack.getModel(selectedModelId!)!} />
             </Modal.Content>
-            <ModalAction passive onClick={e => e.close()}>Close</ModalAction>
+            <Modal.Action
+                placeholder=''
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+                passive
+                onClick={e => e.close()}
+            >
+                Close
+            </Modal.Action>
             {/* <Modal.Action placeholder="" onClick={GLTF2Export.GLBAsync()}>Close</Modal.Action> */}
         </Modal>
     </>;
