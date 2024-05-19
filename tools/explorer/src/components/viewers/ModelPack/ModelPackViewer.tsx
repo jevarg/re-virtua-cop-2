@@ -1,9 +1,9 @@
 import './ModelPackViewer.css';
 
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { Grid, Keyboard, Modal, Spacer, Table, Text } from '@geist-ui/core';
-import X from '@geist-ui/icons/x';
-import { Button, ModalAction } from '@VCRE/components/GeistFix';
+import { GLTF2Export } from '@babylonjs/serializers/glTF';
+import { Grid, Keyboard, Modal, Table, Text } from '@geist-ui/core';
+import { Button } from '@VCRE/components/GeistFix';
 import { ModelViewer, StaticModelViewer, StaticModelViewerProps } from '@VCRE/components/viewers';
 import { ModelPack } from '@VCRE/core/gamedata';
 import { useCallback, useMemo, useState } from 'react';
@@ -113,7 +113,6 @@ export function ModelPackViewer({ modelPack }: ModelPackViewerProps) {
             >
                 Close
             </Modal.Action>
-            {/* <Modal.Action placeholder="" onClick={GLTF2Export.GLBAsync()}>Close</Modal.Action> */}
         </Modal>
     </>;
 }

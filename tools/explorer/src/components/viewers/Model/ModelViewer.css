@@ -1,6 +1,17 @@
 .model-viewer {
+    position: relative;
+}
+
+.model-viewer canvas {
     aspect-ratio: 4/3;
     width: 100%;
     pointer-events: visible;
     position: relative;
+}
+
+.model-viewer .download-button {
+    position: absolute !important;
+    z-index: 9999;
+    top: 8px;
+    right: 8px;
 }
