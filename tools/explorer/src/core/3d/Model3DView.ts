@@ -1,4 +1,4 @@
-import { HighlightLayer, Nullable, StandardMaterial } from '@babylonjs/core';
+import { Nullable, StandardMaterial } from '@babylonjs/core';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { PickingInfo } from '@babylonjs/core/Collisions/pickingInfo';
 import { Engine } from '@babylonjs/core/Engines/engine';
@@ -74,6 +74,7 @@ export class Model3DView {
         );
 
         this.camera.minZ = 0;
+        this.camera.lowerRadiusLimit = .15;
         if (this._options.controllableCamera) {
             this.camera.wheelPrecision = 100;
             this.camera.attachControl(undefined, false);
