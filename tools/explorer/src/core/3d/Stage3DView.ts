@@ -33,6 +33,7 @@ export class Stage3DView {
         this.camera.angularSensibility = 500;
         this.camera.target = new Vector3(0, 0, 0);
         this.camera.minZ = 0;
+        this.camera.maxZ = 100;
         this.camera.speed = 10;
         this.camera.attachControl(canvas, true);
     }

@@ -27,12 +27,9 @@ export function StageViewer({ modelPack }: StageViewerProps) {
         // const model3DView = new Model3DView(engine, canvasRef.current);
         // model3DView.setModel(model);
 
-        stageViewer.loadStage(modelPack);
-        // stageViewer.loadStage(modelPack, 1060, 1076);
-        // stageViewer.loadStage(modelPack, 40, 44);
-        // stageViewer.loadStage(modelPack, 23, 24);
-        // stageViewer.loadStage(modelPack, 561, 562);
-        // stageViewer.loadStage(modelPack, 560, 566);
+        // stageViewer.loadStage(modelPack);
+        stageViewer.loadStage(modelPack, 289, 290);
+        stageViewer.loadStage(modelPack, 291, 292);
         console.info(`Active textures: ${stageViewer.scene.textures.length}`);
 
 

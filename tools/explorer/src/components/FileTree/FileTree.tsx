@@ -1,8 +1,8 @@
 import { Tree } from '@geist-ui/core';
 import { TreeFile } from '@geist-ui/core/esm/tree';
 import { AssetName, AssetType, GameData, Texture, TreeNode, TreeNodeType } from '@VCRE/core/gamedata';
-import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export type ClickedTexture = {
     texture: Texture
@@ -10,6 +10,11 @@ export type ClickedTexture = {
 
 export function FileTree() {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        // TODO: Highlight active asset in tree
+    }, [location]);
 
     const tree = useMemo(() => {
         const buildTree = (nodes: TreeNode[]) => {

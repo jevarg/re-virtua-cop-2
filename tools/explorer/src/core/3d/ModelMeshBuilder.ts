@@ -1,3 +1,4 @@
+import { MeshBuilder } from '@babylonjs/core';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { RawTexture } from '@babylonjs/core/Materials/Textures/rawTexture';
 import { Texture as BabylonTexture } from '@babylonjs/core/Materials/Textures/texture';
@@ -28,19 +29,19 @@ export class ModelMeshBuilder {
         let texturePack: TexturePack;
         try {
             texturePack = this._findTexturePack(model, face.material.texturePackId);
-            console.log(`textureId: ${face.material.textureId}`);
-            console.log(`texturePackId: ${face.material.texturePackId}`);
-            console.log(`pack: ${texturePack.name}`);
-            console.log(`pageSize: ${texturePack.pageSize}`);
-            console.log(`pageOffset: ${texturePack.pageOffset}`);
-            console.log(' ');
+            // console.log(`textureId: ${face.material.textureId}`);
+            // console.log(`texturePackId: ${face.material.texturePackId}`);
+            // console.log(`pack: ${texturePack.name}`);
+            // console.log(`pageSize: ${texturePack.pageSize}`);
+            // console.log(`pageOffset: ${texturePack.pageOffset}`);
+            // console.log(' ');
 
             // const tid = (face.material.textureId * face.material.texturePackId);
 
             const n = (face.material.texturePackId - texturePack.pageOffset);
             const n2 = n > 0 ? n : n + 1;
 
-            console.log(`n2: ${n2}`);
+            // console.log(`n2: ${n2}`);
 
             const i = face.material.textureId + (256 * n) - ((n2) * texturePack.pageSize);
             texture = texturePack.getTexture(i);
@@ -49,7 +50,7 @@ export class ModelMeshBuilder {
             console.warn(model, face, e);
 
             const material = new StandardMaterial('fallbackMaterial', scene);
-            material.emissiveColor = Color3.Gray();
+            material.emissiveColor = Color3.Red();
 
             return material;
         }
@@ -70,9 +71,12 @@ export class ModelMeshBuilder {
         }
 
         const material = new StandardMaterial('texturedMaterial', scene);
-        material.emissiveTexture = rawTexture;
+        material.diffuseTexture = rawTexture;
+        material.emissiveColor = Color3.White();
+
         if (texture.info.hasFlag(TextureFlag.Alpha)) {
-            material.opacityTexture = rawTexture;
+            material.diffuseTexture.hasAlpha = true;
+            material.useAlphaFromDiffuseTexture = true;
         }
 
         return material;
@@ -81,6 +85,8 @@ export class ModelMeshBuilder {
     private static _createUVs(face: Face) {
         const uvRect = new Rect(0, 1, 1, 0);
         const uvs = Array<number>(8);
+
+        // X UVs
         if (face.material.hasMaterialFlag(MaterialFlag.InvertX)) {
             uvs[0] = uvRect.right;
             uvs[2] = uvRect.left;
@@ -93,6 +99,7 @@ export class ModelMeshBuilder {
             uvs[6] = uvRect.left;
         }
 
+        // Y UVs
         if (face.material.hasMaterialFlag(MaterialFlag.InvertY)) {
             uvs[1] = uvRect.bottom;
             uvs[3] = uvRect.bottom;
@@ -154,18 +161,25 @@ export class ModelMeshBuilder {
             let material: StandardMaterial;
             if (face.material.hasMaterialFlag(MaterialFlag.Texture)) {
                 material = this._createTexturedMaterial(model, face, scene, textures)!;
-                if (face.material.hasRenderFlag(RenderFlag.Transparent)) {
-                    material.alpha = 0.5; // TODO: Make it dithered like the game does
-                }
                 vertexData.uvs = this._createUVs(face);
             } else if (face.material.hasMaterialFlag(MaterialFlag.Color)) {
                 material = this._createColorMaterial(face, scene);
                 vertexData.uvs = new Array<number>(8);
+            } else {
+                material = new StandardMaterial('fallbackMaterial', scene);
+                material.emissiveColor = Color3.Red();
             }
 
+            if (face.material.hasRenderFlag(RenderFlag.Transparent)) {
+                material.alpha = 0.5; // TODO: Make it dithered like the game does
+            }
+
+            // if (!face.material.hasRenderFlag(RenderFlag.Backface)) {
+                // material.backFaceCulling = false;
+            // }
+
             const mesh = new Mesh(face.id.toString());
-            mesh.material = material!;
-            material!.useLogarithmicDepth = true;
+            mesh.material = material;
 
             // if (model.unk && mesh.material) {
                 // mesh.material.backFaceCulling = false;
@@ -188,6 +202,12 @@ export class ModelMeshBuilder {
 
         finalMesh.id = model.id.toString();
         finalMesh.name = `Model ${model.id}`;
+        if (model.depth) {
+            finalMesh.renderingGroupId = 0;
+        } else {
+            finalMesh.renderingGroupId = 1;
+        }
+        // finalMesh.alphaIndex = model.depth;
 
         // switch (model.depth) {
         //     case 12:
@@ -215,11 +235,12 @@ export class ModelMeshBuilder {
 
         // const lines = [];
         // for (let i = 0; i < positions.length; i++) {
-        //     const line = [ positions[i], positions[i].add(normals[i]) ];
+        //     const line = [ positions[i], positions[i].add(normals[i])];
         //     lines.push(line);
         // }
-        // const lineSystem = MeshBuilder.CreateLineSystem("ls", {lines: lines}, scene);
+        // const lineSystem = MeshBuilder.CreateLineSystem('ls', {lines: lines}, scene);
         // lineSystem.color = Color3.Green();
+        // lineSystem.renderingGroupId = 3;
 
         return finalMesh;
     }

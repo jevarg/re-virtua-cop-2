@@ -14,12 +14,13 @@ export function AssetViewer() {
             return <TextureViewer textureFile={asset as TexturePack} />;
 
         case AssetType.Model: {
-            return <ModelPackViewer modelPack={asset as ModelPack} />;
+            // return <ModelPackViewer modelPack={asset as ModelPack} />;
             const modelPack = asset as ModelPack;
             if (modelPack.isStage) {
                 return <StageViewer modelPack={modelPack} />;
             } else {
-                return <ModelViewer model={modelPack.models[3]} />;
+                return <ModelPackViewer modelPack={asset as ModelPack} />;
+                // return <ModelViewer model={modelPack.models[3]} />;
             }
         }
 

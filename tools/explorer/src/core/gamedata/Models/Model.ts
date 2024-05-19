@@ -35,6 +35,7 @@ export enum MaterialFlag {
 export enum RenderFlag {
     Transparent = 0x1,
     Unknown = 0x2,
+    Backface = 0x10,
 }
 
 const fiveBits = 0b11111;

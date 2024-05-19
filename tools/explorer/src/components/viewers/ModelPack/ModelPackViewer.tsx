@@ -1,7 +1,7 @@
 import './ModelPackViewer.css';
 
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { Grid, Modal, Table, Text } from '@geist-ui/core';
+import { Grid, Modal, Spacer, Table, Text } from '@geist-ui/core';
 import X from '@geist-ui/icons/x';
 import { Button, ModalAction } from '@VCRE/components/GeistFix';
 import { ModelViewer, StaticModelViewer, StaticModelViewerProps } from '@VCRE/components/viewers';
@@ -68,16 +68,24 @@ export function ModelPackViewer({ modelPack }: ModelPackViewerProps) {
     }, []);
 
     return <>
-        <Text h3>{modelPack.name}</Text>
-        <Table data={models} onCell={onCellClicked}>
-            <Table.Column prop="id" label="id" />
-            <Table.Column prop="offset" label="offset" />
-            <Table.Column prop="view" label="preview" className='table-preview-cell' />
-            <Table.Column prop="vertexCount" label="# vertices" />
-            <Table.Column prop="faceCount" label="# faces" />
-            <Table.Column prop="depth" label="depth" />
-            <Table.Column prop="unk" label="unknown" />
-        </Table>
+        <Grid.Container gap={2}>
+            <Grid xs={24} alignItems='center' direction='column'>
+                <Text h3 margin={0}>{modelPack.name}</Text>
+                <Text p small margin={0}>{modelPack.models.length} model(s)</Text>
+            </Grid>
+            <Grid xs={24} justify='center'>
+                <Table data={models} onCell={onCellClicked} className='model-pack-table'>
+                    <Table.Column prop="id" label="id" />
+                    <Table.Column prop="offset" label="offset" />
+                    <Table.Column prop="view" label="preview" className='table-preview-cell' />
+                    <Table.Column prop="vertexCount" label="# vertices" />
+                    <Table.Column prop="faceCount" label="# faces" />
+                    <Table.Column prop="depth" label="depth" />
+                    <Table.Column prop="unk" label="unknown" />
+                </Table>
+            </Grid>
+        </Grid.Container>
+
         <Modal width={'80%'} visible={selectedModelId !== undefined} disableBackdropClick onClose={closeModal}>
             <Modal.Title>
                 <Grid.Container justify='flex-end'>

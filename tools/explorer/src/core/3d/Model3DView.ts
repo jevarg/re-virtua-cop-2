@@ -1,4 +1,4 @@
-import { StandardMaterial } from '@babylonjs/core';
+import { HighlightLayer, Nullable, StandardMaterial } from '@babylonjs/core';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { PickingInfo } from '@babylonjs/core/Collisions/pickingInfo';
 import { Engine } from '@babylonjs/core/Engines/engine';
@@ -29,6 +29,11 @@ const defaultViewOptions: ViewOptions = {
     logClickedFace: false
 };
 
+type HighlightedSubMesh = {
+    subMeshId: number,
+    originalColor: Color3,
+};
+
 export class Model3DView {
     public static readonly cameraName = 'mainCamera';
 
@@ -39,7 +44,7 @@ export class Model3DView {
 
     private _model?: Model;
     private _modelMesh?: Mesh;
-    private _highlightedSubMeshId?: number;
+    private _highlightedSubMesh?: HighlightedSubMesh;
 
     private _fpsCounterIntervalId?: number;
     private _options: ViewOptions;
@@ -56,7 +61,7 @@ export class Model3DView {
         }
 
         if (this._options.logClickedFace) {
-            this.scene.onPointerDown = this._onPointerDown.bind(this);
+            this.scene.onPointerUp = this._onPointerUp.bind(this);
         }
 
         this.camera = new ArcRotateCamera(
@@ -103,52 +108,60 @@ export class Model3DView {
         }, 500);
     }
 
-    private _toggleFaceHighlight(subMeshId: number) {
+    private _toggleFaceHighlight(subMeshId: number, color: Color3) {
         const subMesh = this._modelMesh?.subMeshes[subMeshId];
         if (!subMesh) {
             return;
         }
 
         const material = subMesh.getMaterial() as StandardMaterial;
-        if (material.emissiveColor.r === 0) {
-            material.emissiveColor = new Color3(0.3, 0.3, 0.3);
-        } else {
-            material.emissiveColor = Color3.Black();
-        }
+        const prevColor = material.emissiveColor;
+        material.emissiveColor = color;
+
+        return prevColor;
     }
 
-    private _onPointerDown(_e: IPointerEvent, pickInfo: PickingInfo) {
-        if (!this._model) {
+    private _onPointerUp(_e: IPointerEvent, pickInfo: Nullable<PickingInfo>) {
+        if (!this._model || !pickInfo?.hit || pickInfo.subMeshId === -1) {
             return;
         }
 
-        if (pickInfo.hit && pickInfo.subMeshId !== -1) {
-            const face = this._model?.faces[pickInfo.subMeshId];
-            console.log(face);
-            if (!face) {
-                return;
-            }
-
-            this.onFaceClicked?.(face);
+        const face = this._model?.faces[pickInfo.subMeshId];
+        console.log(face);
+        if (!face) {
+            return;
         }
+
+        this.onFaceClicked?.(face);
     }
 
     private _onPointerMove(_e: IPointerEvent, pickInfo: PickingInfo) {
-        if (pickInfo.subMeshId === this._highlightedSubMeshId) {
+        if (!pickInfo.hit) {
+            // If no hit but something was highlighted
+            if (this._highlightedSubMesh) {
+                this._toggleFaceHighlight(this._highlightedSubMesh.subMeshId, this._highlightedSubMesh.originalColor);
+                this._highlightedSubMesh = undefined;
+            }
+
             return;
         }
 
-        if (pickInfo.hit) {
-            if (this._highlightedSubMeshId !== undefined) {
-                this._toggleFaceHighlight(this._highlightedSubMeshId);
-            }
-
-            this._toggleFaceHighlight(pickInfo.subMeshId);
-            this._highlightedSubMeshId = pickInfo.subMeshId;
-        } else if (this._highlightedSubMeshId) {
-            this._toggleFaceHighlight(this._highlightedSubMeshId);
-            this._highlightedSubMeshId = undefined;
+        // If hit the same submesh
+        if (pickInfo.subMeshId === this._highlightedSubMesh?.subMeshId) {
+            return;
         }
+
+        // If hit and something was highlighted
+        if (this._highlightedSubMesh) {
+            this._toggleFaceHighlight(this._highlightedSubMesh.subMeshId, this._highlightedSubMesh.originalColor);
+        }
+
+        // Highlight the new face
+        const prevColor = this._toggleFaceHighlight(pickInfo.subMeshId, Color3.Red());
+        this._highlightedSubMesh = {
+            subMeshId: pickInfo.subMeshId,
+            originalColor: prevColor || Color3.Black() // Black should never happen here,
+        };
     }
 
     public setModel(model: Model) {
