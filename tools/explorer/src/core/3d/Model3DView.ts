@@ -1,4 +1,4 @@
-import { Nullable, StandardMaterial } from '@babylonjs/core';
+import { HemisphericLight, Nullable, StandardMaterial } from '@babylonjs/core';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { PickingInfo } from '@babylonjs/core/Collisions/pickingInfo';
 import { Engine } from '@babylonjs/core/Engines/engine';
@@ -55,6 +55,8 @@ export class Model3DView {
 
         this.scene = new Scene(engine);
         this.scene.clearColor = new Color4(0.12, 0.12, 0.12, 1);
+
+        // const light = new HemisphericLight('defaultLight', Vector3.Up(), this.scene);
 
         if (this._options.highlightHoveredFace) {
             this.scene.onPointerMove = this._onPointerMove.bind(this);

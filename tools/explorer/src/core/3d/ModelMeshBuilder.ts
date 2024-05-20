@@ -116,7 +116,8 @@ export class ModelMeshBuilder {
 
     private static _createColorMaterial(face: Face, scene: Scene) {
         const material = new StandardMaterial('colorMaterial', scene);
-        material.emissiveColor = Color3.FromArray(face.material.color || []);
+        material.diffuseColor = Color3.FromArray(face.material.color?.toArray() || []);
+        material.emissiveColor = material.diffuseColor;
 
         return material;
     }
@@ -166,11 +167,13 @@ export class ModelMeshBuilder {
                 vertexData.uvs = new Array<number>(8);
             } else {
                 material = new StandardMaterial('fallbackMaterial', scene);
-                material.emissiveColor = Color3.Red();
+                material.emissiveColor = Color3.Red(); // Visual debug
             }
 
+            material.disableLighting = true;
+
             if (face.material.hasRenderFlag(RenderFlag.Transparent)) {
-                material.alpha = 0.5; // TODO: Make it dithered like the game does
+                material.alpha = 0.5;
             }
 
             // if (!face.material.hasRenderFlag(RenderFlag.Backface)) {
@@ -201,33 +204,14 @@ export class ModelMeshBuilder {
 
         finalMesh.id = model.id.toString();
         finalMesh.name = `Model ${model.id}`;
-        if (model.depth) {
+        if (model.depth & 0xf) {
             finalMesh.renderingGroupId = 0;
         } else {
             finalMesh.renderingGroupId = 1;
         }
+
+        // console.info((finalMesh.material as StandardMaterial));
         // finalMesh.alphaIndex = model.depth;
-
-        // switch (model.depth) {
-        //     case 12:
-        //         finalMesh.renderingGroupId = 0;
-        //         break;
-        //     // case 8:
-        //     //     finalMesh.renderingGroupId = 1;
-        //     //     break;
-        //     // case 4:
-        //     //     finalMesh.renderingGroupId = 2;
-        //     //     break;
-        //     default:
-        //         finalMesh.renderingGroupId = 1;
-        //         break;
-        // }
-
-        // if (model.depth & 0x4) {
-        //     finalMesh.renderingGroupId = 0;
-        // } else {
-        //     finalMesh.renderingGroupId = 1;
-        // }
 
         // const positions = finalMesh.getFacetLocalPositions();
         // const normals = finalMesh.getFacetLocalNormals();

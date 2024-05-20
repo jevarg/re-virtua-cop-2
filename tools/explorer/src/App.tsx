@@ -1,40 +1,9 @@
 import './App.css';
 
 import { Grid, Page } from '@geist-ui/core';
-import { Explorer } from '@VCRE/components';
-import { Button } from '@VCRE/components/GeistFix';
+import { Explorer, SelectGameDir } from '@VCRE/components';
 import { AssetViewer } from '@VCRE/components/viewers';
-import { GameData } from '@VCRE/core/gamedata';
-import { useCallback } from 'react';
-import { createBrowserRouter, LoaderFunctionArgs, redirect, RouterProvider, useNavigate } from 'react-router-dom';
-
-function SelectGameDir() {
-  const navigate = useNavigate();
-
-  const loadGameData = useCallback(async () => {
-    await GameData.init();
-    await GameData.get().build();
-
-    const queryParams = new URLSearchParams(location.search);
-    const redirectTo = queryParams.get('redirectTo') || '/';
-
-    navigate(redirectTo);
-  }, [navigate]);
-
-  return <Button onClick={loadGameData}>
-    Select game directory
-  </Button>;
-}
-
-SelectGameDir.loader = function(_args: LoaderFunctionArgs) {
-  if (!GameData.isInitialized) {
-    return null;
-  }
-
-  const queryParams = new URLSearchParams(location.search);
-  const redirectTo = queryParams.get('redirectTo') || '/';
-  return redirect(redirectTo);
-};
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 const router = createBrowserRouter([
   {
@@ -45,22 +14,7 @@ const router = createBrowserRouter([
   {
     path: '/',
     Component: Explorer,
-    loader: ({ request }) => {
-      if (!GameData.isInitialized) {
-        const url = new URL(request.url);
-
-        let destination = '/open';
-        if (url.pathname !== '/') {
-          const queryParams = new URLSearchParams();
-          queryParams.set('redirectTo', url.pathname);
-          destination += `?${queryParams}`;
-        }
-
-        return redirect(destination);
-      }
-
-      return null;
-    },
+    loader: Explorer.loader,
     children: [
       {
         path: '/:assetType/:assetName',
@@ -73,22 +27,21 @@ const router = createBrowserRouter([
 
 function App() {
   return <>
-    {/* <BrowserRouter> */}
-      <div className='header-wrapper'>
-        <header className='header'>
-          <Grid.Container justify='center'>
-            <Grid xs={18} alignItems='center'>
-              <img src='/header.png' className='header-img' />
-              <p>VCop2 re</p>
-            </Grid>
-          </Grid.Container>
-        </header>
-      </div>
-      <Page id='main-section'>
-        <Page.Content>
-          <RouterProvider router={router} />
-        </Page.Content>
-      </Page>
+    <div className='header-wrapper'>
+      <header className='header'>
+        <Grid.Container justify='center'>
+          <Grid xs={18} alignItems='center'>
+            <img src='/header.png' className='header-img' />
+            <p>VCop2 re</p>
+          </Grid>
+        </Grid.Container>
+      </header>
+    </div>
+    <Page id='main-section'>
+      <Page.Content>
+        <RouterProvider router={router} />
+      </Page.Content>
+    </Page>
   </>;
 }
 

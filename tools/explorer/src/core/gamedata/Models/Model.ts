@@ -1,5 +1,6 @@
 import { TexturePackName } from '@VCRE/core/gamedata';
 import { Vec3 } from '@VCRE/core/types';
+import { Color3 } from '@VCRE/core/types/Color';
 
 import { ModelPack, ModelPackName } from './ModelPack';
 
@@ -38,8 +39,6 @@ export enum RenderFlag {
     Backface = 0x10,
 }
 
-const fiveBits = 0b11111;
-
 export class FaceMaterial {
     private readonly _materialFlags: number;
     private readonly _renderFlags: number;
@@ -48,7 +47,7 @@ export class FaceMaterial {
     public readonly textureId: number;
     public readonly texturePackId: number;
     public readonly paletteId?: number;
-    public readonly color?: number[];
+    public readonly color?: Color3;
     public readonly colorData: number;
 
     constructor(mFlags: number, tFlags: number, textureId: number, texturePackId: number, rFlags: number, colorData: number) {
@@ -62,12 +61,7 @@ export class FaceMaterial {
         if (this.hasMaterialFlag(MaterialFlag.Texture)) {
             this.paletteId = colorData;
         } else {
-            // 15bit encoded color
-            const r = (colorData & fiveBits) / fiveBits;
-            const g = ((colorData >> 5) & fiveBits) / fiveBits;
-            const b = ((colorData >> 10) & fiveBits) / fiveBits;
-
-            this.color = [r, g, b];
+            this.color = Color3.fromBGR555(colorData);
         }
     }
 
