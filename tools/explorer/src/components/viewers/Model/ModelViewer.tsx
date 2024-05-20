@@ -3,25 +3,20 @@ import './ModelViewer.css';
 import { Scene } from '@babylonjs/core';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { GLTF2Export } from '@babylonjs/serializers';
-import { ButtonDropdown, ButtonDropdownItemProps, Spacer, useToasts } from '@geist-ui/core';
+import { ButtonDropdown, Spacer, useToasts } from '@geist-ui/core';
 import Download from '@geist-ui/icons/download';
-import { Button } from '@VCRE/components/GeistFix';
 import { Model3DView } from '@VCRE/core/3d';
 import { Model } from '@VCRE/core/gamedata';
-import { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 export type ModelViewerProps = {
     model: Model;
 }
 
-type DownloadButtonItemProps = {
-    format: string;
-};
-
-function DownloadFormat({ format } : DownloadButtonItemProps) {
-    return <>
-        <Download size={16} /><Spacer width={0.5} />{format}
-    </>;
+enum SupportedDownloadFormat {
+    GLB = 0,
+    GLTF,
+    OBJ
 }
 
 export function ModelViewer({ model }: ModelViewerProps) {
@@ -56,7 +51,7 @@ export function ModelViewer({ model }: ModelViewerProps) {
         };
     }, [model]);
 
-    const download = useCallback(async (format: string) => {
+    const exportModel = useCallback(async (format: SupportedDownloadFormat) => {
         if (!scene.current) {
             setToast({ text: 'Could not download model', type: 'error' });
             return;
@@ -64,12 +59,12 @@ export function ModelViewer({ model }: ModelViewerProps) {
 
         let promise;
         const filePrefix = `vc2-${model.parent.name.replace('.BIN', '')}-${model.id}`;
-        switch (format.toLowerCase()) {
-            case 'glb':
+        switch (format) {
+            case SupportedDownloadFormat.GLB:
                 promise = GLTF2Export.GLBAsync(scene.current, filePrefix);
                 break;
 
-            case 'gltf':
+            case SupportedDownloadFormat.GLTF:
                 promise = GLTF2Export.GLTFAsync(scene.current, filePrefix);
                 break;
 
@@ -86,13 +81,13 @@ export function ModelViewer({ model }: ModelViewerProps) {
         <div className='model-viewer'>
 
             <ButtonDropdown className='download-button' scale={2 / 3} auto>
-                <ButtonDropdown.Item main onClick={() => download('GLB')}>
+                <ButtonDropdown.Item main onClick={() => exportModel(SupportedDownloadFormat.GLB)}>
                     <Download size={16} />
                     <Spacer width={0.5} />
                     GLB
                 </ButtonDropdown.Item>
-                <ButtonDropdown.Item onClick={() => download('glTF')}>glTF</ButtonDropdown.Item>
-                <ButtonDropdown.Item onClick={() => download('OBJ')}>OBJ</ButtonDropdown.Item>
+                <ButtonDropdown.Item onClick={() => exportModel(SupportedDownloadFormat.GLTF)}>glTF</ButtonDropdown.Item>
+                <ButtonDropdown.Item onClick={() => exportModel(SupportedDownloadFormat.OBJ)}>OBJ</ButtonDropdown.Item>
             </ButtonDropdown>
 
             <canvas ref={canvasRef} />

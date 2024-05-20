@@ -1,4 +1,3 @@
-import { MeshBuilder } from '@babylonjs/core';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { RawTexture } from '@babylonjs/core/Materials/Textures/rawTexture';
 import { Texture as BabylonTexture } from '@babylonjs/core/Materials/Textures/texture';
