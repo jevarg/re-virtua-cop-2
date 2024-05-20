@@ -36,7 +36,7 @@ export enum MaterialFlag {
 export enum RenderFlag {
     Transparent = 0x1,
     Unknown = 0x2,
-    Backface = 0x10,
+    Unknown2 = 0x10,
 }
 
 export class FaceMaterial {

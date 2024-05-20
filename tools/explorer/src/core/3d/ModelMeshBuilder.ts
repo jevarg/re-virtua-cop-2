@@ -170,15 +170,12 @@ export class ModelMeshBuilder {
                 material.emissiveColor = Color3.Red(); // Visual debug
             }
 
-            material.disableLighting = true;
-
             if (face.material.hasRenderFlag(RenderFlag.Transparent)) {
                 material.alpha = 0.5;
             }
 
-            // if (!face.material.hasRenderFlag(RenderFlag.Backface)) {
-                // material.backFaceCulling = false;
-            // }
+            material.disableLighting = true;
+            material.backFaceCulling = false;
 
             const mesh = new Mesh(face.id.toString());
             mesh.material = material;
@@ -204,6 +201,8 @@ export class ModelMeshBuilder {
 
         finalMesh.id = model.id.toString();
         finalMesh.name = `Model ${model.id}`;
+
+        // Not sure about this...
         if (model.depth & 0xf) {
             finalMesh.renderingGroupId = 0;
         } else {

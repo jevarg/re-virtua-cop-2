@@ -11,9 +11,6 @@ export type StageViewerProps = {
 
 export function StageViewer({ modelPack }: StageViewerProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    // const model = useMemo(() => {
-    //     return models.getModel(25);
-    // }, [models]);
 
     useEffect(() => {
         if (!canvasRef.current || !modelPack) {
@@ -24,12 +21,10 @@ export function StageViewer({ modelPack }: StageViewerProps) {
         const stageViewer = new Stage3DView(engine, canvasRef.current);
         stageViewer.camera.position.fromArray(JSON.parse(sessionStorage.getItem('camPos') || '[0, 0, 0]'));
         stageViewer.camera.rotation.fromArray(JSON.parse(sessionStorage.getItem('camRot') || '[0, 0, 0]'));
-        // const model3DView = new Model3DView(engine, canvasRef.current);
-        // model3DView.setModel(model);
 
-        // stageViewer.loadStage(modelPack);
-        stageViewer.loadStage(modelPack, 289, 290);
-        stageViewer.loadStage(modelPack, 291, 292);
+        stageViewer.loadStage(modelPack);
+        // stageViewer.loadStage(modelPack, 289, 290);
+        // stageViewer.loadStage(modelPack, 291, 292);
         console.info(`Active textures: ${stageViewer.scene.textures.length}`);
 
 
@@ -44,6 +39,7 @@ export function StageViewer({ modelPack }: StageViewerProps) {
 
         return () => {
             clearInterval(intervalId);
+            // stageViewer
             // model3DView.destroy();
             engine.dispose();
 

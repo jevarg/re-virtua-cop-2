@@ -1,4 +1,4 @@
-import { HemisphericLight, Nullable, StandardMaterial } from '@babylonjs/core';
+import { Nullable, StandardMaterial } from '@babylonjs/core';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { PickingInfo } from '@babylonjs/core/Collisions/pickingInfo';
 import { Engine } from '@babylonjs/core/Engines/engine';
@@ -49,14 +49,27 @@ export class Model3DView {
     private _fpsCounterIntervalId?: number;
     private _options: ViewOptions;
 
+    public set backfaceCulling(enabled: boolean) {
+        if (!this._modelMesh) {
+            return;
+        }
+
+        for (const subMesh of this._modelMesh.subMeshes) {
+            const material = subMesh.getMaterial();
+            if (!material) {
+                continue;
+            }
+
+            material.backFaceCulling = enabled;
+        }
+    }
+
     constructor(engine: Engine, options: ViewOptions = defaultViewOptions) {
         this._options = options;
         this.engine = engine;
 
         this.scene = new Scene(engine);
         this.scene.clearColor = new Color4(0.12, 0.12, 0.12, 1);
-
-        // const light = new HemisphericLight('defaultLight', Vector3.Up(), this.scene);
 
         if (this._options.highlightHoveredFace) {
             this.scene.onPointerMove = this._onPointerMove.bind(this);

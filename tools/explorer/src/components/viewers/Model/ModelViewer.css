@@ -9,9 +9,10 @@
     position: relative;
 }
 
-.model-viewer .download-button {
+.model-viewer .viewer-actions {
     position: absolute !important;
     z-index: 9999;
-    top: 8px;
-    right: 8px;
+    width: auto;
+    right: 0;
+    column-gap: 8px;
 }

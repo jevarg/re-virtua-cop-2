@@ -1,4 +1,4 @@
-import { IPointerEvent, Mesh, PickingInfo } from '@babylonjs/core';
+import { IPointerEvent, Mesh, PickingInfo, TexturePacker } from '@babylonjs/core';
 import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Color3 } from '@babylonjs/core/Maths/math.color';
@@ -73,7 +73,6 @@ export class Stage3DView {
 
             meshes.push(ModelMeshBuilder.CreateMesh(model, this.scene));
             this._models.set(model.id, model);
-            // break;
         }
 
         // console.log(`Before pack: ${this.scene.textures.length}`);
