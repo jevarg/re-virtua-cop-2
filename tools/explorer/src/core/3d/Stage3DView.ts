@@ -1,4 +1,4 @@
-import { IPointerEvent, Mesh, PickingInfo, TexturePacker } from '@babylonjs/core';
+import { IPointerEvent, Mesh, PickingInfo } from '@babylonjs/core';
 import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Color3 } from '@babylonjs/core/Maths/math.color';

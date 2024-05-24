@@ -32,7 +32,7 @@ function App() {
         <Grid.Container justify='center'>
           <Grid xs={18} alignItems='center'>
             <img src='/header.png' className='header-img' />
-            <p>VCop2 re</p>
+            <p>VCop2 Explorer</p>
           </Grid>
         </Grid.Container>
       </header>

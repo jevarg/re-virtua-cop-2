@@ -1,7 +1,6 @@
 import { AssetName, AssetPack, AssetType, GameData, ModelPack, TexturePack } from '@VCRE/core/gamedata';
 import { LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
 
-import { ModelViewer } from './Model/ModelViewer';
 import { ModelPackViewer } from './ModelPack/ModelPackViewer';
 import { StageViewer } from './Stage/StageViewer';
 import { TextureViewer } from './Texture/TextureViewer';
@@ -20,7 +19,6 @@ export function AssetViewer() {
                 return <StageViewer modelPack={modelPack} />;
             } else {
                 return <ModelPackViewer modelPack={asset as ModelPack} />;
-                // return <ModelViewer model={modelPack.models[3]} />;
             }
         }
 

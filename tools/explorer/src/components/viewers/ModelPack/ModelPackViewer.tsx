@@ -1,7 +1,6 @@
 import './ModelPackViewer.css';
 
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { GLTF2Export } from '@babylonjs/serializers/glTF';
 import { Grid, Keyboard, Modal, Table, Text } from '@geist-ui/core';
 import { Button } from '@VCRE/components/GeistFix';
 import { ModelViewer, StaticModelViewer, StaticModelViewerProps } from '@VCRE/components/viewers';
