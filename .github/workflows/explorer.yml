@@ -2,6 +2,11 @@ name: Explorer workflow
 
 on: push
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -9,28 +14,39 @@ jobs:
     - uses: actions/checkout@v4
       with:
         sparse-checkout: tools/explorer
-
-      # You may pin to the exact commit or the version.
-      # uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2
     - uses: pnpm/action-setup@v4.0.0
       with:
         package_json_file: tools/explorer/package.json
         run_install: true
 
-    - name: 'hello, world'
+    - name: build
       working-directory: tools/explorer
       run: |
         pnpm build
-        find dest
-      # with:
-        # Version of pnpm to install
-        # version: # optional
-        # Where to store pnpm files
-        # dest: # optional, default is ~/setup-pnpm
-        # If specified, run `pnpm install`
-        # run_install: # optional, default is null
-        # File path to the package.json to read "packageManager" configuration
-        # package_json_file: # optional, default is package.json
-        # When set to true, @pnpm/exe, which is a Node.js bundled package, will be installed, enabling using pnpm without Node.js.
-        # standalone: # optional, default is false
-              
+    
+    - uses: actions/upload-artifact@v4
+      with:
+        path: tools/explorer/dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Retrieving build
+        uses: actions/download-artifact@v4
+      - name: test
+        run: find
+      # - name: Setup Pages
+      #   uses: actions/configure-pages@v5
+      # - name: Upload artifact
+      #   uses: actions/upload-pages-artifact@v3
+      #   with:
+      #     # Upload entire repository
+      #     path: './tools/explorer/dist'
+      # - name: Deploy to GitHub Pages
+      #   id: deployment
+      #   uses: actions/deploy-pages@v4
+
+      
