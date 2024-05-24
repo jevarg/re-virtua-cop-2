@@ -15,12 +15,13 @@ jobs:
     - uses: pnpm/action-setup@v4.0.0
       with:
         package_json_file: tools/explorer/package.json
+        run_install: true
 
     - name: 'hello, world'
       working-directory: tools/explorer
       run: |
-        pwd
-        ls -la
+        pnpm build
+        find dest
       # with:
         # Version of pnpm to install
         # version: # optional
