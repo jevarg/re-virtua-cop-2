@@ -17,7 +17,8 @@ console.log('Aliases:', aliases);
 // https://vitejs.dev/config/
 export default defineConfig({
   resolve: {
-    alias: aliases
+    alias: aliases,
   },
+  base: '',
   plugins: [react()]
 });

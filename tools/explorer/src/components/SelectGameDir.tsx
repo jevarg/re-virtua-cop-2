@@ -1,10 +1,11 @@
 import { GameData } from '@VCRE/core/gamedata';
 import { useCallback } from 'react';
-import { LoaderFunctionArgs, redirect, useNavigate } from 'react-router-dom';
+import { LoaderFunctionArgs, redirect, useLocation, useNavigate } from 'react-router-dom';
 
 import { Button } from './GeistFix';
 
 export function SelectGameDir() {
+    const location = useLocation();
     const navigate = useNavigate();
 
     const loadGameData = useCallback(async () => {
@@ -15,7 +16,7 @@ export function SelectGameDir() {
         const redirectTo = queryParams.get('redirectTo') || '/';
 
         navigate(redirectTo);
-    }, [navigate]);
+    }, [location.search, navigate]);
 
     return <Button onClick={loadGameData}>
         Select game directory

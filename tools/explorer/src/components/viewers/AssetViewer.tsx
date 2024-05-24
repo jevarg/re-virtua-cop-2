@@ -1,24 +1,29 @@
 import { AssetName, AssetPack, AssetType, GameData, ModelPack, TexturePack } from '@VCRE/core/gamedata';
-import { LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
+import { LoaderFunctionArgs, redirect, useLoaderData } from 'react-router-dom';
 
 import { ModelPackViewer } from './ModelPack/ModelPackViewer';
 import { StageViewer } from './Stage/StageViewer';
 import { TextureViewer } from './Texture/TextureViewer';
 
-export function AssetViewer() {
-    const asset = useLoaderData() as AssetPack;
+type AssetViewerLoaderData = {
+    asset: AssetPack;
+    assetId?: number;
+}
 
-    switch (asset?.assetType) {
+export function AssetViewer() {
+    const loaderData = useLoaderData() as AssetViewerLoaderData;
+
+    switch (loaderData.asset.assetType) {
         case AssetType.Texture:
-            return <TextureViewer textureFile={asset as TexturePack} />;
+            return <TextureViewer textureFile={loaderData.asset as TexturePack} />;
 
         case AssetType.Model: {
             // return <ModelPackViewer modelPack={asset as ModelPack} />;
-            const modelPack = asset as ModelPack;
+            const modelPack = loaderData.asset as ModelPack;
             if (modelPack.isStage) {
                 return <StageViewer modelPack={modelPack} />;
             } else {
-                return <ModelPackViewer modelPack={asset as ModelPack} />;
+                return <ModelPackViewer modelPack={modelPack} modelId={loaderData.assetId} />;
             }
         }
 
@@ -27,11 +32,11 @@ export function AssetViewer() {
     }
 }
 
-AssetViewer.loader = function({ params }: LoaderFunctionArgs) {
+AssetViewer.loader = function({ params }: LoaderFunctionArgs): AssetViewerLoaderData | Response | null {
     const assetType = params.assetType as AssetType;
-    const assetName = params.assetName as AssetName;
-    if (!assetType || !assetName) {
-        console.error(`Unable to find ${assetType}/${assetName}`);
+    const assetFileName = params.assetFileName as AssetName;
+    if (!assetType || !assetFileName) {
+        console.error(`Unable to find ${assetType}/${assetFileName}`);
         return null;
     }
 
@@ -40,11 +45,15 @@ AssetViewer.loader = function({ params }: LoaderFunctionArgs) {
         console.error('No assets in game data. (did you call init?)');
         return null;
     }
-    const asset = gameData.assets[assetType].get(assetName);
+    const asset = gameData.assets[assetType].get(assetFileName);
     if (!asset) {
-        console.warn(`Unable to find ${assetName} in game data`);
-        return null; // TODO: redirect
+        console.warn(`Unable to find ${assetFileName} in game data`);
+        return redirect('/');
     }
 
-    return asset;
+    const assetId = parseInt(params.assetId as string);
+    return {
+        asset,
+        assetId: Number.isNaN(assetId) ? undefined : assetId
+    };
 };

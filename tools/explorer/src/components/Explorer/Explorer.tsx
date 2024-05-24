@@ -1,22 +1,23 @@
 import './Explorer.css';
 
-import { Grid } from '@geist-ui/core';
+import Grid from '@geist-ui/core/esm/grid/grid';
+import GridContainer from '@geist-ui/core/esm/grid/grid-container';
 import { FileTree } from '@VCRE/components';
 import { GameData } from '@VCRE/core/gamedata';
 import { LoaderFunctionArgs, Outlet, redirect } from 'react-router-dom';
 
 export function Explorer() {
     return <>
-        <Grid.Container>
+        <GridContainer>
             <Grid xs={4}>
                 <aside className='sidebar'>
                     <FileTree />
                 </aside>
             </Grid>
-            <Grid.Container justify='center' xs={20}>
+            <GridContainer justify='center' xs={20}>
                 <Outlet />
-            </Grid.Container>
-        </Grid.Container>
+            </GridContainer>
+        </GridContainer>
     </>;
 }
 

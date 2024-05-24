@@ -1,5 +1,5 @@
-import { Tooltip } from '@geist-ui/core';
-import { Target } from '@geist-ui/icons';
+import Tooltip from '@geist-ui/core/esm/tooltip/tooltip';
+import Target from '@geist-ui/icons/target';
 import { Button } from '@VCRE/components/GeistFix';
 
 export type CenterActionProps = {

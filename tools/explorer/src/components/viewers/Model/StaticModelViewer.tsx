@@ -1,5 +1,5 @@
-import { Engine } from '@babylonjs/core';
-import { Loading } from '@geist-ui/core';
+import { Engine } from '@babylonjs/core/Engines/engine';
+import Loading from '@geist-ui/core/esm/loading';
 import { isElementInViewport } from '@VCRE/components/utils';
 import { Model3DView } from '@VCRE/core/3d';
 import { Model } from '@VCRE/core/gamedata';

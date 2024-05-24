@@ -1,6 +1,8 @@
 import './TextureViewer.css';
 
-import { Card, Grid } from '@geist-ui/core';
+import Card from '@geist-ui/core/esm/card/card';
+import Grid from '@geist-ui/core/esm/grid/grid';
+import GridContainer from '@geist-ui/core/esm/grid/grid-container';
 import { TexturePack, TexturePackName, Tile } from '@VCRE/core/gamedata';
 import Konva from 'konva';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -152,7 +154,7 @@ export function TextureViewer({ textureFile }: TextureViewerProps) {
         };
     }, [onTileClicked, textureFile]);
 
-    return <Grid.Container gap={8}>
+    return <GridContainer gap={8}>
         <Grid xs={17}>
             <Card width="100%">
                 <div className='tilemap-container' ref={containerRef} ></div>
@@ -161,5 +163,5 @@ export function TextureViewer({ textureFile }: TextureViewerProps) {
         <Grid xs={7} width="100%">
             <TileViewer textureFileName={textureFile.name as TexturePackName} tile={selectedTile} />
         </Grid>
-    </Grid.Container>;
+    </GridContainer>;
 }

@@ -1,8 +1,10 @@
 import './ModelViewer.css';
 
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { GLTF2Export } from '@babylonjs/serializers';
-import { Grid, useToasts } from '@geist-ui/core';
+import { GLTF2Export } from '@babylonjs/serializers/glTF';
+import Grid from '@geist-ui/core/esm/grid/grid';
+import GridContainer from '@geist-ui/core/esm/grid/grid-container';
+import useToasts from '@geist-ui/core/esm/use-toasts/use-toast';
 import { Model3DView } from '@VCRE/core/3d';
 import { Model } from '@VCRE/core/gamedata';
 import { useCallback, useEffect, useRef } from 'react';
@@ -84,7 +86,7 @@ export function ModelViewer({ model }: ModelViewerProps) {
 
     return <>
         <div className='model-viewer'>
-            <Grid.Container className='viewer-actions' margin={0.5}>
+            <GridContainer className='viewer-actions' margin={0.5}>
                 <Grid alignContent='center'>
                     <CenterAction onClick={() => viewRef.current?.center()} />
                 </Grid>
@@ -94,7 +96,7 @@ export function ModelViewer({ model }: ModelViewerProps) {
                 <Grid>
                     <ExportModelAction onExport={exportModel} />
                 </Grid>
-            </Grid.Container>
+            </GridContainer>
 
             <canvas ref={canvasRef} />
         </div>

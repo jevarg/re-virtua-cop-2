@@ -1,11 +1,14 @@
 import './App.css';
 
-import { Grid, Page } from '@geist-ui/core';
+import Grid from '@geist-ui/core/esm/grid/grid';
+import GridContainer from '@geist-ui/core/esm/grid/grid-container';
+import Page from '@geist-ui/core/esm/page/page';
+import PageContent from '@geist-ui/core/esm/page/page-content';
 import { Explorer, SelectGameDir } from '@VCRE/components';
 import { AssetViewer } from '@VCRE/components/viewers';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createHashRouter, RouterProvider } from 'react-router-dom';
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: '/open',
     Component: SelectGameDir,
@@ -17,7 +20,12 @@ const router = createBrowserRouter([
     loader: Explorer.loader,
     children: [
       {
-        path: '/:assetType/:assetName',
+        path: '/:assetType/:assetFileName',
+        Component: AssetViewer,
+        loader: AssetViewer.loader
+      },
+      {
+        path: '/:assetType/:assetFileName/:assetId',
         Component: AssetViewer,
         loader: AssetViewer.loader
       }
@@ -29,18 +37,18 @@ function App() {
   return <>
     <div className='header-wrapper'>
       <header className='header'>
-        <Grid.Container justify='center'>
+        <GridContainer justify='center'>
           <Grid xs={18} alignItems='center'>
-            <img src='/header.png' className='header-img' />
+            <img src='header.png' className='header-img' />
             <p>VCop2 Explorer</p>
           </Grid>
-        </Grid.Container>
+        </GridContainer>
       </header>
     </div>
     <Page id='main-section'>
-      <Page.Content>
+      <PageContent>
         <RouterProvider router={router} />
-      </Page.Content>
+      </PageContent>
     </Page>
   </>;
 }

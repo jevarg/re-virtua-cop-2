@@ -4,7 +4,8 @@ import '@babylonjs/core/Culling/ray';
 import '@VCRE/core/extensions';
 import 'inter-ui/inter.css';
 
-import { CssBaseline,GeistProvider } from '@geist-ui/core';
+import CssBaseline from '@geist-ui/core/esm/css-baseline/css-baseline';
+import GeistProvider from '@geist-ui/core/esm/geist-provider/geist-provider';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 

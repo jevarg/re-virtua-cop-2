@@ -1,8 +1,10 @@
-import { IPointerEvent, Mesh, PickingInfo } from '@babylonjs/core';
 import { UniversalCamera } from '@babylonjs/core/Cameras/universalCamera';
+import { PickingInfo } from '@babylonjs/core/Collisions/pickingInfo';
 import { Engine } from '@babylonjs/core/Engines/engine';
+import { IPointerEvent } from '@babylonjs/core/Events/deviceInputEvents';
 import { Color3 } from '@babylonjs/core/Maths/math.color';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { Scene } from '@babylonjs/core/scene';
 import { Model, ModelPack } from '@VCRE/core/gamedata';
 

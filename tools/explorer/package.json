@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "packageManager": "pnpm@9.1.2",
+  "homepage": "https://jevarg.github.io/re-virtua-cop-2",
   "type": "module",
   "scripts": {
     "dev": "vite",

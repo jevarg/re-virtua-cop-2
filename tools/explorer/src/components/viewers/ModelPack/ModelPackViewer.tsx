@@ -1,14 +1,24 @@
 import './ModelPackViewer.css';
 
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { Grid, Keyboard, Modal, Table, Text } from '@geist-ui/core';
+import Grid from '@geist-ui/core/esm/grid/grid';
+import GridContainer from '@geist-ui/core/esm/grid/grid-container';
+import Keyboard from '@geist-ui/core/esm/keyboard/keyboard';
+import Modal from '@geist-ui/core/esm/modal/modal';
+import ModalAction from '@geist-ui/core/esm/modal/modal-action';
+import ModalContent from '@geist-ui/core/esm/modal/modal-content';
+import ModalTitle from '@geist-ui/core/esm/modal/modal-title';
+import Table from '@geist-ui/core/esm/table/table';
+import Text from '@geist-ui/core/esm/text/text';
 import { Button } from '@VCRE/components/GeistFix';
 import { ModelViewer, StaticModelViewer, StaticModelViewerProps } from '@VCRE/components/viewers';
 import { ModelPack } from '@VCRE/core/gamedata';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export type ModelPackViewerProps = {
     modelPack: ModelPack;
+    modelId?: number;
 }
 
 type ModelRow = {
@@ -34,8 +44,9 @@ function createOffscreenEngine(width: number, height: number) {
 // This is the "PREVIEW" column index in the table.
 const previewColIndex = 2;
 
-export function ModelPackViewer({ modelPack }: ModelPackViewerProps) {
-    const [ selectedModelId, setSelectedModelId ] = useState<number>();
+export function ModelPackViewer({ modelPack, modelId }: ModelPackViewerProps) {
+    const navigate = useNavigate();
+    // const [ selectedModelId, setSelectedModelId ] = useState<number | undefined>(modelId);
 
     const models = useMemo(() => {
         const models: ModelRow[] = [];
@@ -54,20 +65,23 @@ export function ModelPackViewer({ modelPack }: ModelPackViewerProps) {
     }, [modelPack]);
 
     const onCellClicked = useCallback((_: ModelRow[keyof ModelRow], rowIndex: number, colIndex: number) => {
-        console.log(`colIndex: ${colIndex}, rowIndex: ${rowIndex}`);
-        if (colIndex !== previewColIndex) {
+        if (colIndex !== previewColIndex || modelId !== undefined) {
             return;
         }
 
-        setSelectedModelId(rowIndex);
-    }, []);
+        navigate(`${rowIndex}`, {relative: 'path'});
+    }, [navigate, modelId]);
 
     const closeModal = useCallback(() => {
-        setSelectedModelId(undefined);
-    }, []);
+        if (modelId === undefined) {
+            return;
+        }
+
+        navigate('..', { relative: 'path' });
+    }, [navigate, modelId]);
 
     return <>
-        <Grid.Container gap={2}>
+        <GridContainer gap={2}>
             <Grid xs={24} alignItems='center' direction='column'>
                 <Text h3 margin={0}>{modelPack.name}</Text>
                 <Text p small margin={0}>{modelPack.models.length} model(s)</Text>
@@ -83,11 +97,11 @@ export function ModelPackViewer({ modelPack }: ModelPackViewerProps) {
                     <Table.Column prop="unk" label="unknown" />
                 </Table>
             </Grid>
-        </Grid.Container>
+        </GridContainer>
 
-        <Modal width={3} className='modal-preview' visible={selectedModelId !== undefined} disableBackdropClick onClose={closeModal}>
-            <Modal.Title>
-                <Grid.Container justify='flex-end'>
+        <Modal width={3} className='modal-preview' visible={modelId !== undefined} disableBackdropClick onClose={closeModal}>
+            <ModalTitle>
+                <GridContainer justify='flex-end'>
                     <Grid>
                         <Button
                             className='modal-close'
@@ -98,12 +112,12 @@ export function ModelPackViewer({ modelPack }: ModelPackViewerProps) {
                             onClick={closeModal}
                         />
                     </Grid>
-                </Grid.Container>
-            </Modal.Title>
-            <Modal.Content>
-                <ModelViewer model={modelPack.getModel(selectedModelId!)!} />
-            </Modal.Content>
-            <Modal.Action
+                </GridContainer>
+            </ModalTitle>
+            <ModalContent>
+                <ModelViewer model={modelPack.getModel(modelId!)!} />
+            </ModalContent>
+            <ModalAction
                 placeholder=''
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
@@ -111,7 +125,7 @@ export function ModelPackViewer({ modelPack }: ModelPackViewerProps) {
                 onClick={e => e.close()}
             >
                 Close
-            </Modal.Action>
+            </ModalAction>
         </Modal>
     </>;
 }

@@ -1,5 +1,5 @@
-import { Tooltip } from '@geist-ui/core';
-import { Triangle } from '@geist-ui/icons';
+import Tooltip from '@geist-ui/core/esm/tooltip/tooltip';
+import Triangle from '@geist-ui/icons/triangle';
 import { Button } from '@VCRE/components/GeistFix';
 import { useState } from 'react';
 

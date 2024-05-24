@@ -1,5 +1,4 @@
-import { Tree } from '@geist-ui/core';
-import { TreeFile } from '@geist-ui/core/esm/tree';
+import Tree, { TreeFile } from '@geist-ui/core/esm/tree/tree';
 import { AssetName, AssetType, GameData, Texture, TreeNode, TreeNodeType } from '@VCRE/core/gamedata';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
