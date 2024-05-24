@@ -1,0 +1,31 @@
+name: Explorer workflow
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        sparse-checkout: tools/explorer
+
+      # You may pin to the exact commit or the version.
+      # uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2
+    - uses: pnpm/action-setup@v4.0.0
+    - name: 'hello, world'
+      run: |
+        pwd
+        ls -la
+      # with:
+        # Version of pnpm to install
+        # version: # optional
+        # Where to store pnpm files
+        # dest: # optional, default is ~/setup-pnpm
+        # If specified, run `pnpm install`
+        # run_install: # optional, default is null
+        # File path to the package.json to read "packageManager" configuration
+        # package_json_file: # optional, default is package.json
+        # When set to true, @pnpm/exe, which is a Node.js bundled package, will be installed, enabling using pnpm without Node.js.
+        # standalone: # optional, default is false
+              
