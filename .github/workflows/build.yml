@@ -1,11 +1,6 @@
-name: Explorer workflow
+name: Build
 
 on: push
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
 
 jobs:
   build:
