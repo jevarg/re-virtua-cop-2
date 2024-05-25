@@ -1,4 +1,6 @@
-Work in progress reverse engineering of [Virtua Cop 2 PC](https://www.abandonware-france.org/ltf_abandon/ltf_jeu.php?id=669) (1997)
+![Explorer status badge](https://github.com/jevarg/re-virtua-cop-2/actions/workflows/explorer.yml/badge.svg)
+
+Work in progress reverse engineering of [Virtua Cop 2 PC](https://www.myabandonware.com/game/virtua-cop-2-byi) (1997)
 
 - [Used tools](#used-tools)
 - [Assets data structure](#assets-data-structure)

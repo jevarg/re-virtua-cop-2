@@ -1,6 +1,8 @@
 name: Explorer
 
-on: push
+on:
+  push:
+    paths: tools/explorer/**
 
 permissions:
   contents: read
