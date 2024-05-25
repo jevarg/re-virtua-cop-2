@@ -1,0 +1,49 @@
+name: Explorer
+
+on: push
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        sparse-checkout: tools/explorer
+    - uses: pnpm/action-setup@v4.0.0
+      with:
+        package_json_file: tools/explorer/package.json
+        run_install: true
+
+    - name: build
+      working-directory: tools/explorer
+      run: |
+        pnpm build
+    
+    - uses: actions/upload-artifact@v4
+      with:
+        path: tools/explorer/dist
+
+  deploy:
+    if: github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Retrieving build
+        uses: actions/download-artifact@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './artifact'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
