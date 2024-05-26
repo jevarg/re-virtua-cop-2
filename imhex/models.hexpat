@@ -42,7 +42,7 @@ struct Face {
     Vec3 normal;
 };
 
-bitfield RGB565 {
+bitfield RGB555 {
     r : 5;
     g : 5;
     b : 5;
@@ -60,7 +60,7 @@ struct Material {
         u8 paletteID [[color("FFFFFF")]];
         padding[1];
     } else {
-        RGB565 color;
+        RGB555 color;
     }
 
     padding[2];
