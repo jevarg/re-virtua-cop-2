@@ -6,6 +6,7 @@
   - [Faces](#faces)
   - [Faces materials](#faces-materials)
     - [Material flags](#material-flags)
+    - [Rendering flags](#rendering-flags)
 
 Models are stored in **BIN/P_*.BIN** files divided into 4 sections.
 
@@ -46,13 +47,39 @@ Each face is represented like so:
 
 ## Faces materials
 For each face there exist one **10 bytes** material row:
-|  Type | Name               | Description                                                              |
-| ----: | ------------------ | ------------------------------------------------------------------------ |
-| uint8 | Material flags     | Bitfield defining specific flags (see [Material flags](#material-flags)) |
-| uint8 | Texture pack flags | TBD (TODO)                                                               |
-| uint8 | Texture id         | Texture index within the texture pack                                    |
-| uint8 | Texture pack id    | Texture pack id                                                          |
-| uint8 | -                  | -                                                                        |
-| uint8 | Render flags       | Bitfield                                                                 |
+|   Type | Name               | Description                                                                          |
+| -----: | ------------------ | ------------------------------------------------------------------------------------ |
+|  uint8 | Material flags     | Bitfield defining specific material flags (see [Material flags](#material-flags))    |
+|  uint8 | Texture pack flags | TBD (TODO)                                                                           |
+|  uint8 | Texture id         | Texture index within the texture pack                                                |
+|  uint8 | Texture pack id    | Texture pack id                                                                      |
+|  uint8 | ?                  | Maybe texture pack id is 16bits?                                                     |
+|  uint8 | Rendering flags    | Bitfield defining specific rendering flags (see [Rendering Flags](#rendering-flags)) |
+| uint16 | Palette id / Color | A palette identifier **or** a RGB555 encoded color depending on Material flags       |
+| uint16 | -                  | Padding                                                                              |
 
 ### Material flags
+Bitfield defining how materials should be applied
+| Bit (LE) | Name       | Description                                      |
+| -------: | ---------- | ------------------------------------------------ |
+|        1 | ?          |                                                  |
+|        2 | Texture    | Uses texture                                     |
+|        3 | Color      | Uses flat color                                  |
+|        4 | ?          |                                                  |
+|        5 | Inversed X | If set, will be rendered with X inversed texture |
+|        6 | Inversed Y | If set, will be rendered with Y inversed texture |
+|        7 | ?          |                                                  |
+|        8 | ?          |                                                  |
+
+### Rendering flags
+Bitfield defining how materials should be rendered
+| Bit (LE) | Name        | Description              |
+| -------: | ----------- | ------------------------ |
+|        1 | Transparent | Render with transparency |
+|        2 | ?           |                          |
+|        3 | ?           |                          |
+|        4 | ?           |                          |
+|        5 | ?           |                          |
+|        6 | ?           |                          |
+|        7 | ?           |                          |
+|        8 | ?           |                          |

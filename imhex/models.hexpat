@@ -28,7 +28,7 @@ bitfield MaterialFlags {
     x_inv : 1;
     y_inv : 1;
 
-    enabled : 1;
+    unknown : 1;
 };
 
 bitfield RenderFlags {
