@@ -47,16 +47,18 @@ Each face is represented like so:
 
 ## Faces materials
 For each face there exist one **10 bytes** material row:
-|   Type | Name               | Description                                                                          |
-| -----: | ------------------ | ------------------------------------------------------------------------------------ |
-|  uint8 | Material flags     | Bitfield defining specific material flags (see [Material flags](#material-flags))    |
-|  uint8 | Texture pack flags | TBD (TODO)                                                                           |
-|  uint8 | Texture id         | Texture index within the texture pack                                                |
-|  uint8 | Texture pack id    | Texture pack id                                                                      |
-|  uint8 | ?                  | Maybe texture pack id is 16bits?                                                     |
-|  uint8 | Rendering flags    | Bitfield defining specific rendering flags (see [Rendering Flags](#rendering-flags)) |
-| uint16 | Palette id / Color | A palette identifier **or** a RGB555 encoded color depending on Material flags       |
-| uint16 | -                  | Padding                                                                              |
+|   Type | Name                | Description                                                                          |
+| -----: | ------------------- | ------------------------------------------------------------------------------------ |
+|  uint8 | Material flags      | Bitfield defining specific material flags (see [Material flags](#material-flags))    |
+|  uint8 | Texture pack flags  | TBD (TODO)                                                                           |
+|  uint8 | Texture id          | Texture index within the texture pack                                                |
+|  uint8 | Texture pack id     | Texture pack id                                                                      |
+|  uint8 | ?                   | Maybe texture pack id is 16bits?                                                     |
+|  uint8 | Rendering flags     | Bitfield defining specific rendering flags (see [Rendering Flags](#rendering-flags)) |
+| uint16 | Palette id / Color* | A palette identifier **or** a RGB555 encoded color depending on Material flags       |
+| uint16 | -                   | Padding                                                                              |
+
+*It is a palette id if the [material flags](#material-flags) has the **texture** bit set to 1, otherwise if it is the **color** bit, it is an RGB555 color.
 
 ### Material flags
 Bitfield defining how materials should be applied

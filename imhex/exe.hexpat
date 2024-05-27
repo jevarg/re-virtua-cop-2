@@ -1,8 +1,8 @@
 #include <std/io.pat>
 
-#define RDATA_SECTION_ADDR 0x0004D400
-#define VDATA_SECTION_ADDR 0x0044F000
-#define RAW_RELATIVE_OFF (0x0004D400 - 0x0044F000)
+#define RDATA_SECTION_ADDR 0x0004d400
+#define VDATA_SECTION_ADDR 0x0044f000
+#define RAW_RELATIVE_OFF (0x0004d400 - 0x0044f000)
 
 fn rawAddr(u32 virtualAddr) {
     return virtualAddr + RAW_RELATIVE_OFF;
@@ -34,7 +34,7 @@ struct Texture {
     TextureFlags flags;
 };
 
-struct TextureFile {
+struct TexturePack {
     char *fileName[16] : u32 [[pointer_base("ptrToRaw")]];
     char *paletteFileName[16] : u32 [[pointer_base("ptrToRaw")]];
     u32 ptrTextures [[transform("rawAddr")]];
@@ -47,7 +47,7 @@ struct TextureFile {
     Texture textures[count] @ ptrTextures;
 } [[name(fileName)]];
 
-struct ModelFile {
+struct ModelPack {
     char name[16];
     u32 *ptr : u32 [[pointer_base("ptrToRaw")]];
 };
@@ -167,7 +167,7 @@ enum SCENE : u8 {
     MAX
 };
 
-TextureFile textures[22] @ rawAddr(0x00458FD0);
+TexturePack textures[22] @ rawAddr(0x00458fd0);
 
 std::print("There are {} MOTS", MOT::MAX);
 std::print("There are {} MODELS", MODEL::MAX);
@@ -177,7 +177,7 @@ std::print("There are {} CAMMOVS", CAMMOV::MAX);
 std::print("There are {} SCENES", SCENE::MAX);
 
 //File MOT_FILES[MOT::MAX] @ MOT_FILES_ADDR;
-ModelFile models[MODEL::MAX] @ rawAddr(0x00472ef8);
+ModelPack models[MODEL::MAX] @ rawAddr(0x00472ef8);
 //File TEXTURES_FILES[TEXTURE::MAX] @ TEXTURES_FILES_ADDR;
 //File PALETTES_FILES[PALETTE::MAX] @ PALETTES_FILES_ADDR;
 //File CAMMOV_FILES[CAMMOV::MAX] @ CAMMOV_FILES_ADDR;

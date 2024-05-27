@@ -1,8 +1,41 @@
 # Textures
-Textures are stored in **T_*.BIN** files.
+Textures are stored in **T_*.BIN** files. They are encoded using **8bit** palette indices.
 
-Based on what we can see using **Binocle**, it seems like each pixel is encoded as an **8bit palette index**.
+All the textures metadata are defined in the game executable, there are 22 texture packs defined (not all of them seem to exist in the game files though).
 
-![texture-binocle](.doc/texture-binocle.png)
+> :warning: Note that since the data are defined within the game executable, all addresses are virtual and need to be transformed into raw addresses.
 
-<sub>Example of T_MINI_C.BIN captured using Binocle</sub>
+Virtual addresses can be translated to raw like this:
+```c
+#define RDATA_SECTION_ADDR 0x0004d400
+#define VDATA_SECTION_ADDR 0x0044f000
+#define RAW_RELATIVE_OFF (RDATA_SECTION_ADDR - VDATA_SECTION_ADDR)
+
+uint32_t virtualToRawAddr(uint32_t virtualAddr) {
+    return virtualAddr + RAW_RELATIVE_OFF;
+};
+```
+
+For example, `virtual 0x00458fd0` -> `raw 0x000573d0`.
+
+## Texture Pack
+Each texture pack is defined like so:
+|   Type | Name                  | Description                                                                                    |
+| -----: | --------------------- | ---------------------------------------------------------------------------------------------- |
+| uint32 | File name ptr         | Offset to char[16] of the texture file name (e.g. `T_COMMON.BIN`)                              |
+| uint32 | Palette file name ptr | Offset to char[16] of the palette file name (e.g. `P_COMMON.BIN`)                              |
+| uint32 | Textures metadata ptr | Offset to the start of all the textures metadata (see [Textures Metadata](#textures-metadata)) |
+|  uint8 | Offset?               |                                                                                                |
+|  uint8 | Id                    |                                                                                                |
+| uint16 | -                     | Padding                                                                                        |
+| uint32 | Count ptr             | Offset to a uint32 representing the number of tetxures in the current pack                     |
+| uint32 | ?                     |                                                                                                |
+
+## Textures Metadata (TO FINISH)
+|   Type | Name   | Description           |
+| -----: | ------ | --------------------- |
+| uint16 | Width  | Width of the texture  |
+| uint16 | Height | Height of the texture |
+| uint32 |        |                       |
+| uint32 |        |                       |
+|  uint8 |        |                       |
