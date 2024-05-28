@@ -18,7 +18,7 @@ fn ptrToRaw(u32 virtualAddr) {
 
 bitfield TextureFlags {
     padding : 1;
-    alpha : 1;
+    transparency : 1;
     ui : 1;
     padding : 24;
 };

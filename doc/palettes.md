@@ -1,6 +1,7 @@
 # Color palettes
 Color palettes are defined in **L_*.BIN** files.
-Each file contains several color palettes.
+
+Each file contains several **64 bits** (16 colors) color palettes.
 
 | Size   | Name | Description       |
 | ------ | ---- | ----------------- |
@@ -9,8 +10,7 @@ Each file contains several color palettes.
 | 1 byte | B    | Blue color value  |
 | 1 byte | X    | Padding           |
 
-ImHex can help us having a better view on palette data
+## Example
+`L_LOGO.BIN` captured using ImHex with the `palettes.hexpat` pattern
 
-![logo-palette-imhex](.doc/logo-palette-imhex.png)
-
-<sub>Example of L_LOGO.BIN captured using ImHex w/ palettes.hexpat pattern</sub>
+![logo-palette-imhex](../.doc/logo-palette-imhex.png)
