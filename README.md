@@ -4,4 +4,4 @@
 
 Work in progress reverse engineering of [Virtua Cop 2 PC](https://www.myabandonware.com/game/virtua-cop-2-byi) (1997)
 
-Go checkout [the Wiki](https://github.com/jevarg/re-virtua-cop-2./wiki) for more info
+Go checkout [the Wiki](https://github.com/jevarg/re-virtua-cop-2/wiki) for more info
