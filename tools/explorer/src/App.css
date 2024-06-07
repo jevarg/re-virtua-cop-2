@@ -25,6 +25,16 @@ img, canvas {
     backdrop-filter: saturate(180%) blur(5px);
 }
 
+.header-link {
+    display: inline-flex;
+    color: white;
+    transition: color 100ms;
+}
+
+.header-link:hover {
+    color: grey;
+}
+
 .header-img {
     margin-right: 16px;
 }

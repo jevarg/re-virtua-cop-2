@@ -1,0 +1,39 @@
+.centered {
+    position: absolute;
+    width: auto;
+    height: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-browse {
+    cursor: pointer;
+}
+
+.card-browse .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-browse .icon-folder {
+    margin: 15px;
+    transition-property: transform, color;
+    transition-duration: 200ms;
+    stroke-width: 0.5;
+}
+
+.card-browse:hover .icon-folder {
+    transform: scale(1.1);
+    color: white !important;
+}
+
+.button-browse {
+    width: fit-content !important;
+}
