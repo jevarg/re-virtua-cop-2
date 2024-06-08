@@ -2,6 +2,22 @@
     --header-height: 64px;
 }
 
+body.animated-cursor {
+    cursor: url('cursor/0.png') 11 11, auto;
+    animation: cursor 300ms infinite;
+}
+
+@keyframes cursor {
+    0% { cursor: url('cursor/0.png') 11 11, auto; }
+    12.5% { cursor: url('cursor/1.png') 11 11, auto; }
+    25% { cursor: url('cursor/2.png') 11 11, auto; }
+    37.5% { cursor: url('cursor/3.png') 11 11, auto; }
+    50% { cursor: url('cursor/4.png') 11 11, auto; }
+    62.5% { cursor: url('cursor/5.png') 11 11, auto; }
+    75% { cursor: url('cursor/6.png') 11 11, auto; }
+    100% { cursor: url('cursor/7.png') 11 11, auto; }
+}
+
 img, canvas {
     image-rendering: pixelated !important;
 }
@@ -37,6 +53,28 @@ img, canvas {
 
 .header-img {
     margin-right: 16px;
+}
+
+.cursor-settings {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+
+    display: flex;
+}
+
+.cursor-settings .cursor-toggle {
+    height: auto;
+    margin-top: 1px;
+}
+
+.cursor-settings .cursor-image img {
+    vertical-align: bottom;
+}
+
+.bw {
+    filter: saturate(0);
+    transition: filter 300ms;
 }
 
 #main-section {
