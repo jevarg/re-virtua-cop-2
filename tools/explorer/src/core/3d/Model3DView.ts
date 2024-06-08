@@ -182,9 +182,9 @@ export class Model3DView {
         };
     }
 
-    public setModel(model: Model) {
+    public async setModel(model: Model) {
         this._model = model;
-        this._modelMesh = ModelMeshBuilder.CreateMesh(model, this.scene);
+        this._modelMesh = await ModelMeshBuilder.CreateMesh(model, this.scene);
 
         if (this._options.highlightHoveredFace) {
             this._modelMesh.enablePointerMoveEvents = true;

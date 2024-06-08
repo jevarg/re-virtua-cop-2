@@ -3,7 +3,7 @@ import { LoaderFunctionArgs, redirect, useLoaderData } from 'react-router-dom';
 
 import { ModelPackViewer } from './ModelPack/ModelPackViewer';
 import { StageViewer } from './Stage/StageViewer';
-import { TextureViewer } from './Texture/TextureViewer';
+import { TextureViewer } from './TexturePack/TexturePackViewer';
 
 type AssetViewerLoaderData = {
     asset: AssetPack;
@@ -15,7 +15,7 @@ export function AssetViewer() {
 
     switch (loaderData.asset.assetType) {
         case AssetType.Texture:
-            return <TextureViewer textureFile={loaderData.asset as TexturePack} />;
+            return <TextureViewer texturePack={loaderData.asset as TexturePack} textureId={loaderData.assetId} />;
 
         case AssetType.Model: {
             // return <ModelPackViewer modelPack={asset as ModelPack} />;

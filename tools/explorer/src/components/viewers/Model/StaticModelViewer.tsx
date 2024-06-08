@@ -39,36 +39,39 @@ export function StaticModelViewer({ engine, model }: StaticModelViewerProps) {
             return;
         }
 
-        console.debug(`Loading: model ${model.id}`);
-        const view = new Model3DView(engine, {
-            controllableCamera: false,
-            highlightHoveredFace: false,
-            logClickedFace: false,
-            showFPSCounter: false
-        });
+        const setupView = async () => {
+            const view = new Model3DView(engine, {
+                controllableCamera: false,
+                highlightHoveredFace: false,
+                logClickedFace: false,
+                showFPSCounter: false
+            });
 
-        view.setModel(model);
+            await view.setModel(model);
 
-        // We just render 1 frame and get the hell out
-        view.render();
+            // We just render 1 frame and get the hell out
+            view.render();
 
-        // Seems buggy, will leave it like this for now.
-        // view.destroy();
+            // Seems buggy, will leave it like this for now.
+            // view.destroy();
 
-        const engineCanvas = engine.getRenderingCanvas();
-        if (!engineCanvas) {
-            console.warn('Could not get engine canvas!');
-            return;
-        }
+            const engineCanvas = engine.getRenderingCanvas();
+            if (!engineCanvas) {
+                console.warn('Could not get engine canvas!');
+                return;
+            }
 
-        const ctx = canvasRef.current?.getContext('2d');
-        if (!ctx) {
-            console.warn('Could not get static view canvas context!');
-            return;
-        }
+            const ctx = canvasRef.current?.getContext('2d');
+            if (!ctx) {
+                console.warn('Could not get static view canvas context!');
+                return;
+            }
 
-        ctx.drawImage(engineCanvas, 0, 0);
-        setIsLoaded(true);
+            ctx.drawImage(engineCanvas, 0, 0);
+            setIsLoaded(true);
+        };
+
+        setupView();
     }, [engine, canvasRef, isLoaded, isVisible, model]);
 
     useEffect(() => {

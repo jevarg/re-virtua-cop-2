@@ -1,22 +1,23 @@
-import './TextureViewer.css';
+import './TexturePackViewer.css';
 
 import Card from '@geist-ui/core/esm/card/card';
 import Grid from '@geist-ui/core/esm/grid/grid';
 import GridContainer from '@geist-ui/core/esm/grid/grid-container';
-import { TexturePack, TexturePackName, Tile } from '@VCRE/core/gamedata';
+import { Texture, TexturePack, Tile } from '@VCRE/core/gamedata';
 import Konva from 'konva';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { TileViewer } from './TileViewer';
+import { TextureInfo } from './TextureInfo';
 
 export interface TextureViewerProps {
-    textureFile: TexturePack;
+    texturePack: TexturePack;
+    textureId?: number;
 }
 
-type TileClickedFunction = (tile: Tile) => void;
+type TileClickedFunction = (tile: Tile, texture: Texture) => void;
 
-function buildTileMap(textureFile: TexturePack, layer: Konva.Layer, onTileClicked: TileClickedFunction) {
-    if (!textureFile.tileMap) {
+function buildTileMap(texturePack: TexturePack, layer: Konva.Layer, onTileClicked: TileClickedFunction) {
+    if (!texturePack.tileMap) {
         console.warn('tileMap is not set!');
         return;
     }
@@ -35,8 +36,8 @@ function buildTileMap(textureFile: TexturePack, layer: Konva.Layer, onTileClicke
         listening: false,
     });
 
-    for (const tile of textureFile.tileMap) {
-        const texture = textureFile.textures[tile.textureId];
+    for (const tile of texturePack.tileMap) {
+        const texture = texturePack.textures[tile.textureId];
 
         canvas.width = texture.info.width;
         canvas.height = texture.info.height;
@@ -65,7 +66,7 @@ function buildTileMap(textureFile: TexturePack, layer: Konva.Layer, onTileClicke
             });
 
             image.on('click', function () {
-                onTileClicked(tile);
+                onTileClicked(tile, texture);
             });
 
             group.add(image);
@@ -126,12 +127,12 @@ function updateLayout(stage: Konva.Stage) {
     });
 }
 
-export function TextureViewer({ textureFile }: TextureViewerProps) {
+export function TextureViewer({ texturePack, textureId }: TextureViewerProps) {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [selectedTile, setSelectedTile] = useState<Tile>();
+    const [selectedTexture, setSelectedTexture] = useState<Texture>();
 
-    const onTileClicked = useCallback<TileClickedFunction>(tile => {
-        setSelectedTile(tile);
+    const onTileClicked = useCallback<TileClickedFunction>((_, texture) => {
+        setSelectedTexture(texture);
     }, []);
 
     useEffect(() => {
@@ -146,13 +147,22 @@ export function TextureViewer({ textureFile }: TextureViewerProps) {
         });
 
         stage.add(layer);
-        buildTileMap(textureFile, layer, onTileClicked);
+        buildTileMap(texturePack, layer, onTileClicked);
 
         window.addEventListener('resize', onWindowResized);
         return () => {
             window.removeEventListener('resize', onWindowResized);
         };
-    }, [onTileClicked, textureFile]);
+    }, [onTileClicked, texturePack]);
+
+    useEffect(() => {
+        if (textureId === undefined) {
+            return;
+        }
+
+        const texture = texturePack.textures[textureId];
+        setSelectedTexture(texture);
+    }, [textureId, texturePack.textures]);
 
     return <GridContainer gap={8}>
         <Grid xs={17}>
@@ -161,7 +171,7 @@ export function TextureViewer({ textureFile }: TextureViewerProps) {
             </Card>
         </Grid>
         <Grid xs={7} width="100%">
-            <TileViewer textureFileName={textureFile.name as TexturePackName} tile={selectedTile} />
+            <TextureInfo texture={selectedTexture} />
         </Grid>
     </GridContainer>;
 }

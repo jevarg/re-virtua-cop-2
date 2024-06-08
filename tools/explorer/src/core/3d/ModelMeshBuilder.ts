@@ -122,7 +122,7 @@ export class ModelMeshBuilder {
         return material;
     }
 
-    public static CreateMesh(model: Model, scene: Scene): Mesh {
+    public static async CreateMesh(model: Model, scene: Scene): Promise<Mesh> {
         const submeshes: Mesh[] = [];
         const textures = new Map<string, RawTexture>();
         for (const face of model.faces) {

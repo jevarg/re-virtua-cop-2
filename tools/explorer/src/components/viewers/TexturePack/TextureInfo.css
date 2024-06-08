@@ -7,10 +7,21 @@
 
 .tile-viewer-main-content {
     display: flex;
+    flex-direction: column;
+}
+
+.tile-canvas-wrapper {
+    display: flex;
     justify-content: center;
+    aspect-ratio: 1;
+    width: 100%;
+    background-color: #171717;
 }
 
 .tile-canvas {
-    height: 256px;
-    padding: calc(16px * 2);
+    object-fit: contain;
+}
+
+.tile-info {
+    padding: 1em;
 }

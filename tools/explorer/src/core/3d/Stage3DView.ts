@@ -25,10 +25,10 @@ export class Stage3DView {
 
         this.camera = new UniversalCamera('universalCamera', new Vector3(0, 5, 0), this.scene);
         this.camera.fov = 1;
-        this.camera.keysUpward.push(69); //increase elevation
-        this.camera.keysDownward.push(81); //decrease elevation
-        this.camera.keysUp.push(87); //forwards
-        this.camera.keysDown.push(83); //backwards
+        this.camera.keysUpward.push(69); // increase elevation
+        this.camera.keysDownward.push(81); // decrease elevation
+        this.camera.keysUp.push(87); // forwards
+        this.camera.keysDown.push(83); // backwards
         this.camera.keysLeft.push(65);
         this.camera.keysRight.push(68);
         this.camera.inertia = 0;
@@ -41,25 +41,14 @@ export class Stage3DView {
     }
 
     private _onPointerDown(_e: IPointerEvent, pickInfo: PickingInfo) {
-        // if (!this._model) {
-        //     return;
-        // }
-
-        if (pickInfo.hit && pickInfo.pickedMesh) {
-            // const submesh = pickInfo.pickedMesh.subMeshes[pickInfo.subMeshId];
-            // console.log(pickInfo.pickedMesh.name, `submesh: ${pickInfo.subMeshId}`);
-            const model = this._models.get(Number(pickInfo.pickedMesh.id));
-            console.log('Mesh', pickInfo.pickedMesh.getPositionData());
-            console.log('Model', model);
-            console.log('Face', model?.faces[pickInfo.subMeshId]);
-            // const face = this._model?.faces[pickInfo.subMeshId];
-            // console.log(face);
-            // if (!face) {
-            //     return;
-            // }
-
-            // this.onFaceClicked?.(face);
+        if (!pickInfo.hit || !pickInfo.pickedMesh) {
+            return;
         }
+
+        const model = this._models.get(Number(pickInfo.pickedMesh.id));
+        console.log('Mesh', pickInfo.pickedMesh.getPositionData());
+        console.log('Model', model);
+        console.log('Face', model?.faces[pickInfo.subMeshId]);
     }
 
     public async loadStage(stage: ModelPack, min: number | undefined = undefined, max: number | undefined = undefined) {
@@ -73,12 +62,14 @@ export class Stage3DView {
                 break;
             }
 
-            meshes.push(ModelMeshBuilder.CreateMesh(model, this.scene));
+            const mesh = await ModelMeshBuilder.CreateMesh(model, this.scene);
+            meshes.push(mesh);
             this._models.set(model.id, model);
         }
 
         // console.log(`Before pack: ${this.scene.textures.length}`);
 
+        // TODO: investigate texture packer
         // const pack = new TexturePacker('TestPack', meshes, {
         //     frameSize: 256,
         //     layout: TexturePacker.LAYOUT_POWER2,

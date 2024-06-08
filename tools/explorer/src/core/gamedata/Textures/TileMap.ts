@@ -78,9 +78,9 @@ export class TileMap implements Iterable<Tile> {
 
         for (const texture of textures) {
             // UI Textures are not included in the TileMap
-            if (texture.info.hasFlag(TextureFlag.UI)) {
-                continue;
-            }
+            // if (texture.info.hasFlag(TextureFlag.UI)) {
+            //     continue;
+            // }
 
             if (!map.has(texture.info.width)) {
                 map.set(texture.info.width, []);
