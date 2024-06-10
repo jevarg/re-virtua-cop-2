@@ -9,17 +9,6 @@
     height: 128px;
 }
 
-.table-preview-cell {
-    cursor: pointer;
-}
-
 .modal-close {
     border: none !important;
-}
-
-.model-pack-table thead {
-    position: sticky;
-    position: -webkit-sticky;
-
-    top: calc(var(--header-height) + 8px);
 }

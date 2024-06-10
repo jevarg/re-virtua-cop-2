@@ -62,21 +62,20 @@ export class TexturePack extends AssetPack {
             const info = new TextureInfo(this._metadata, TextureInfo.byteSize * i);
             const byteSize = info.width * info.height;
             const indices = this.buffer.sliceAt(filePos, byteSize);
-            filePos += byteSize;
-
             const pixels = this._palette.getPixels(new Uint8Array(indices), info.paletteOffset, info.hasFlag(TextureFlag.Alpha));
-            this.textures.push(new Texture(i, info, pixels));
+
+            this.textures.push(new Texture(i, filePos, info, pixels));
+            filePos += byteSize;
         }
 
         this.tileMap = new TileMap(this.textures);
     }
 
-    public getTexture(id: number): Texture {
+    public getTexture(id: number): Texture | undefined {
         const i = id;
         const texture = this.textures[i];
         if (!texture) {
-            console.warn(`Computed i: ${i}`);
-            throw new TextureNotFoundError(id);
+            return;
         }
 
         return texture;

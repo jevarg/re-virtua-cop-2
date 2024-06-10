@@ -1,221 +1,114 @@
 import './TexturePackViewer.css';
 
-import Card from '@geist-ui/core/esm/card/card';
 import Grid from '@geist-ui/core/esm/grid/grid';
 import GridContainer from '@geist-ui/core/esm/grid/grid-container';
-import { Texture, TexturePack, Tile } from '@VCRE/core/gamedata';
-import Konva from 'konva';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import Spacer from '@geist-ui/core/esm/spacer/spacer';
+import TableColumn from '@geist-ui/core/esm/table/table-column';
+import Tag from '@geist-ui/core/esm/tag';
+import Text from '@geist-ui/core/esm/text/text';
+import { AssetPackTable } from '@VCRE/components/Table/AssetPackTable';
+import { Texture, TextureFlag, TexturePack } from '@VCRE/core/gamedata';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { TextureInfo } from './TextureInfo';
+import { TextureViewer } from '../Texture/TextureViewer';
 
 export interface TextureViewerProps {
     texturePack: TexturePack;
     textureId?: number;
 }
 
-type TileClickedFunction = (texture: Texture) => void;
+type TextureFlagsViewerProps = {
+    texture: Texture;
+}
 
-function buildTileMap(texturePack: TexturePack, layer: Konva.Layer, onTileClicked: TileClickedFunction) {
-    if (!texturePack.tileMap) {
-        console.warn('tileMap is not set!');
-        return;
-    }
+function TextureCanvas({ texture }: TextureFlagsViewerProps) {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    const group = new Konva.Group();
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-        console.error('Cannot get context...');
-        return;
-    }
-
-    const rect = new Konva.Rect({
-        stroke: '#ff00007c',
-        strokeScaleEnabled: true,
-        listening: false,
-    });
-
-    for (const tile of texturePack.tileMap) {
-        const texture = texturePack.textures[tile.textureId];
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas?.getContext('2d');
+        if (!canvas || !ctx) {
+            return;
+        }
 
         canvas.width = texture.info.width;
         canvas.height = texture.info.height;
 
         const imageData = new ImageData(texture.pixels, texture.info.width, texture.info.height);
         ctx.putImageData(imageData, 0, 0);
+    }, [texture]);
 
-        Konva.Image.fromURL(canvas.toDataURL(), function(image) {
-            image.setAttrs({
-                x: tile.rect.left,
-                y: tile.rect.top,
-            });
+    return <div className='canvas-wrapper'>
+        <canvas ref={canvasRef} />
+    </div>;
+}
 
-            image.on('mouseover', function () {
-                rect.setAttrs({
-                    visible: true,
-                    x: tile.rect.left - 1,
-                    y: tile.rect.top - 1,
-                    width: tile.rect.width + 2,
-                    height: tile.rect.height + 2,
-                });
-            });
+function TextureFlagsViewer({ texture }: TextureFlagsViewerProps) {
+    const components = [];
+    for (const flag of Object.values(TextureFlag)) {
+        if (isNaN(Number(flag)) || !texture.info.hasFlag(flag as TextureFlag)) {
+            continue;
+        }
 
-            image.on('mouseout', function () {
-                rect.visible(false);
-            });
-
-            image.on('click', function () {
-                onTileClicked(texture);
-            });
-
-            group.add(image);
-        });
+        if (components.length > 0) {
+            components.push(<Spacer />);
+        }
+        components.push(<>
+            <Tag scale={0.7}>
+                {TextureFlag[flag as TextureFlag]}
+            </Tag>
+        </>);
     }
 
-    layer.add(group);
-    layer.add(rect);
+    return components;
 }
 
-function createStage(container: HTMLDivElement) {
-    const stage = new Konva.Stage({
-        container,
-        width: container.clientWidth,
-        height: container.clientHeight,
-        draggable: true,
-        scale: { x: 3, y: 3 },
-    });
-
-    stage.on('wheel', (e) => {
-        e.evt.preventDefault();
-
-        if (!e.evt.deltaY) {
-            return;
+export function TexturePackViewer({ texturePack, textureId }: TextureViewerProps) {
+    const tableData = useMemo(() => {
+        const data = [];
+        for (const texture of texturePack.textures) {
+            data.push({
+                id: texture.id.toString(),
+                offset: `0x${texture.offset.toString(16)}`,
+                canvas: <TextureCanvas texture={texture} key={texture.id} />,
+                width: texture.info.width,
+                height: texture.info.height,
+                paletteOffset: `0x${texture.info.paletteOffset.toString(16)}`,
+                flags: <TextureFlagsViewer texture={texture} key={texture.id} />
+            });
         }
 
-        const scale = stage.scale() || { x: 1, y: 1 };
-        const pointer = stage.getPointerPosition()!;
-        const mousePos = {
-            x: (pointer.x - stage.x()) / scale.x,
-            y: (pointer.y - stage.y()) / scale.y,
-        };
+        return data;
+    }, [texturePack.textures]);
 
-        if (e.evt.deltaY > 0) {
-            scale.x = Math.max(0.5, scale.x - 0.5);
-            scale.y = Math.max(0.5, scale.y - 0.5);
-        } else {
-            scale.x = Math.max(0.5, scale.x + 0.5);
-            scale.y = Math.max(0.5, scale.y + 0.5);
-        }
-
-        stage.scale(scale);
-        stage.position({
-            x: pointer.x - mousePos.x * scale.x,
-            y: pointer.y - mousePos.y * scale.y
-        });
-    });
-
-    return stage;
-}
-
-function updateLayout(stage: Konva.Stage) {
-    const container = stage.container();
-
-    stage.size({
-        width: container.clientWidth,
-        height: container.clientHeight
-    });
-}
-
-export function TextureViewer({ texturePack, textureId }: TextureViewerProps) {
-    const navigate = useNavigate();
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [selectedTexture, setSelectedTexture] = useState<Texture>();
-
-    useEffect(() => {
+    const viewerProvider = useCallback(() => {
         if (textureId === undefined) {
-            if (selectedTexture) {
-                setSelectedTexture(undefined);
-            }
-
             return;
         }
 
-        const texture = texturePack.textures[textureId];
-        setSelectedTexture(texture);
-    }, [selectedTexture, textureId, texturePack.textures]);
-
-    // const layer = useMemo(() => {
-    //     console.info(TextureViewer.name, 'memo layer');
-    //     if (!containerRef.current) {
-    //         console.info(TextureViewer.name, 'cant create layer: no container');
-    //         return;
-    //     }
-
-    //     const stage = createStage(containerRef.current);
-    //     const onWindowResized = () => updateLayout(stage);
-
-    //     const layer = new Konva.Layer({
-    //         imageSmoothingEnabled: false
-    //     });
-    //     stage.add(layer);
-
-    //     window.removeEventListener('resize', onWindowResized); // If any previous was registered, we remove it
-    //     window.addEventListener('resize', onWindowResized);
-
-    //     return layer;
-    // }, []);
-
-    const makeLayer = useCallback((container: HTMLDivElement) => {
-        const stage = createStage(container);
-        const onWindowResized = () => updateLayout(stage);
-
-        const layer = new Konva.Layer({
-            imageSmoothingEnabled: false
-        });
-        stage.add(layer);
-
-        window.removeEventListener('resize', onWindowResized); // If any previous was registered, we remove it
-        window.addEventListener('resize', onWindowResized);
-
-        return layer;
-    }, []);
-
-    useEffect(() => {
-        // if (textureId !== undefined) {
-        //     const texture = texturePack.textures[textureId];
-        //     setSelectedTexture(texture);
-        // } else {
-        //     setSelectedTexture(undefined);
-        // }
-
-        if (!containerRef.current) {
+        const texture = texturePack.getTexture(textureId);
+        if (!texture) {
             return;
         }
 
-        const layer = makeLayer(containerRef.current);
-        const onTileClicked: TileClickedFunction = (texture) => {
-            let to = texture.id.toString();
-            if (textureId !== undefined) {
-                to = `../${to}`;
-            }
+        return <TextureViewer texture={texture} />;
+    }, [textureId, texturePack]);
 
-            navigate(to, { relative: 'path' });
-        };
-
-        console.info(TextureViewer.name, 'building tile map');
-        buildTileMap(texturePack, layer, onTileClicked);
-    }, [navigate, textureId, texturePack, makeLayer]);
-
-    return <GridContainer gap={8}>
-        <Grid xs={17}>
-            <Card width="100%">
-                <div className='tilemap-container' ref={containerRef} />
-            </Card>
+    return <GridContainer gap={2}>
+        <Grid xs={24} alignItems='center' direction='column'>
+            <Text h3 margin={0}>{texturePack.name}</Text>
+            <Text p small margin={0}>{texturePack.textures.length} texture(s)</Text>
         </Grid>
-        <Grid xs={7} width="100%">
-            <TextureInfo texture={selectedTexture} />
+        <Grid xs={24}>
+            <AssetPackTable data={tableData} previewColIndex={2} selectedRowId={textureId} modalViewerProvider={viewerProvider}>
+                <TableColumn label='ID' prop='id' />
+                <TableColumn label='Offset' prop='offset' />
+                <TableColumn label='Preview' prop='canvas' className='table-preview-cell' />
+                <TableColumn label='Width' prop='width' />
+                <TableColumn label='Height' prop='height' />
+                <TableColumn label='Palette offset' prop='paletteOffset' />
+                <TableColumn label='Flags' prop='flags' />
+            </AssetPackTable>
         </Grid>
     </GridContainer>;
 }

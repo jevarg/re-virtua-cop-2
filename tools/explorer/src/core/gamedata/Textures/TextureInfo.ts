@@ -12,10 +12,10 @@ export class TextureInfo {
     public readonly paletteOffset: number;
 
     // private readonly _unk: number;
-    private readonly _flags: number;
+    public readonly flags: number;
 
     public hasFlag(flag: TextureFlag) {
-        return Boolean(this._flags & flag);
+        return Boolean(this.flags & flag);
     }
 
     constructor(buffer: ArrayBufferLike, byteOffset: number) {
@@ -25,6 +25,6 @@ export class TextureInfo {
         this.height = dataView.getUint16(2, true);
         this.paletteOffset = dataView.getUint32(4, true);
         // this._unk = dataView.getUint32(8);
-        this._flags = dataView.getUint32(12, true);
+        this.flags = dataView.getUint32(12, true);
     }
 }

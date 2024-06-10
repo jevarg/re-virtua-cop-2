@@ -1,0 +1,4 @@
+.texture-viewer-container {
+    object-fit: contain;
+    height: 512px;
+}

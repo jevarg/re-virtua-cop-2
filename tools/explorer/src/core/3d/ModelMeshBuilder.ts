@@ -24,29 +24,14 @@ export class ModelMeshBuilder {
     }
 
     private static _createTexturedMaterial(model: Model, face: Face, scene: Scene, textures: Map<string, RawTexture>) {
-        let texture: Texture;
-        let texturePack: TexturePack;
-        try {
-            texturePack = this._findTexturePack(model, face.material.texturePackId);
-            // console.log(`textureId: ${face.material.textureId}`);
-            // console.log(`texturePackId: ${face.material.texturePackId}`);
-            // console.log(`pack: ${texturePack.name}`);
-            // console.log(`pageSize: ${texturePack.pageSize}`);
-            // console.log(`pageOffset: ${texturePack.pageOffset}`);
-            // console.log(' ');
+        const texturePack = this._findTexturePack(model, face.material.texturePackId);
+        const n = (face.material.texturePackId - texturePack.pageOffset);
+        const n2 = n > 0 ? n : n + 1;
 
-            // const tid = (face.material.textureId * face.material.texturePackId);
-
-            const n = (face.material.texturePackId - texturePack.pageOffset);
-            const n2 = n > 0 ? n : n + 1;
-
-            // console.log(`n2: ${n2}`);
-
-            const i = face.material.textureId + (256 * n) - ((n2) * texturePack.pageSize);
-            texture = texturePack.getTexture(i);
-            // texture = texturePack.getTexture(face.material.textureId, face.material.texturePackId);
-        } catch (e) {
-            console.warn(model, face, e);
+        const i = face.material.textureId + (256 * n) - (n2 * texturePack.pageSize);
+        const texture = texturePack.getTexture(i);
+        if (!texture) {
+            console.warn(model, face, 'Applying fallback material ...');
 
             const material = new StandardMaterial('fallbackMaterial', scene);
             material.emissiveColor = Color3.Red();
@@ -74,7 +59,7 @@ export class ModelMeshBuilder {
         material.emissiveColor = Color3.White();
 
         if (texture.info.hasFlag(TextureFlag.Alpha)) {
-            material.diffuseTexture.hasAlpha = true;
+            // material.diffuseTexture.hasAlpha = true;
             material.useAlphaFromDiffuseTexture = true;
         }
 

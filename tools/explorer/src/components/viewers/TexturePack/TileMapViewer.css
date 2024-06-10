@@ -1,0 +1,8 @@
+.tilemap-container {
+    width: 100%;
+    min-height: 1024px;
+}
+
+.tilemap-container canvas {
+    border-radius: 6px;
+}
