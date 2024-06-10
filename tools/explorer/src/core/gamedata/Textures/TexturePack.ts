@@ -1,4 +1,3 @@
-import { TextureNotFoundError } from '@VCRE/core/errors';
 import { AssetPack, AssetType } from '@VCRE/core/gamedata';
 import { FileSystemFileHandle } from 'native-file-system-adapter';
 

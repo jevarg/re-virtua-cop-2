@@ -1,12 +1,12 @@
 import './TextureInfo.css';
 
-import { Spacer, Tag, Tooltip } from '@geist-ui/core';
+import { Tag, Tooltip } from '@geist-ui/core';
 import Card from '@geist-ui/core/esm/card/card';
 import CardContent from '@geist-ui/core/esm/card/card-content';
 import Divider from '@geist-ui/core/esm/divider/divider';
 import Text from '@geist-ui/core/esm/text/text';
-import { AssetType, GameData, Texture, TextureFlag, TexturePackName, Tile } from '@VCRE/core/gamedata';
-import { useEffect, useMemo, useRef } from 'react';
+import { Texture, TextureFlag } from '@VCRE/core/gamedata';
+import { useEffect, useRef } from 'react';
 
 export type TextureInfoProps = {
     texture?: Texture;

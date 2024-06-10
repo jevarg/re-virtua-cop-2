@@ -2,7 +2,6 @@ import { TileNotFoundError } from '@VCRE/core/errors';
 import { Rect, Size, Vec2 } from '@VCRE/core/types';
 
 import { Texture } from './Texture';
-import { TextureFlag } from './TextureInfo';
 
 export type Tile = {
     rect: Rect;

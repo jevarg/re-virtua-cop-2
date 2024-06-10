@@ -5,7 +5,7 @@ import { Color3 } from '@babylonjs/core/Maths/math.color';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
 import { Scene } from '@babylonjs/core/scene';
-import { AssetType, Face, GameData, MaterialFlag, Model, RenderFlag, Texture, TextureFlag, TexturePack } from '@VCRE/core/gamedata';
+import { AssetType, Face, GameData, MaterialFlag, Model, RenderFlag, TextureFlag } from '@VCRE/core/gamedata';
 import { Rect } from '@VCRE/core/types';
 
 export class ModelMeshBuilder {
