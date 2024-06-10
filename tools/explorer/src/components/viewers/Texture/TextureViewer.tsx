@@ -94,7 +94,6 @@ export function TextureViewer({ texture }: TextureViewerProps) {
         }
 
         stage.add(layer);
-        // layer.
     }, [texture]);
 
     return <div ref={containerRef} className='texture-viewer-container' />;
