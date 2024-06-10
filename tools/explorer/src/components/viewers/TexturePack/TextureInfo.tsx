@@ -97,7 +97,6 @@ export function TextureInfo({ texture }: TextureInfoProps) {
 
     return <TextureInfoCard>
         <div className='tile-canvas-wrapper'>
-            {/* KONVA STAGE HERE */}
             <canvas ref={canvasRef} className='tile-canvas'></canvas>
         </div>
         <TextureInfoDetails texture={texture} />
