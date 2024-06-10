@@ -1,6 +1,6 @@
 import './TextureInfo.css';
 
-import { Tag } from '@geist-ui/core';
+import { Spacer, Tag, Tooltip } from '@geist-ui/core';
 import Card from '@geist-ui/core/esm/card/card';
 import CardContent from '@geist-ui/core/esm/card/card-content';
 import Divider from '@geist-ui/core/esm/divider/divider';
@@ -39,9 +39,17 @@ function TextureInfoDetails({ texture }: TextureInfoDetailsProps) {
                 Palette Offset: <Text small>0x{texture.info.paletteOffset.toString(16)}</Text>
             </Text>
             <Text p b>
-                Flags:&nbsp;
-                {texture.info.hasFlag(TextureFlag.Alpha) && <Tag scale={0.5}>Alpha</Tag>}
-                {texture.info.hasFlag(TextureFlag.UI) && <Tag scale={0.5}>UI</Tag>}
+                {texture.info.hasFlag(TextureFlag.Alpha) && <>
+                    <Tooltip text='Has transparency'>
+                        <Tag scale={0.5}>Alpha</Tag>
+                    </Tooltip>
+                </>}
+                &nbsp;
+                {texture.info.hasFlag(TextureFlag.UI) && <>
+                    <Tooltip text='2D UI texture'>
+                        <Tag scale={0.5}>UI</Tag>
+                    </Tooltip>
+                </>}
             </Text>
         </div>
     </>;
@@ -89,9 +97,9 @@ export function TextureInfo({ texture }: TextureInfoProps) {
 
     return <TextureInfoCard>
         <div className='tile-canvas-wrapper'>
+            {/* KONVA STAGE HERE */}
             <canvas ref={canvasRef} className='tile-canvas'></canvas>
         </div>
         <TextureInfoDetails texture={texture} />
-        {/* KONVA STAGE HERE */}
     </TextureInfoCard>;
 }

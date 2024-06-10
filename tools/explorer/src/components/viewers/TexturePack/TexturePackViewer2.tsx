@@ -3,6 +3,7 @@ import './TexturePackViewer.css';
 import Card from '@geist-ui/core/esm/card/card';
 import Grid from '@geist-ui/core/esm/grid/grid';
 import GridContainer from '@geist-ui/core/esm/grid/grid-container';
+import Table from '@geist-ui/core/esm/table';
 import { Texture, TexturePack, Tile } from '@VCRE/core/gamedata';
 import Konva from 'konva';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -129,93 +130,28 @@ function updateLayout(stage: Konva.Stage) {
 }
 
 export function TextureViewer({ texturePack, textureId }: TextureViewerProps) {
-    const navigate = useNavigate();
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [selectedTexture, setSelectedTexture] = useState<Texture>();
-
-    useEffect(() => {
-        if (textureId === undefined) {
-            if (selectedTexture) {
-                setSelectedTexture(undefined);
-            }
-
-            return;
+    const tableData = useMemo(() => {
+        const data = [];
+        for (const texture of texturePack.textures) {
+            data.push({
+                id: texture.id,
+                width: texture.info.width,
+                height: texture.info.height,
+                paletteOffset: texture.info.paletteOffset
+            });
         }
-
-        const texture = texturePack.textures[textureId];
-        setSelectedTexture(texture);
-    }, [selectedTexture, textureId, texturePack.textures]);
-
-    // const layer = useMemo(() => {
-    //     console.info(TextureViewer.name, 'memo layer');
-    //     if (!containerRef.current) {
-    //         console.info(TextureViewer.name, 'cant create layer: no container');
-    //         return;
-    //     }
-
-    //     const stage = createStage(containerRef.current);
-    //     const onWindowResized = () => updateLayout(stage);
-
-    //     const layer = new Konva.Layer({
-    //         imageSmoothingEnabled: false
-    //     });
-    //     stage.add(layer);
-
-    //     window.removeEventListener('resize', onWindowResized); // If any previous was registered, we remove it
-    //     window.addEventListener('resize', onWindowResized);
-
-    //     return layer;
-    // }, []);
-
-    const makeLayer = useCallback((container: HTMLDivElement) => {
-        const stage = createStage(container);
-        const onWindowResized = () => updateLayout(stage);
-
-        const layer = new Konva.Layer({
-            imageSmoothingEnabled: false
-        });
-        stage.add(layer);
-
-        window.removeEventListener('resize', onWindowResized); // If any previous was registered, we remove it
-        window.addEventListener('resize', onWindowResized);
-
-        return layer;
     }, []);
-
-    useEffect(() => {
-        // if (textureId !== undefined) {
-        //     const texture = texturePack.textures[textureId];
-        //     setSelectedTexture(texture);
-        // } else {
-        //     setSelectedTexture(undefined);
-        // }
-
-        if (!containerRef.current) {
-            return;
-        }
-
-        const layer = makeLayer(containerRef.current);
-        const onTileClicked: TileClickedFunction = (texture) => {
-            let to = texture.id.toString();
-            if (textureId !== undefined) {
-                to = `../${to}`;
-            }
-
-            navigate(to, { relative: 'path' });
-        };
-
-        console.info(TextureViewer.name, 'building tile map');
-        buildTileMap(texturePack, layer, onTileClicked);
-    }, [navigate, textureId, texturePack, makeLayer]);
 
     return <GridContainer gap={8}>
         <Grid xs={17}>
             <Card width="100%">
-                <div className='tilemap-container' ref={containerRef} />
+                <Table>
+
+                </Table>
             </Card>
         </Grid>
         <Grid xs={7} width="100%">
-            <TextureInfo texture={selectedTexture} />
+            <TextureInfo texture={undefined} />
         </Grid>
     </GridContainer>;
 }
