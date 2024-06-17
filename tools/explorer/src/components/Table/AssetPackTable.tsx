@@ -68,7 +68,7 @@ export function AssetPackTable({ children, data, previewColIndex, selectedRowId,
                 onPointerEnterCapture={undefined}
                 onPointerLeaveCapture={undefined}
                 passive
-                onClick={e => e.close()}
+                onClick={closeModal}
             >
                 Close
             </ModalAction>
