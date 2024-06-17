@@ -59,7 +59,7 @@ export class ModelMeshBuilder {
         material.emissiveColor = Color3.White();
 
         if (texture.info.hasFlag(TextureFlag.Alpha)) {
-            // material.diffuseTexture.hasAlpha = true;
+            material.diffuseTexture.hasAlpha = true;
             material.useAlphaFromDiffuseTexture = true;
         }
 
