@@ -3,19 +3,19 @@
 }
 
 body.animated-cursor {
-    cursor: url('cursor/0.png') 11 11, auto;
+    cursor: url('../cursor/0.png') 11 11, auto;
     animation: cursor 300ms infinite;
 }
 
 @keyframes cursor {
-    0% { cursor: url('cursor/0.png') 11 11, auto; }
-    12.5% { cursor: url('cursor/1.png') 11 11, auto; }
-    25% { cursor: url('cursor/2.png') 11 11, auto; }
-    37.5% { cursor: url('cursor/3.png') 11 11, auto; }
-    50% { cursor: url('cursor/4.png') 11 11, auto; }
-    62.5% { cursor: url('cursor/5.png') 11 11, auto; }
-    75% { cursor: url('cursor/6.png') 11 11, auto; }
-    100% { cursor: url('cursor/7.png') 11 11, auto; }
+    0% { cursor: url('../cursor/0.png') 11 11, auto; }
+    12.5% { cursor: url('../cursor/1.png') 11 11, auto; }
+    25% { cursor: url('../cursor/2.png') 11 11, auto; }
+    37.5% { cursor: url('../cursor/3.png') 11 11, auto; }
+    50% { cursor: url('../cursor/4.png') 11 11, auto; }
+    62.5% { cursor: url('../cursor/5.png') 11 11, auto; }
+    75% { cursor: url('../cursor/6.png') 11 11, auto; }
+    100% { cursor: url('../cursor/7.png') 11 11, auto; }
 }
 
 img, canvas {
