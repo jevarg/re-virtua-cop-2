@@ -4,7 +4,7 @@ Work in progress reverse engineering of [Virtua Cop 2 PC](https://www.myabandonw
 
 Go checkout [the Wiki](https://github.com/jevarg/re-virtua-cop-2/wiki) for more info about data structures
 
-You can also check the [assets explorer](https://jevarg.github.io/re-virtua-cop-2/)
+You can also check the [assets explorer](https://jevarg.github.io/re-virtua-cop-2/) (Check the explorer's for a quick overview [README.md](tools/explorer/README.md))
 
 ### Important Note
 
